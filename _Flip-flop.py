@@ -6,26 +6,28 @@
 # -- Flip-flop card (Show FrontSide/BackSide by F7/F8 or Ctrl+PgUp/Control+PageDown 
 #                                            or ^9/^3 or Insert/0)
 # -- 519426347 -- 
+from __future__ import division
 from __future__ import unicode_literals
-
-import sys, os
-sys.setdefaultencoding('utf8')
+import os, sys
 
 if __name__ == "__main__":
-    print "This is the add-on for the Anki program and it can't be run directly."
-    print "Please download Anki 2.0 from http://ankisrs.net/"
+    print("This is the _Flip-flop add-on for the Anki program and it can't be run directly.")
+    print("Please download Anki 2.0 from http://ankisrs.net/")
     sys.exit()
 else:
     pass
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+if sys.version[0] == '2': # Python 3 is utf8 only already.
+  if hasattr(sys,'setdefaultencoding'):
+    sys.setdefaultencoding('utf8')
 
 from aqt import mw
 import anki.sound
-
 from anki.hooks import wrap
 from aqt.reviewer import Reviewer
+
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 # Get language class
 import anki.lang
@@ -37,7 +39,7 @@ FLIP_FLOP = True
 ANKI_MENU_ICONS = True
 #ANKI_MENU_ICONS = False
 
-MUSTHAVE_COLOR_ICONS = 'color_icons' 
+MUSTHAVE_COLOR_ICONS = 'flipflop_icons' 
 
 ZERO_KEY_TO_SHOW_ANSWER = True
 #ZERO_KEY_TO_SHOW_ANSWER = False
