@@ -16,6 +16,7 @@ else:
     pass
 
 if sys.version[0] == '2': # Python 3 is utf8 only already.
+  if hasattr(sys,'setdefaultencoding'):
     sys.setdefaultencoding('utf8')
 
 CASE_SENSITIVE = False # True # 
