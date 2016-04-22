@@ -213,17 +213,21 @@ And it sets up <code><i>Again</i></code> reply button as default
 if you type wrong.
 
 Remove <code><b>#</b></code> from line 
+```
 <code>
 UPPER_CASE = False
 #UPPER_CASE = True
 </code>
+```
 to see upper case letters on BackSide of your cards.
 
 You should exactly remove <code><b>#</b></code> not replace with space char
+```
 <code>
 EXACT_COMPARING = False
 #EXACT_COMPARING = True
 </code>
+```
 if you want to do exact field comparing
 (as it is done in Anki itself)
 but keep spacebar functionality.
