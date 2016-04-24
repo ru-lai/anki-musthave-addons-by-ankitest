@@ -1,5 +1,6 @@
 # -*- mode: Python ; coding: utf-8 -*-
 from __future__ import unicode_literals
+import os
 
 FONT = 'Courier New' # "Calibri" # 'Arial'
 FONTSIZE = 12
@@ -8,6 +9,8 @@ CtrlShiftX = "F4"
 
 import aqt.clayout
 import aqt.editor
+import aqt.addons
+import aqt.utils
 import PyQt4.QtGui
 import PyQt4.QtCore
 from BeautifulSoup import BeautifulSoup
@@ -87,3 +90,70 @@ def mySetupF4(self):
     f4.connect(f4, PyQt4.QtCore.SIGNAL("activated()"), self.onHtmlEdit)
 
 aqt.editor.Editor.setupButtons = anki.hooks.wrap(aqt.editor.Editor.setupButtons, mySetupF4)
+
+# Addons Edit...
+######################################################################
+
+def myEdit(self, path):
+    d = PyQt4.QtGui.QDialog(self.mw)
+    frm = aqt.forms.editaddon.Ui_Dialog()
+    frm.setupUi(d)
+    d.setWindowTitle(os.path.basename(path))
+
+    frm.text.setFont(font)
+    frm.text.setPlainText(unicode(open(path).read(), "utf8"))
+
+    d.connect(frm.buttonBox, PyQt4.QtCore.SIGNAL("accepted()"),
+              lambda: self.onAcceptEdit(path, frm))
+    d.exec_()
+
+aqt.addons.AddonManager.onEdit = myEdit
+
+# Addons Edit...
+######################################################################
+
+def showTextik(txt, parent=None, type="text", run=True, geomKey=None, \
+    minWidth=500, minHeight=400, title=''):
+    if not parent:
+        parent = aqt.mw.app.activeWindow() or aqt.mw
+    diag = PyQt4.QtGui.QDialog(parent)
+    diag.setWindowTitle("Anki " + title)
+    layout = PyQt4.QtGui.QVBoxLayout(diag)
+    diag.setLayout(layout)
+
+    text = PyQt4.QtGui.QTextEdit()
+    text.setReadOnly(True)
+
+    text.setFont(font)
+    if type == "text":
+        text.setPlainText(txt)
+    else:
+        text.setHtml(txt)
+
+    layout.addWidget(text)
+    box = PyQt4.QtGui.QDialogButtonBox(PyQt4.QtGui.QDialogButtonBox.Close)
+    layout.addWidget(box)
+
+    def onReject():
+        if geomKey:
+            aqt.utils.saveGeom(diag, geomKey)
+        PyQt4.QtGui.QDialog.reject(diag)
+
+    diag.connect(box, PyQt4.QtCore.SIGNAL("rejected()"), onReject)
+    diag.setMinimumHeight(minHeight)
+    diag.setMinimumWidth(minWidth)
+    if geomKey:
+        restoreGeom(diag, geomKey)
+    if run:
+        diag.exec_()
+    else:
+        return diag, box
+
+aqt.utils.showText = showTextik
+
+'''
+    try:
+      showText(yourText, type="HTML", minHeight=150, minWidth=450, title="• Your title")
+    except TypeError:
+      showText(yourText, type="HTML")
+'''
