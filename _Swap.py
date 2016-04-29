@@ -6,7 +6,7 @@
 #
 from __future__ import division
 from __future__ import unicode_literals
-import os, sys
+import os, sys, datetime
 
 if __name__ == "__main__":
     print("This is _Swap add-on for the Anki program and it can't be run directly.")
@@ -20,6 +20,7 @@ if sys.version[0] == '2': # Python 3 is utf8 only already.
     sys.setdefaultencoding('utf8')
 
 CASE_SENSITIVE = False # True # 
+DO_NOT_TAG = False # True # 
 
 fldlst = [
     ['En','Ru'],
@@ -155,6 +156,12 @@ def JustDoIt(note):
             swap_fld = note[fld1st]
             note[fld1st] = note[fld2nd]
             note[fld2nd] = swap_fld
+
+        if not DO_NOT_TAG:
+            tag = datetime.datetime.now().strftime("swapped::swap-%Y-%m-%d") #-%H:%M:%S")
+            #tag = datetime.datetime.now().strftime("sw-%y-%m-%d") 
+            if not note.hasTag(tag):
+                note.addTag(tag)
 
         note.flush()  # never forget to flush
         tooltip(("Выполнен обмен значений между полями <b>%s</b> и <b>%s</b>." if lang=='ru' else '<b>%s</b> and <b>%s</b> swapped.')%(fld1st,fld2nd))
