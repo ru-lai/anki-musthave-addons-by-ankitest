@@ -19,8 +19,11 @@ if sys.version[0] == '2': # Python 3 is utf8 only already.
   if hasattr(sys,'setdefaultencoding'):
     sys.setdefaultencoding('utf8')
 
-CASE_SENSITIVE = False # True # 
-DO_NOT_TAG = False # True # 
+CASE_SENSITIVE = True # False # 
+
+SWAP_TAG = False
+#SWAP_TAG = datetime.datetime.now().strftime("swapped::swap-%Y-%m-%d") #-%H:%M:%S")
+#SWAP_TAG = datetime.datetime.now().strftime("sw-%y-%m-%d") 
 
 fldlst = [
     ['En','Ru'],
@@ -157,11 +160,9 @@ def JustDoIt(note):
             note[fld1st] = note[fld2nd]
             note[fld2nd] = swap_fld
 
-        if not DO_NOT_TAG:
-            tag = datetime.datetime.now().strftime("swapped::swap-%Y-%m-%d") #-%H:%M:%S")
-            #tag = datetime.datetime.now().strftime("sw-%y-%m-%d") 
-            if not note.hasTag(tag):
-                note.addTag(tag)
+        if SWAP_TAG:
+            if not note.hasTag(SWAP_TAG):
+                note.addTag(SWAP_TAG)
 
         note.flush()  # never forget to flush
         tooltip(("Выполнен обмен значений между полями <b>%s</b> и <b>%s</b>." if lang=='ru' else '<b>%s</b> and <b>%s</b> swapped.')%(fld1st,fld2nd))
