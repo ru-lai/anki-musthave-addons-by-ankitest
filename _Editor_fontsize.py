@@ -7,9 +7,10 @@ FONTSIZE = 12
 
 CtrlShiftX = "F4"
 
+import aqt.addons
+import aqt.browser
 import aqt.clayout
 import aqt.editor
-import aqt.addons
 import aqt.utils
 import PyQt4.QtGui
 import PyQt4.QtCore
@@ -157,3 +158,50 @@ aqt.utils.showText = showTextik
     except TypeError:
       showText(yourText, type="HTML")
 '''
+
+# Is there a way to increase the size of text in the Search bar?
+######################################################################
+
+def onBrowserSearch(self, reset=True):
+    "Careful: if reset is true, the current note is saved."
+    txt = unicode(self.form.searchEdit.lineEdit().text()).strip()
+    prompt = _("<type here to search; hit enter to show current deck>")
+    sh = self.mw.pm.profile['searchHistory']
+    # update search history
+    if txt in sh:
+        sh.remove(txt)
+    sh.insert(0, txt)
+    sh = sh[:30]
+    self.form.searchEdit.clear()
+    self.form.searchEdit.addItems(sh)
+    self.mw.pm.profile['searchHistory'] = sh
+
+    self.form.searchEdit.lineEdit().setFont(font)
+
+    if self.mw.state == "review" and "is:current" in txt:
+        # search for current card, but set search to easily display whole
+        # deck
+        if reset:
+            self.model.beginReset()
+            self.model.focusedCard = self.mw.reviewer.card.id
+        self.model.search("nid:%d"%self.mw.reviewer.card.nid, False)
+        if reset:
+            self.model.endReset()
+        self.form.searchEdit.lineEdit().setText(prompt)
+        self.form.searchEdit.lineEdit().selectAll()
+        return
+    elif "is:current" in txt:
+        self.form.searchEdit.lineEdit().setText(prompt)
+        self.form.searchEdit.lineEdit().selectAll()
+    elif txt == prompt:
+        self.form.searchEdit.lineEdit().setText("deck:current ")
+        txt = "deck:current "
+
+    self.model.search(txt, reset)
+    if not self.model.cards:
+        # no row change will fire
+        self.onRowChanged(None, None)
+    elif self.mw.state == "review":
+        self.focusCid(self.mw.reviewer.card.id)
+
+aqt.browser.Browser.onSearch = onBrowserSearch
