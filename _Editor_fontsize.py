@@ -1,12 +1,14 @@
 # -*- mode: Python ; coding: utf-8 -*-
 from __future__ import unicode_literals
 import os
+from operator import  itemgetter
 
 FONT = 'Courier New' # "Calibri" # 'Arial'
 FONTSIZE = 12
 
 CtrlShiftX = "F4"
 
+from aqt.qt import * 
 import aqt.addons
 import aqt.browser
 import aqt.clayout
@@ -19,6 +21,9 @@ from BeautifulSoup import BeautifulSoup
 font = PyQt4.QtGui.QFont()
 font.setFamily(FONT)
 font.setPointSize(FONTSIZE)
+
+typeface = PyQt4.QtGui.QFont()
+typeface.setPointSize(FONTSIZE)
 
 #font.setWeight(62) # <=62 normal >=63 bold
 
@@ -110,7 +115,7 @@ def myEdit(self, path):
 
 aqt.addons.AddonManager.onEdit = myEdit
 
-# Addons Edit...
+# showText with title=,minWidth=,minHeight= key parameters
 ######################################################################
 
 def showTextik(txt, parent=None, type="text", run=True, geomKey=None, \
@@ -176,7 +181,7 @@ def onBrowserSearch(self, reset=True):
     self.form.searchEdit.addItems(sh)
     self.mw.pm.profile['searchHistory'] = sh
 
-    self.form.searchEdit.lineEdit().setFont(font)
+    self.form.searchEdit.lineEdit().setFont(typeface)
 
     if self.mw.state == "review" and "is:current" in txt:
         # search for current card, but set search to easily display whole
@@ -205,3 +210,109 @@ def onBrowserSearch(self, reset=True):
         self.focusCid(self.mw.reviewer.card.id)
 
 aqt.browser.Browser.onSearch = onBrowserSearch
+
+# There is a way to increase the size of an each column in the Browser
+######################################################################
+
+def allData(self, index, role):
+    if not index.isValid():
+        return
+    if role == Qt.FontRole:
+        #if self.activeCols[index.column()] not in (
+        #    "question", "answer", "noteFld"):
+        #    return
+        f = QFont()
+        row = index.row()
+        c = self.getCard(index)
+        t = c.template()
+        f.setFamily(t.get("bfont", self.browser.mw.fontFamily))
+        f.setPixelSize(t.get("bsize", self.browser.mw.fontHeight))
+        return f
+    elif role == Qt.TextAlignmentRole:
+        align = Qt.AlignVCenter
+        if self.activeCols[index.column()] not in ("question", "answer",
+           "template", "deck", "noteFld", "note"):
+            align |= Qt.AlignHCenter
+        return align
+    elif role == Qt.DisplayRole or role == Qt.EditRole:
+        return self.columnData(index)
+    else:
+        return
+
+aqt.browser.DataModel.data = allData
+
+# Filter tree
+######################################################################
+
+def _systemTagTree(self, root):
+    tags = (
+        (_("Whole Collection"), "ankibw", ""),
+        (_("Current Deck"), "deck16", "deck:current"),
+        (_("Added Today"), "view-pim-calendar.png", "added:1"),
+        (_("Studied Today"), "view-pim-calendar.png", "rated:1"),
+        (_("Again Today"), "view-pim-calendar.png", "rated:1:1"),
+        (_("New"), "plus16.png", "is:new"),
+        (_("Learning"), "stock_new_template_red.png", "is:learn"),
+        (_("Review"), "clock16.png", "is:review"),
+        (_("Due"), "clock16.png", "is:due"),
+        (_("Marked"), "star16.png", "tag:marked"),
+        (_("Suspended"), "media-playback-pause.png", "is:suspended"),
+        (_("Leech"), "emblem-important.png", "tag:leech"))
+    for name, icon, cmd in tags:
+        item = self.CallbackItem(
+            root, name, lambda c=cmd: self.setFilter(c))
+        item.setIcon(0, QIcon(":/icons/" + icon))
+        item.setFont(0, typeface)
+    return root
+
+def _favTree(self, root):
+    saved = self.col.conf.get('savedFilters', [])
+    if not saved:
+        # Don't add favourites to tree if none saved
+        return
+    root = self.CallbackItem(root, _("My Searches"), None)
+    root.setExpanded(True)
+    root.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
+    root.setFont(0, typeface)
+    for name, filt in sorted(saved.items()):
+        item = self.CallbackItem(root, name, lambda s=filt: self.setFilter(s))
+        item.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
+        item.setFont(0, typeface)
+
+def _decksTree(self, root):
+    grps = self.col.sched.deckDueTree()
+    def fillGroups(root, grps, head=""):
+        for g in grps:
+            item = self.CallbackItem(
+                root, g[0],
+                lambda g=g: self.setFilter("deck", head+g[0]),
+                lambda g=g: self.mw.col.decks.collapseBrowser(g[1]))
+            item.setIcon(0, QIcon(":/icons/deck16.png"))
+            item.setFont(0, typeface)
+            newhead = head + g[0]+"::"
+            collapsed = self.mw.col.decks.get(g[1]).get('browserCollapsed', False)
+            item.setExpanded(not collapsed)
+            fillGroups(item, g[5], newhead)
+    fillGroups(root, grps)
+
+def _modelTree(self, root):
+    for m in sorted(self.col.models.all(), key=itemgetter("name")):
+        mitem = self.CallbackItem(
+            root, m['name'], lambda m=m: self.setFilter("mid", str(m['id'])))
+        mitem.setIcon(0, QIcon(":/icons/product_design.png"))
+        mitem.setFont(0, typeface)
+
+def _userTagTree(self, root):
+    for t in sorted(self.col.tags.all()):
+        if t.lower() == "marked" or t.lower() == "leech":
+            continue
+        item = self.CallbackItem(
+            root, t, lambda t=t: self.setFilter("tag", t))
+        item.setIcon(0, QIcon(":/icons/anki-tag.png"))
+        item.setFont(0, typeface)
+
+aqt.browser.Browser._systemTagTree = _systemTagTree
+aqt.browser.Browser._favTree = _favTree
+aqt.browser.Browser._decksTree = _decksTree
+aqt.browser.Browser._modelTree = _modelTree
+aqt.browser.Browser._userTagTree = _userTagTree
