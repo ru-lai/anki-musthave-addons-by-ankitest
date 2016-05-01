@@ -19,6 +19,7 @@
 from __future__ import division
 from __future__ import unicode_literals
 import os, re
+import unicodedata
 
 UPPER_CASE = False
 #UPPER_CASE = True
@@ -32,6 +33,13 @@ import HTMLParser
 from anki.utils import stripHTML
 from anki.hooks import addHook, wrap, runHook
 from aqt.utils import tooltip, showInfo
+
+# from Ignore accents in browser search add-on
+# https://ankiweb.net/shared/info/1924690148
+def stripCombining(txt):
+    "Return txt with all combining characters removed."
+    norm = unicodedata.normalize('NFKD', txt)
+    return "".join([c for c in norm if not unicodedata.combining(c)])
 
 def maTypeAnsAnswerFilter(self, buf): 
     # tell webview to call us back with the input content
@@ -49,6 +57,11 @@ def maTypeAnsAnswerFilter(self, buf):
     cor = parser.unescape(cor)
     cor = cor.replace(u"\xa0", " ")
     given = self.typedAnswer
+
+    if not EXACT_COMPARING:
+        cor = stripCombining(cor)
+        given = stripCombining(given)
+
     # compare with typed answer
     if EXACT_COMPARING:
         res = self.correct(given, cor, showBad=False)
@@ -88,6 +101,11 @@ def myTypeAnsAnswerFilter(self, buf, i):
     cor = parser.unescape(cor)
     cor = cor.replace(u"\xa0", " ")
     given = self.typedAnswer
+
+    if not EXACT_COMPARING:
+        cor = stripCombining(cor)
+        given = stripCombining(given)
+
     # compare with typed answer
     if EXACT_COMPARING:
         res = self.correct(given, cor, showBad=False)
@@ -188,6 +206,7 @@ def myDefaultEase(self, _old):
             else:
                 res = True
                 for i in range(0,len(cor)):
+
                     if EXACT_COMPARING:
                         pass
                     elif UPPER_CASE:
@@ -196,6 +215,11 @@ def myDefaultEase(self, _old):
                     else:
                         gvn[i] = gvn[i].strip().lower()
                         cor[i] = cor[i].strip().lower()
+
+                    if not EXACT_COMPARING:
+                        cor[i] = stripCombining(cor[i])
+                        gvn[i] = stripCombining(gvn[i])
+
                     if (gvn[i]  !=  "" and gvn[i]  !=  cor[i]):
                         res = False
                     if (gvn[i]  !=  ""):
