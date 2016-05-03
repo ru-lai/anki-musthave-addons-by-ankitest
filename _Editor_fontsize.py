@@ -344,8 +344,14 @@ def _systemTagTree(self, root):
         (_("Marked"), "star16.png", "tag:marked"),
         (_("Suspended"), "media-playback-pause.png", "is:suspended"),
         (_("Leech"), "emblem-important.png", "tag:leech"))
-    limb = self.CallbackItem(root, "Коренные" if lang=='ru' else _("Rootage"), None)
-    limb.setExpanded(True)
+    def onCollapse():
+        mw.col.conf['_collapseRootage'] = limb.isExpanded()
+    limb = self.CallbackItem(root, "Коренные" if lang=='ru' else _("Rootage"), \
+                             lambda: self.setFilter(""), oncollapse=onCollapse)
+    if '_collapseRootage' in mw.col.conf:
+        limb.setExpanded(mw.col.conf['_collapseRootage'])
+    else:
+        limb.setExpanded(True)
     limb.setIcon(0, QIcon(":/icons/ankibw"))
     limb.setFont(0, particularFont('Browser sysTree',italic=True))
     for name, icon, cmd in tags:
@@ -360,8 +366,14 @@ def _favTree(self, root):
     if not saved:
         # Don't add favourites to tree if none saved
         return
-    limb = self.CallbackItem(root, _("My Searches"), None)
-    limb.setExpanded(True)
+    def onCollapse():
+        mw.col.conf['_collapseFavorites'] = limb.isExpanded()
+    limb = self.CallbackItem(root, _("My Searches"), \
+                             lambda: self.setFilter(""), oncollapse=onCollapse)
+    if '_collapseFavorites' in mw.col.conf:
+        limb.setExpanded(mw.col.conf['_collapseFavorites'])
+    else:
+        limb.setExpanded(True)
     limb.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
     limb.setFont(0, particularFont('Browser favTree',italic=True))
     for name, filt in sorted(saved.items()):
@@ -370,8 +382,14 @@ def _favTree(self, root):
         item.setFont(0, particularFont('Browser favTree',italic=True))
 
 def _decksTree(self, root):
-    limb = self.CallbackItem(root, _("Decks"), None)
-    limb.setExpanded(True)
+    def onCollapse():
+        mw.col.conf['_collapseDecks'] = limb.isExpanded()
+    limb = self.CallbackItem(root, _("Decks"), \
+                             lambda: self.setFilter(""), oncollapse=onCollapse)
+    if '_collapseDecks' in mw.col.conf:
+        limb.setExpanded(mw.col.conf['_collapseDecks'])
+    else:
+        limb.setExpanded(True)
     limb.setIcon(0, QIcon(":/icons/deck16.png"))
     limb.setFont(0, particularFont('Browser deckTree',italic=True))
     def fillGroups(root, grps, head=""):
@@ -389,8 +407,14 @@ def _decksTree(self, root):
     fillGroups(limb, self.col.sched.deckDueTree())
 
 def _modelTree(self, root):
-    limb = self.CallbackItem(root, _("Note Types"), None)
-    limb.setExpanded(True)
+    def onCollapse():
+        mw.col.conf['_collapseNoteTypes'] = limb.isExpanded()
+    limb = self.CallbackItem(root, _("Note Types"), \
+                             lambda: self.setFilter(""), oncollapse=onCollapse)
+    if '_collapseNoteTypes' in mw.col.conf:
+        limb.setExpanded(mw.col.conf['_collapseNoteTypes'])
+    else:
+        limb.setExpanded(True)
     limb.setIcon(0, QIcon(":/icons/product_design.png"))
     limb.setFont(0, particularFont('Browser noteTree',italic=True))
     for m in sorted(self.col.models.all(), key=itemgetter("name")):
@@ -400,8 +424,14 @@ def _modelTree(self, root):
         mitem.setFont(0, particularFont('Browser noteTree'))
 
 def _userTagTree(self, root):
-    limb = self.CallbackItem(root, _("Tags"), None)
-    limb.setExpanded(True)
+    def onCollapse():
+        mw.col.conf['_collapseTags'] = limb.isExpanded()
+    limb = self.CallbackItem(root, _("Tags"), \
+                             lambda: self.setFilter(""), oncollapse=onCollapse)
+    if '_collapseTags' in mw.col.conf:
+        limb.setExpanded(mw.col.conf['_collapseTags'])
+    else:
+        limb.setExpanded(True)
     limb.setIcon(0, QIcon(":/icons/anki-tag.png"))
     limb.setFont(0, particularFont('Browser tagTree',italic=True))
     for t in sorted(self.col.tags.all()):
