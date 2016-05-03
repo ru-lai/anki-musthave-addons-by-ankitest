@@ -1,46 +1,117 @@
 # -*- mode: Python ; coding: utf-8 -*-
+# • Editor fontsize
+# https://ankiweb.net/shared/info/1931469441
+# 
+# Increase Text Size for Card Types Editor and so on
+# 
+# TODO: Some description should be here!!!
+# 
+# HTML Editor saves width and height on exit
+# 
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
+# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+#
 from __future__ import unicode_literals
 import os
 from operator import  itemgetter
 
-FONT = 'Courier New' # "Calibri" # 'Arial'
-FONTSIZE = 12
+CtrlShiftX = "F4" # You can make your own e.g. = "Ctrl+Alt+Shift+0"
 
-CtrlShiftX = "F4"
+BrowserColumns = True # if you want to enlarge ALL columns in browser
+#BrowserColumns = False # to enlarge "Sort Field", "Question", "Answer" only
 
+FONTS = {
+    # {{}} height of curly braces is near font's height in pixels 
+    #  (Why not exact? It's font dependant).
+
+    # ('Arial', 11) is Anki's default setup. Or 12?
+
+    # To change only fontsize use
+    #  (None, 14),
+
+    # To change only typeface use
+    #  ('Calibri', 0),
+
+    # To switch off both particular typeface and fontsize setup
+    #  you need to comment it's line
+    #   (just use # sharp at the very beginning)
+
+    #'Force custom font':  (None, 0),
+    #'Force custom font':  ('Calibri', 14),
+    'Force custom font':  ('Times New Roman', 16),
+
+    'Front Template':   ('Courier New', 16),
+    'Styling':          ('Courier New', 16),
+    'Back Template':    ('Courier New', 16),
+
+    'HTML Editor':      ('Courier New', 18),
+
+    'Add-ons Edit...':  ('Calibri', 16),
+    'showText':         ('Calibri', 16),
+
+    'Browser Search':       ('Verdana', 14),
+    'Browser Columns':      ('Courier New', 16),
+
+    'Browser sysTree':      ('Calibri', 18),
+    'Browser favTree':      ('Calibri', 18),
+    'Browser deckTree':     ('Calibri', 20),
+    'Browser noteTree':     ('Calibri', 18),
+    'Browser tagTree':      ('Calibri', 16),
+
+    'Fields List':          ('Consolas', 18),
+}
+
+from aqt import mw
 from aqt.qt import * 
 import aqt.addons
 import aqt.browser
 import aqt.clayout
 import aqt.editor
+import aqt.fields
 import aqt.utils
 import PyQt4.QtGui
 import PyQt4.QtCore
 from BeautifulSoup import BeautifulSoup
 
-font = PyQt4.QtGui.QFont()
-font.setFamily(FONT)
-font.setPointSize(FONTSIZE)
+def particularFont(fontKey, bold=False, italic=False, underline=False):
+    font = PyQt4.QtGui.QFont()
+    if fontKey in FONTS:
+       if FONTS[fontKey][0] != None:
+          font.setFamily(FONTS[fontKey][0])
+       fontsize = int(FONTS[fontKey][1])
+       if fontsize > 0:
+          font.setPixelSize(fontsize)
+          #font.setPointSize(fontsize)
+       font.setBold(bold)
+       font.setItalic(italic)
+       font.setUnderline(underline)
+    return font
 
-typeface = PyQt4.QtGui.QFont()
-typeface.setPointSize(FONTSIZE)
+# Force Custom Font
+# https://ankiweb.net/shared/info/2103013902
+# Copyright: Damien Elmes <anki@ichi2.net>
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 
-#font.setWeight(62) # <=62 normal >=63 bold
+def changeFont():
+    f = QFontInfo(particularFont('Force custom font'))
+    ws = QWebSettings.globalSettings()
+    mw.fontHeight = f.pixelSize()
+    mw.fontFamily = f.family()
+    mw.fontHeightDelta = max(0, mw.fontHeight - 13)
+    ws.setFontFamily(QWebSettings.StandardFont, mw.fontFamily)
+    ws.setFontSize(QWebSettings.DefaultFontSize, mw.fontHeight)
+    mw.reset()
 
-"""
-font.setBold(True)
-font.setItalic(True)
-font.setUnderline(True)
-"""
+changeFont()
 
 # Cards... Style and Templates editing
 ######################################################################
 
 def myReadCard(self):
 
-    self.tab['tform'].front.setFont(font)
-    self.tab['tform'].css.setFont(font)
-    self.tab['tform'].back.setFont(font)
+    self.tab['tform'].front.setFont(particularFont('Front Template')) 
+    self.tab['tform'].css.setFont(particularFont('Styling'))
+    self.tab['tform'].back.setFont(particularFont('Back Template'))
 
     t = self.card.template()
     self.redrawing = True
@@ -66,13 +137,15 @@ def myHtmlEdit(self):
     form = aqt.forms.edithtml.Ui_Dialog()
     form.setupUi(d)
     d.connect(form.buttonBox, PyQt4.QtCore.SIGNAL("helpRequested()"),
-             lambda: openHelp("editor"))
+             lambda: aqt.utils.openHelp("editor"))
+    aqt.utils.restoreGeom(d,'HTMLedit')
 
-    form.textEdit.setFont(font)
+    form.textEdit.setFont(particularFont('HTML Editor'))
     form.textEdit.setPlainText(self.note.fields[self.currentField])
 
     form.textEdit.moveCursor(PyQt4.QtGui.QTextCursor.End)
     d.exec_()
+    aqt.utils.saveGeom(d,'HTMLedit')
     html = form.textEdit.toPlainText()
     # filter html through beautifulsoup so we can strip out things
     # like a leading </div>
@@ -106,12 +179,14 @@ def myEdit(self, path):
     frm.setupUi(d)
     d.setWindowTitle(os.path.basename(path))
 
-    frm.text.setFont(font)
+    frm.text.setFont(particularFont('Add-ons Edit...'))
     frm.text.setPlainText(unicode(open(path).read(), "utf8"))
+    aqt.utils.restoreGeom(d,'AddonEditor')
 
     d.connect(frm.buttonBox, PyQt4.QtCore.SIGNAL("accepted()"),
               lambda: self.onAcceptEdit(path, frm))
     d.exec_()
+    aqt.utils.saveGeom(d,'AddonEditor')
 
 aqt.addons.AddonManager.onEdit = myEdit
 
@@ -130,7 +205,7 @@ def showTextik(txt, parent=None, type="text", run=True, geomKey=None, \
     text = PyQt4.QtGui.QTextEdit()
     text.setReadOnly(True)
 
-    text.setFont(font)
+    text.setFont(particularFont('showText'))
     if type == "text":
         text.setPlainText(txt)
     else:
@@ -181,7 +256,7 @@ def onBrowserSearch(self, reset=True):
     self.form.searchEdit.addItems(sh)
     self.mw.pm.profile['searchHistory'] = sh
 
-    self.form.searchEdit.lineEdit().setFont(typeface)
+    self.form.searchEdit.lineEdit().setFont(particularFont('Browser Search',bold=True))
 
     if self.mw.state == "review" and "is:current" in txt:
         # search for current card, but set search to easily display whole
@@ -218,15 +293,16 @@ def allData(self, index, role):
     if not index.isValid():
         return
     if role == Qt.FontRole:
-        #if self.activeCols[index.column()] not in (
-        #    "question", "answer", "noteFld"):
-        #    return
-        f = QFont()
+        if not BrowserColumns:
+          if self.activeCols[index.column()] not in (
+            "question", "answer", "noteFld"):
+            return
+        f = particularFont('Browser Columns') #QFont()
         row = index.row()
         c = self.getCard(index)
         t = c.template()
-        f.setFamily(t.get("bfont", self.browser.mw.fontFamily))
-        f.setPixelSize(t.get("bsize", self.browser.mw.fontHeight))
+        #f.setFamily(t.get("bfont", self.browser.mw.fontFamily))
+        #f.setPixelSize(t.get("bsize", self.browser.mw.fontHeight))
         return f
     elif role == Qt.TextAlignmentRole:
         align = Qt.AlignVCenter
@@ -262,7 +338,7 @@ def _systemTagTree(self, root):
         item = self.CallbackItem(
             root, name, lambda c=cmd: self.setFilter(c))
         item.setIcon(0, QIcon(":/icons/" + icon))
-        item.setFont(0, typeface)
+        item.setFont(0, particularFont('Browser sysTree'))
     return root
 
 def _favTree(self, root):
@@ -273,11 +349,11 @@ def _favTree(self, root):
     root = self.CallbackItem(root, _("My Searches"), None)
     root.setExpanded(True)
     root.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
-    root.setFont(0, typeface)
+    root.setFont(0, particularFont('Browser favTree',italic=True))
     for name, filt in sorted(saved.items()):
         item = self.CallbackItem(root, name, lambda s=filt: self.setFilter(s))
         item.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
-        item.setFont(0, typeface)
+        item.setFont(0, particularFont('Browser favTree',italic=True))
 
 def _decksTree(self, root):
     grps = self.col.sched.deckDueTree()
@@ -288,7 +364,7 @@ def _decksTree(self, root):
                 lambda g=g: self.setFilter("deck", head+g[0]),
                 lambda g=g: self.mw.col.decks.collapseBrowser(g[1]))
             item.setIcon(0, QIcon(":/icons/deck16.png"))
-            item.setFont(0, typeface)
+            item.setFont(0, particularFont('Browser deckTree'))
             newhead = head + g[0]+"::"
             collapsed = self.mw.col.decks.get(g[1]).get('browserCollapsed', False)
             item.setExpanded(not collapsed)
@@ -300,7 +376,7 @@ def _modelTree(self, root):
         mitem = self.CallbackItem(
             root, m['name'], lambda m=m: self.setFilter("mid", str(m['id'])))
         mitem.setIcon(0, QIcon(":/icons/product_design.png"))
-        mitem.setFont(0, typeface)
+        mitem.setFont(0, particularFont('Browser noteTree'))
 
 def _userTagTree(self, root):
     for t in sorted(self.col.tags.all()):
@@ -309,10 +385,39 @@ def _userTagTree(self, root):
         item = self.CallbackItem(
             root, t, lambda t=t: self.setFilter("tag", t))
         item.setIcon(0, QIcon(":/icons/anki-tag.png"))
-        item.setFont(0, typeface)
+        item.setFont(0, particularFont('Browser tagTree'))
 
 aqt.browser.Browser._systemTagTree = _systemTagTree
 aqt.browser.Browser._favTree = _favTree
 aqt.browser.Browser._decksTree = _decksTree
 aqt.browser.Browser._modelTree = _modelTree
 aqt.browser.Browser._userTagTree = _userTagTree
+
+# Fields List dialog window
+##########################################################################
+
+def FieldDialog__init__(self, mw, note, ord=0, parent=None):
+        QDialog.__init__(self, parent or mw) #, Qt.Window)
+        self.mw = aqt.mw
+        self.parent = parent or mw
+        self.note = note
+        self.col = self.mw.col
+        self.mm = self.mw.col.models
+        self.model = note.model()
+        self.mw.checkpoint(_("Fields"))
+        self.form = aqt.forms.fields.Ui_Dialog()
+        self.form.setupUi(self)
+        self.setWindowTitle(_("Fields for %s") % self.model['name'])
+        self.form.buttonBox.button(QDialogButtonBox.Help).setAutoDefault(False)
+        self.form.buttonBox.button(QDialogButtonBox.Close).setAutoDefault(False)
+        self.currentIdx = None
+        self.oldSortField = self.model['sortf']
+        self.fillFields()
+        self.setupSignals()
+
+        self.form.fieldList.setCurrentRow(0)
+        self.form.fieldList.setFont(particularFont('Fields List'))
+
+        self.exec_()
+
+aqt.fields.FieldDialog.__init__ = FieldDialog__init__
