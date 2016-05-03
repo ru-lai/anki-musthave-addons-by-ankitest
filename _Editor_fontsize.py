@@ -1,12 +1,16 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • Editor fontsize
 # https://ankiweb.net/shared/info/1931469441
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # 
-# Increase Text Size for Card Types Editor and so on
+# Increase Text Size for Card Types Editor and so on.
 # 
 # TODO: Some description should be here!!!
 # 
-# HTML Editor saves width and height on exit
+# HTML Editor saves width and height on exit.
+# Also do Addons Editor.
+# 
+# Decks, Note Types and Tags in Browser Tree could be collapsed too.
 # 
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
@@ -72,6 +76,12 @@ import aqt.utils
 import PyQt4.QtGui
 import PyQt4.QtCore
 from BeautifulSoup import BeautifulSoup
+
+#####################
+# Get language class
+# Выбранный пользователем язык программной оболочки
+import anki.lang
+lang = anki.lang.getLang()
 
 def particularFont(fontKey, bold=False, italic=False, underline=False):
     font = PyQt4.QtGui.QFont()
@@ -334,9 +344,13 @@ def _systemTagTree(self, root):
         (_("Marked"), "star16.png", "tag:marked"),
         (_("Suspended"), "media-playback-pause.png", "is:suspended"),
         (_("Leech"), "emblem-important.png", "tag:leech"))
+    limb = self.CallbackItem(root, "Коренные" if lang=='ru' else _("Rootage"), None)
+    limb.setExpanded(True)
+    limb.setIcon(0, QIcon(":/icons/ankibw"))
+    limb.setFont(0, particularFont('Browser sysTree',italic=True))
     for name, icon, cmd in tags:
         item = self.CallbackItem(
-            root, name, lambda c=cmd: self.setFilter(c))
+            limb, name, lambda c=cmd: self.setFilter(c))
         item.setIcon(0, QIcon(":/icons/" + icon))
         item.setFont(0, particularFont('Browser sysTree'))
     return root
@@ -346,17 +360,20 @@ def _favTree(self, root):
     if not saved:
         # Don't add favourites to tree if none saved
         return
-    root = self.CallbackItem(root, _("My Searches"), None)
-    root.setExpanded(True)
-    root.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
-    root.setFont(0, particularFont('Browser favTree',italic=True))
+    limb = self.CallbackItem(root, _("My Searches"), None)
+    limb.setExpanded(True)
+    limb.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
+    limb.setFont(0, particularFont('Browser favTree',italic=True))
     for name, filt in sorted(saved.items()):
-        item = self.CallbackItem(root, name, lambda s=filt: self.setFilter(s))
+        item = self.CallbackItem(limb, name, lambda s=filt: self.setFilter(s))
         item.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
         item.setFont(0, particularFont('Browser favTree',italic=True))
 
 def _decksTree(self, root):
-    grps = self.col.sched.deckDueTree()
+    limb = self.CallbackItem(root, _("Decks"), None)
+    limb.setExpanded(True)
+    limb.setIcon(0, QIcon(":/icons/deck16.png"))
+    limb.setFont(0, particularFont('Browser deckTree',italic=True))
     def fillGroups(root, grps, head=""):
         for g in grps:
             item = self.CallbackItem(
@@ -369,21 +386,29 @@ def _decksTree(self, root):
             collapsed = self.mw.col.decks.get(g[1]).get('browserCollapsed', False)
             item.setExpanded(not collapsed)
             fillGroups(item, g[5], newhead)
-    fillGroups(root, grps)
+    fillGroups(limb, self.col.sched.deckDueTree())
 
 def _modelTree(self, root):
+    limb = self.CallbackItem(root, _("Note Types"), None)
+    limb.setExpanded(True)
+    limb.setIcon(0, QIcon(":/icons/product_design.png"))
+    limb.setFont(0, particularFont('Browser noteTree',italic=True))
     for m in sorted(self.col.models.all(), key=itemgetter("name")):
         mitem = self.CallbackItem(
-            root, m['name'], lambda m=m: self.setFilter("mid", str(m['id'])))
+            limb, m['name'], lambda m=m: self.setFilter("mid", str(m['id'])))
         mitem.setIcon(0, QIcon(":/icons/product_design.png"))
         mitem.setFont(0, particularFont('Browser noteTree'))
 
 def _userTagTree(self, root):
+    limb = self.CallbackItem(root, _("Tags"), None)
+    limb.setExpanded(True)
+    limb.setIcon(0, QIcon(":/icons/anki-tag.png"))
+    limb.setFont(0, particularFont('Browser tagTree',italic=True))
     for t in sorted(self.col.tags.all()):
         if t.lower() == "marked" or t.lower() == "leech":
             continue
         item = self.CallbackItem(
-            root, t, lambda t=t: self.setFilter("tag", t))
+            limb, t, lambda t=t: self.setFilter("tag", t))
         item.setIcon(0, QIcon(":/icons/anki-tag.png"))
         item.setFont(0, particularFont('Browser tagTree'))
 
