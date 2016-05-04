@@ -83,6 +83,7 @@ import aqt.utils
 import PyQt4.QtGui
 import PyQt4.QtCore
 from BeautifulSoup import BeautifulSoup
+from aqt.webview import AnkiWebView
 
 #####################
 # Get language class
@@ -552,3 +553,47 @@ def FieldDialog__init__(self, mw, note, ord=0, parent=None):
         self.exec_()
 
 aqt.fields.FieldDialog.__init__ = FieldDialog__init__
+
+# Preview Answer / Preview Next by click Enter
+#  (by default goPrev byLeftArrow goNext byRight Arrow)
+#######################################################
+
+def _openPreview(self):
+    c = self.connect
+    self._previewState = "question"
+    self._previewWindow = PyQt4.QtGui.QDialog(None, Qt.Window)
+    self._previewWindow.setWindowTitle(_("Preview"))
+    c(self._previewWindow, SIGNAL("finished(int)"), self._onPreviewFinished)
+
+    vbox = QVBoxLayout()
+    vbox.setMargin(0)
+    self._previewWeb = AnkiWebView()
+    vbox.addWidget(self._previewWeb)
+    bbox = QDialogButtonBox()
+
+    self._previewReplay = bbox.addButton(_("Replay Audio"), QDialogButtonBox.ActionRole)
+    self._previewReplay.setAutoDefault(False)
+    self._previewReplay.setShortcut(PyQt4.QtGui.QKeySequence("R"))
+    self._previewReplay.setToolTip(_("Shortcut key: %s" % "R"))
+
+    self._previewPrev = bbox.addButton("<", PyQt4.QtGui.QDialogButtonBox.ActionRole)
+    self._previewPrev.setAutoDefault(False)
+    self._previewPrev.setShortcut(PyQt4.QtGui.QKeySequence("Left"))
+    self._previewPrev.setToolTip(_("Shortcut key: ← Left arrow ⇐ "))
+
+    self._previewNext = bbox.addButton(">", PyQt4.QtGui.QDialogButtonBox.ActionRole)
+    self._previewNext.setAutoDefault(True)
+    self._previewNext.setShortcut(PyQt4.QtGui.QKeySequence("Right"))
+    self._previewNext.setToolTip(_("Shortcut key: → Right arrow ⇒ or Enter ↵ ")) # &crarr;
+
+    c(self._previewPrev, PyQt4.QtCore.SIGNAL("clicked()"), self._onPreviewPrev)
+    c(self._previewNext, PyQt4.QtCore.SIGNAL("clicked()"), self._onPreviewNext)
+    c(self._previewReplay, PyQt4.QtCore.SIGNAL("clicked()"), self._onReplayAudio)
+
+    vbox.addWidget(bbox)
+    self._previewWindow.setLayout(vbox)
+    aqt.utils.restoreGeom(self._previewWindow, "preview")
+    self._previewWindow.show()
+    self._renderPreview(True)
+
+aqt.browser.Browser._openPreview = _openPreview
