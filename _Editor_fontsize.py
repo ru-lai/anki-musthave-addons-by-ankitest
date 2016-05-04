@@ -12,12 +12,18 @@
 # 
 # Decks, Note Types and Tags in Browser Tree could be collapsed too.
 # 
+# Expand/Collapse Whole Browser Tree
+# 
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 from __future__ import unicode_literals
 import os
 from operator import  itemgetter
+
+CtrlShiftPlus  = "Ctrl+Shift++" # Expand   Them All
+CtrlShiftMinus = "Ctrl+Shift+-" # Collapse Them All
+CtrlAltShiftMinus = "Ctrl+Alt+Shift+-" # Collapse Them at All
 
 CtrlShiftX = "F4" # You can make your own e.g. = "Ctrl+Alt+Shift+0"
 
@@ -72,6 +78,7 @@ import aqt.browser
 import aqt.clayout
 import aqt.editor
 import aqt.fields
+import anki.hooks
 import aqt.utils
 import PyQt4.QtGui
 import PyQt4.QtCore
@@ -170,8 +177,6 @@ aqt.editor.Editor.onHtmlEdit = myHtmlEdit
 
 # F4 as well as Ctrl+Shift+X
 ######################################################################
-
-import anki.hooks
 
 def mySetupF4(self):
     f4 = PyQt4.QtGui.QShortcut(
@@ -388,15 +393,10 @@ def _favTree(self, root):
         item.setFont(0, particularFont('Browser favTree',italic=True))
 
 def _decksTree(self, root):
-    def onDecksClick():
-        if limb.isExpanded():
-           limb.setExpanded(False)
-        else:
-           limb.setExpanded(True)
     def onCollapse():
         mw.col.conf['_collapseDecks'] = limb.isExpanded()
     limb = self.CallbackItem(root, _("Decks"), #lambda: root.collapseAll(),
-                             onDecksClick, oncollapse=onCollapse)
+                             lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseDecks' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseDecks'])
     else:
@@ -462,7 +462,9 @@ def _userTagTree(self, root):
 
       if HIERARCHICAL_TAGS:
         components = t.split(SEPARATOR)
-        for idx, c in enumerate(components):
+        enum = enumerate(components)
+        emax = len(components)-1
+        for idx, c in enum:
             partial_tag = SEPARATOR.join(components[0:idx + 1])
             if not tags_tree.get(partial_tag):
                 if idx == 0:
@@ -470,10 +472,13 @@ def _userTagTree(self, root):
                 else:
                     parent_tag = SEPARATOR.join(components[0:idx])
                     parent = tags_tree[parent_tag]
+                if emax == idx:
+                    item = self.CallbackItem(parent, c,
+                        lambda ptg=partial_tag: self.setFilter("tag", ptg))
+                else:
+                    item = self.CallbackItem(parent, c,
+                        lambda ptg=partial_tag: self.setFilter("tag", ptg + '::*'))
 
-                item = self.CallbackItem(
-                    parent, c,
-                    lambda partial_tag=partial_tag: self.setFilter("tag", partial_tag + '*'))
                 item.setIcon(0, QIcon(":/icons/anki-tag.png"))
                 item.setFont(0, particularFont('Browser tagTree'))
 
@@ -489,6 +494,35 @@ aqt.browser.Browser._favTree = _favTree
 aqt.browser.Browser._decksTree = _decksTree
 aqt.browser.Browser._modelTree = _modelTree
 aqt.browser.Browser._userTagTree = _userTagTree
+
+def setupMenu(self):
+    menu = self.form.menuJump #.menuEdit
+    menu.addSeparator()
+
+    a = menu.addAction('Развернуть всё дерево' if lang=='ru' else _('Expand Them All'))
+    a.setShortcut(QKeySequence(CtrlShiftPlus))
+    self.connect(a, PyQt4.QtCore.SIGNAL("triggered()"), lambda b=self: ExpandThemAll(b, True, False))
+
+    a = menu.addAction('Свернуть все ветки' if lang=='ru' else _('Collapse Them All'))
+    a.setShortcut(QKeySequence(CtrlShiftMinus))
+    self.connect(a, PyQt4.QtCore.SIGNAL("triggered()"), lambda b=self: ExpandThemAll(b, False, False))
+
+    a = menu.addAction('Свернуть вообще всё' if lang=='ru' else _('Collapse Them at All'))
+    a.setShortcut(QKeySequence(CtrlAltShiftMinus))
+    self.connect(a, PyQt4.QtCore.SIGNAL("triggered()"), lambda b=self: ExpandThemAll(b, False, True))
+
+    menu.addSeparator()
+
+def ExpandThemAll(self, action, atAll):
+    if action:
+        self.form.tree.expandAll()
+    elif atAll:
+        self.form.tree.collapseAll()
+    else:
+        self.form.tree.collapseAll()
+        self.form.tree.expandToDepth(0)
+
+anki.hooks.addHook("browser.setupMenus", setupMenu)
 
 # Fields List dialog window
 ##########################################################################
