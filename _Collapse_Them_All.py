@@ -14,7 +14,6 @@ CtrlShiftPlus  = "Ctrl+Shift++"  # Expand   Them All
 CtrlShiftMinus = "Ctrl+Shift+-" # Collapse Them All
 
 from anki.hooks import addHook
-from aqt.utils import tooltip
 
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtGui import QKeySequence
@@ -42,11 +41,7 @@ def setupMenu(self):
 def ExpandThemAll(self, action):
     if action:
         self.form.tree.expandAll()
-        pass
-        tooltip('expand')
     else:
         self.form.tree.collapseAll()
-        pass
-        tooltip('collapse')
 
 addHook("browser.setupMenus", setupMenu)
