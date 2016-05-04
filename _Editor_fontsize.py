@@ -330,6 +330,12 @@ aqt.browser.DataModel.data = allData
 # Filter tree
 ######################################################################
 
+def onClick(limb):
+    if limb.isExpanded():
+       limb.setExpanded(False)
+    else:
+       limb.setExpanded(True)
+
 def _systemTagTree(self, root):
     tags = (
         (_("Whole Collection"), "ankibw", ""),
@@ -347,7 +353,7 @@ def _systemTagTree(self, root):
     def onCollapse():
         mw.col.conf['_collapseRootage'] = limb.isExpanded()
     limb = self.CallbackItem(root, "Коренные" if lang=='ru' else _("Rootage"), \
-                             lambda: self.setFilter(""), oncollapse=onCollapse)
+                             lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseRootage' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseRootage'])
     else:
@@ -369,7 +375,7 @@ def _favTree(self, root):
     def onCollapse():
         mw.col.conf['_collapseFavorites'] = limb.isExpanded()
     limb = self.CallbackItem(root, _("My Searches"), \
-                             lambda: self.setFilter(""), oncollapse=onCollapse)
+                             lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseFavorites' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseFavorites'])
     else:
@@ -382,10 +388,15 @@ def _favTree(self, root):
         item.setFont(0, particularFont('Browser favTree',italic=True))
 
 def _decksTree(self, root):
+    def onDecksClick():
+        if limb.isExpanded():
+           limb.setExpanded(False)
+        else:
+           limb.setExpanded(True)
     def onCollapse():
         mw.col.conf['_collapseDecks'] = limb.isExpanded()
-    limb = self.CallbackItem(root, _("Decks"), \
-                             lambda: self.setFilter(""), oncollapse=onCollapse)
+    limb = self.CallbackItem(root, _("Decks"), #lambda: root.collapseAll(),
+                             onDecksClick, oncollapse=onCollapse)
     if '_collapseDecks' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseDecks'])
     else:
@@ -410,7 +421,7 @@ def _modelTree(self, root):
     def onCollapse():
         mw.col.conf['_collapseNoteTypes'] = limb.isExpanded()
     limb = self.CallbackItem(root, _("Note Types"), \
-                             lambda: self.setFilter(""), oncollapse=onCollapse)
+                             lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseNoteTypes' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseNoteTypes'])
     else:
@@ -423,20 +434,51 @@ def _modelTree(self, root):
         mitem.setIcon(0, QIcon(":/icons/product_design.png"))
         mitem.setFont(0, particularFont('Browser noteTree'))
 
+# thanks to Patrice Neff http://patrice.ch/
+# https://github.com/pneff/anki-hierarchical-tags
+# https://ankiweb.net/shared/info/1089921461
+
+HIERARCHICAL_TAGS = True
+#HIERARCHICAL_TAGS = False
+
+# Separator used between hierarchies
+SEPARATOR = '::'
+
 def _userTagTree(self, root):
     def onCollapse():
         mw.col.conf['_collapseTags'] = limb.isExpanded()
     limb = self.CallbackItem(root, _("Tags"), \
-                             lambda: self.setFilter(""), oncollapse=onCollapse)
+                             lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseTags' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseTags'])
     else:
         limb.setExpanded(True)
     limb.setIcon(0, QIcon(":/icons/anki-tag.png"))
     limb.setFont(0, particularFont('Browser tagTree',italic=True))
+    tags_tree = {}
     for t in sorted(self.col.tags.all()):
-        if t.lower() == "marked" or t.lower() == "leech":
-            continue
+      if t.lower() == "marked" or t.lower() == "leech":
+         continue
+
+      if HIERARCHICAL_TAGS:
+        components = t.split(SEPARATOR)
+        for idx, c in enumerate(components):
+            partial_tag = SEPARATOR.join(components[0:idx + 1])
+            if not tags_tree.get(partial_tag):
+                if idx == 0:
+                    parent = limb
+                else:
+                    parent_tag = SEPARATOR.join(components[0:idx])
+                    parent = tags_tree[parent_tag]
+
+                item = self.CallbackItem(
+                    parent, c,
+                    lambda partial_tag=partial_tag: self.setFilter("tag", partial_tag + '*'))
+                item.setIcon(0, QIcon(":/icons/anki-tag.png"))
+                item.setFont(0, particularFont('Browser tagTree'))
+
+                tags_tree[partial_tag] = item
+      else:
         item = self.CallbackItem(
             limb, t, lambda t=t: self.setFilter("tag", t))
         item.setIcon(0, QIcon(":/icons/anki-tag.png"))
