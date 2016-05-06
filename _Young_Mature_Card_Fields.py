@@ -1,3 +1,12 @@
+# -*- mode: Python ; coding: utf-8 -*-
+# • Young Mature Card Fields
+# https://ankiweb.net/shared/info/1751807495
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
+# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+#
+from __future__ import division
+
 import copy
 import time
 from anki.collection import _Collection
@@ -29,7 +38,10 @@ def _renderQA(self,data,_old,qfmt=None,afmt=None):
     def tmpFieldMap(m):
         "Mapping of field name -> (ord, field)."
         d = dict((f['name'], (f['ord'], f)) for f in m['flds'])
-        newFields = ['info:Ord','info:Did','info:Due','info:Id','info:Ivl','info:Queue','info:Reviews','info:Lapses','info:FirstReview','info:LastReview','info:TimeAvg','info:TimeTotal','info:Young','info:Mature','info:CardType','info:Nid','info:Mod','info:Usn','info:Factor']
+        newFields = ['info:Ord','info:Did','info:Due','info:Id', 'info:Ivl','info:Queue','info:Reviews','info:Lapses', 
+        'info:FirstReview','info:LastReview','info:TimeAvg','info:TimeTotal', 'info:Young','info:Mature', 
+        'info:CardType','info:Nid','info:Mod','info:Usn','info:Factor', 
+        'info:New','info:Learning','info:dayLearning','info:Review']
         for i,f in enumerate(newFields):
             d[f] = (len(m['flds'])+i,0)
         return d
@@ -63,8 +75,24 @@ def _renderQA(self,data,_old,qfmt=None,afmt=None):
         additionalFields.append(time.strftime("%Y-%m-%d", time.localtime(card.mod)))
         additionalFields += [str(card.usn)]
         additionalFields += [str(card.factor)]
+        if card.type == 0:
+            additionalFields += [_("New")]
+        else:
+            additionalFields += [""]
+        if card.type == 1 and card.queue != 3:
+            additionalFields += [_("Learning")]
+        else:
+            additionalFields += [""]
+        if card.type == 1 and card.queue == 3:
+            additionalFields += [_("dayLearning")]
+        else:
+            additionalFields += [""]
+        if card.type == 2:
+            additionalFields += [_("Review")]
+        else:
+            additionalFields += [""]
     else:
-        additionalFields += [""] * 18
+        additionalFields += [""] * 22
     data[6] += "\x1f".join(additionalFields)
     #result = oldRenderQA(self,data,qfmt,afmt)
     result = _old(self,data,qfmt,afmt)
