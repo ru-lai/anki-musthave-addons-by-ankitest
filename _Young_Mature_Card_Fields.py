@@ -79,12 +79,12 @@ def _renderQA(self,data,_old,qfmt=None,afmt=None):
             additionalFields += [_("New")]
         else:
             additionalFields += [""]
-        if card.type == 1 and card.queue != 3:
-            additionalFields += [_("Learning")]
+        if card.type == 1:
+            additionalFields += [_("Learn")]
         else:
             additionalFields += [""]
         if card.type == 1 and card.queue == 3:
-            additionalFields += [_("dayLearning")]
+            additionalFields += [_("Learning")]
         else:
             additionalFields += [""]
         if card.type == 2:
