@@ -74,6 +74,52 @@ from PyQt4.QtCore import *
 import anki.lang
 lang = anki.lang.getLang()
 
+"""
+# Bigger Show Answer Button
+For people who do their reps with a mouse. 
+Makes the show answer button wide enough to cover all 4 of the review buttons. 
+"""
+
+def newRemaining(self):
+    if not self.mw.col.conf['dueCounts']:
+        return 0
+    idx = self.mw.col.sched.countIdx(self.card)
+    if self.hadCardQueue:
+        # if it's come from the undo queue, don't count it separately
+        counts = list(self.mw.col.sched.counts())
+    else:
+        counts = list(self.mw.col.sched.counts(self.card))
+    return (idx==0 and counts[0] < 1)
+
+def laterNotNow():
+    return '''<style>td{vertical-align:bottom;}td button{font-size:x-large;color:#999;}</style><table cellpadding=0 cellspacing=0 width=100%%><tr><td align=center><span class=stattxt>%s</span><button title="Short key: %s" \
+onclick='py.link("ease%d");' style="width:100%%;%s">%s</button></td><td>&nbsp;</td>''' % \
+        ("позже" if lang=='ru' else _("later"), "Escape", NOT_NOW_BASE, \
+        "color:"+black, "&nbsp;не&nbsp;сейчас&nbsp;" if lang=='ru' else _("&nbsp;not&nbsp;now&nbsp;"))
+
+def myShowAnswerButton(self,_old):
+    if newRemaining(self):
+        self.mw.moveToState("overview")
+    self._bottomReady = True
+    if not self.typeCorrect:
+        self.bottom.web.setFocus()
+
+    middle = laterNotNow() + '''<td align=center style="width:%s;"><span class=stattxt>%s</span><button %s id=ansbut style="width:100%%;%s" onclick='py.link(\"ans\");'>%s</button></td></tr></table>''' % ( BEAMS4, self._remaining(), \
+        ((" title=' "+_("Shortcut key: %s") % _("Space"))+" '"),
+        "color:"+black, _("Show Answer"))
+
+    # place it in a table so it has the same top margin as the ease buttons
+    #middle = "<!div align=center style='width:%s!important;'>%s</div>" % (BEAMS4, middle)
+    if self.card.shouldShowTimer():
+        maxTime = self.card.timeLimit() / 1000
+    else:
+        maxTime = 0
+    self.bottom.web.eval("showQuestion(%s,%d);" % (
+        json.dumps(middle), maxTime))
+    return True
+
+Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, "around")
+
 #Anki uses a single digit to track which button has been clicked.
 NOT_NOW_BASE = 5
 
@@ -90,47 +136,42 @@ Reviewer._answerCard = wrap(Reviewer._answerCard, AKR_answerCard, "around")
 
 # Replace _answerButtonList method 
 def answerButtonList(self):
-    l = ((1, "<style>button span {font-size:x-large;}" + \
-    " button small { color:#999;font-weight:400;padding-left:.35em;font-size: small; } " + \
-    "</style><span>" + BUTTON_LABEL[0] + "</span>", BEAMS1),)
+    l = ((1, "" + BUTTON_LABEL[0] + "", BEAMS1),)
     cnt = self.mw.col.sched.answerButtons(self.card)
     if cnt == 2:
-        return l + ((2, "<span>" + BUTTON_LABEL[2] + "</span>", BEAMS3),)
+        return l + ((2, "" + BUTTON_LABEL[2] + "", BEAMS3),)
         # the comma at the end is mandatory, a subtle bug occurs without it
     elif cnt == 3:
-        return l + ((2, "<span>" + BUTTON_LABEL[2] + "</span>", BEAMS2), 
-                    (3, "<span>" + BUTTON_LABEL[3] + "</span>", BEAMS1))
+        return l + ((2, "" + BUTTON_LABEL[2] + "", BEAMS2), 
+                    (3, "" + BUTTON_LABEL[3] + "", BEAMS1))
     else:
-        return l + ((2, "<span>" + BUTTON_LABEL[1] + "</span>", BEAMS1), 
-                    (3, "<span>" + BUTTON_LABEL[2] + "</span>", BEAMS1),
-                    (4, "<span>" + BUTTON_LABEL[3] + "</span>", BEAMS1))
+        return l + ((2, "" + BUTTON_LABEL[1] + "", BEAMS1), 
+                    (3, "" + BUTTON_LABEL[2] + "", BEAMS1),
+                    (4, "" + BUTTON_LABEL[3] + "", BEAMS1))
 # all buttons are with coloured text
 # and have an equal width with buttons in Night Mode
+
+
 
 def myAnswerButtons(self,_old):
     times = []
     default = self._defaultEase()
+
     def but(i, label, beam):
         if i == default:
             extra = "id=defease"
         else:
             extra = ""
         due = self._buttonTime(i)
-        return '''
-<td align=center style="width:%s;">%s<button %s %s onclick='py.link("ease%d");'>\
-%s</button></td>''' % (beam, due, extra, \
-        ((" title=' "+_("Shortcut key: %s") % i)+" '"), i, label)
-    buf = '''<table cellpading=0 cellspacing=0 width=100%%><tr>
-<td align=center><span class=nobold>%s</span><br><button title="Short key: %s" \
-onclick='py.link("ease%d");' style="%s">%s</button></td><td>&nbsp;</td>''' % \
-        ("позже" if lang=='ru' else _("later"), "Escape", NOT_NOW_BASE, \
-        "font-size:x-large;color:"+black, "&nbsp;не&nbsp;сейчас&nbsp;" if lang=='ru' else _("&nbsp;not&nbsp;now&nbsp;"))
+        return '''<td align=center style="width:%s;"><span class=stattxt>%s</span><button %s %s style="width:100%%;%s" onclick='py.link("ease%d");'>%s</button></td>''' % (beam, due, extra, \
+        ((" title=' "+_("Shortcut key: %s") % i)+" '"), "color:"+black, i, label)
+
+    buf = laterNotNow()
+
     for ease, lbl, beams in answerButtonList(self):
         buf += but(ease, lbl, beams)
-    buf += "</tr></table>"
-    script = """<style>table tr td button { width: 100%; } </style>
-<script>$(function () { $("#defease").focus(); });</script>"""
-    return buf + script
+
+    return buf + """</tr></table><script>$(function () { $("#defease").focus(); });</script>"""
 
 Reviewer._answerButtons = wrap(Reviewer._answerButtons, myAnswerButtons, "around")
 
@@ -167,51 +208,3 @@ mw.addon_cards_menu.addAction(escape_action)
 mw.deckBrowser.show = wrap(mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
 mw.overview.show = wrap(mw.overview.show, lambda: escape_action.setEnabled(False))
 mw.reviewer.show = wrap(mw.reviewer.show, lambda: escape_action.setEnabled(True))
-
-"""
-# Bigger Show Answer Button
-For people who do their reps with a mouse. 
-Makes the show answer button wide enough to cover all 4 of the review buttons. 
-"""
-
-def newRemaining(self):
-    if not self.mw.col.conf['dueCounts']:
-        return 0
-    idx = self.mw.col.sched.countIdx(self.card)
-    if self.hadCardQueue:
-        # if it's come from the undo queue, don't count it separately
-        counts = list(self.mw.col.sched.counts())
-    else:
-        counts = list(self.mw.col.sched.counts(self.card))
-    return (idx==0 and counts[0] < 1)
-
-def myShowAnswerButton(self,_old):
-    if newRemaining(self):
-        self.mw.moveToState("overview")
-    self._bottomReady = True
-    if not self.typeCorrect:
-        self.bottom.web.setFocus()
-    buf = '''
-<td align=center class=stat2><span class=stattxt>%s</span><br><button title="Short key: %s" \
-onclick='py.link("ease%d");' style="%s">%s</button></td><td>&nbsp;</td>''' % \
-        ("позже" if lang=='ru' else _("later"), "Escape", NOT_NOW_BASE, \
-        "font-size:x-large;color:"+black, "&nbsp;не&nbsp;сейчас&nbsp;" if lang=='ru' else _("&nbsp;not&nbsp;now&nbsp;"))
-
-    middle = '''<table cellpadding=0 cellspacing=0 width=100%%><tr>%s<td class=stat2 align=center style="width:%s;">
-<span class=stattxt>%s</span><br>
-<button %s id=ansbut style="display:inline-block;width:%s;%s" onclick='py.link(\"ans\");'>%s</button>
-    </td></tr></table>
-''' % ( buf, BEAMS4, self._remaining(), \
-        ((" title=' "+_("Shortcut key: %s") % _("Space"))+" '"),
-        BEAMS4, "font-size:x-large;color:"+black, _("Show Answer"))
-    # place it in a table so it has the same top margin as the ease buttons
-    middle = "<div class=stat2 align=center style='width:%s!important;'>%s</div>" % (BEAMS4, middle)
-    if self.card.shouldShowTimer():
-        maxTime = self.card.timeLimit() / 1000
-    else:
-        maxTime = 0
-    self.bottom.web.eval("showQuestion(%s,%d);" % (
-        json.dumps(middle), maxTime))
-    return True
-
-Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, "around")
