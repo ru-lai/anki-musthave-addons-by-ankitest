@@ -13,7 +13,6 @@ from __future__ import unicode_literals
 import json
 from aqt.reviewer import Reviewer
 from anki.hooks import wrap
-from aqt.utils import tooltip
 from aqt import mw
 
 from PyQt4.QtGui import *
@@ -54,8 +53,6 @@ def _answerButtons(self):
 def answer_card_intercepting(self, actual_ease, _old):
     ease = actual_ease
     if actual_ease >= NOT_NOW_BASE:
-        prev_card_id = self.card.id
-        tooltip("Not now")
         self.nextCard()
         return True
     else:
@@ -77,7 +74,7 @@ except AttributeError:
 escape_action = QAction(mw)
 escape_action.setText(u'Позж&е, не сейчас' if lang=='ru' else _(u"&Later, not now"))
 escape_action.setShortcut(QKeySequence('Escape'))
-#escape_action.setEnabled(False)
+escape_action.setEnabled(False)
 mw.connect(escape_action, SIGNAL("triggered()"), onEscape)
 
 #mw.addon_cards_menu.addSeparator()
