@@ -1,0 +1,83 @@
+<code><b><i>1071179937</i></b></code>
+
+Your cards look like too small? That's the add-on for you!
+The default font size is so big in Anki? That's 4U!
+
+Zooms, unzooms, lets you set a 1:1 (100%) or initial (user defined) zoom level. It's pretty cool. 
+Work with images as well as text.
+
+Functions:
+<ul><li>Zoom in or out with <code>Ctrl+<b>+</b>/Ctrl+<b>-</b></code></li>
+<li>or with <code>Ctrl+mouse</code> wheel</li>
+<li>or with the <code>View/Zoom</code> submenu.</li></ul>
+It just makes the font and images a bigger size. 
+U can use a bigger font or scale images if you want without this addon. 
+But you don't need to adjust images and the font size 
+for meeting different resolution monitor each time any more.
+
+<img src="http://i75.fastpic.ru/big/2016/0327/72/38fdf93dd5eb2d2275b06a3015166072.png">
+
+Improved:
+<ul><li>remember user choice (also between sessions) — <b>for each profile</b> separately!</li>
+<li>step ±10% (not */1.19)</li>
+<li>info about current values <code>Alt+0</code></li></ul>
+<img src="http://savepic.ru/9136126.png">
+
+There are three different multipliers:
+<ol><li>for decks panel</li>
+<li>for deck overview</li>
+<li>for cards</li></ol>
+For each, there can be an user defined zoom factor set in the add-on file. 
+Use <code>Tools - Add-ons - _Zooming</code> menu to edit this. 
+
+Zoom Images simultaneously, not only text.
+Images can't be zoomed more than <code>{ max-width: 95%; max-height: 95%; }</code> 
+text can be zoomed min 0.1 with no max limitations.
+
+To avoid upper limit on images 
+use in <i>Styling</i> section of your cards:
+<code><b>img { max-width: none; max-height: none; }</b></code>
+
+If you need old behaviour (zoom text only),
+goto <code>Tools ⇒ Add-ons ⇒ _Zooming ⇒ Edit...</code>
+and set <code>ZOOM_IMAGES = False</code>
+then save the changes and restart Anki. 
+
+Essential! For small or huge screens - should be in by default.
+
+You don't need to zoom again in every new profile. 
+The zoom level can be saved.
+Go to: Tools → Add-ons → _Zooming → Edit...
+Then change:
+<code>deck_browser_standard_zoom
+overview_standard_zoom</code>
+<i>and</i>
+<code>review_standard_zoom</code>
+each to for example 2.5 or 0.5 
+then save the changes and restart Anki. 
+
+Reply buttons in reviewer and field names in editor becomes slightly more bigger.
+
+<img src="http://screenshot.ru/upload/images/2016/03/31/Anki_2016-03-31_16-32-010aaca.png">
+
+Inspired by <a href="https://ankiweb.net/shared/info/2103013902" rel="nofollow">Force custom font</a>
+You can play with FONT and FONTSIZE variable constants.
+
+<img src="http://s8.hostingkartinok.com/uploads/images/2016/03/bd9eae631467882f5c3b35db3b6ac98e.png">
+
+<b>upd.</b>
+<i>08.05.2016</i> Icons come back.
+<i>21.04.2016</i> Now you can find this add-on <a href="https://github.com/ankitest/anki-musthave-addons-by-ankitest/blob/master/_Zooming.py" rel="nofollow">on Github.</a>
+<i>09.04.2016</i> Minor code changing.
+<i>31.03.2016</i> <a href="https://ankiweb.net/shared/info/2103013902" rel="nofollow">Force custom font</a> with font CALIBRI fontsize 16 included.
+<i>30.03.2016</i> Zoom in/out images can be switched off (zoom text only as it was).
+<i>29.03.2016</i> Zoom in/out images too.
+<i>28.03.2016</i> Minor correction of description.
+<i>27.03.2016</i> Initial issue.
+
+Inspired by ZOOM <a href="https://ankiweb.net/shared/info/1956318463" rel="nofollow">https://ankiweb.net/shared/info/1956318463</a>
+
+Now it is the part of Must Have add-on: 
+<a href="https://ankiweb.net/shared/info/67643234" rel="nofollow">https://ankiweb.net/shared/info/67643234</a>
+
+No support. Use it AS IS on your own risk.
