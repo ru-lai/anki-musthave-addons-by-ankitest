@@ -12,10 +12,6 @@ HOTKEY = {      # in mw Main Window (Reviewer)
     'F2_ctrl'   : ["Ctrl+Alt+Space"],  
 }
 
-SWAP_TAG = False
-#SWAP_TAG = datetime.datetime.now().strftime("rescheduled::re-%Y-%m-%d") #-%H:%M:%S")
-#SWAP_TAG = datetime.datetime.now().strftime("re-%y-%m-%d") 
-
 if __name__ == "__main__":
     print("This is _Swap add-on for the Anki program and it can't be run directly.")
     print("Please download Anki 2.0 from http://ankisrs.net/")
@@ -75,6 +71,7 @@ def promptNewInterval():
             'Prompt for new interval available only on answer side (BackSide) of card\'s reviewer.')
         return
 
+    SWAP_TAG = False
     cardEase = None
     infotip = ''
     prefix = ''
@@ -191,7 +188,10 @@ def promptNewInterval():
                 'Rescheduled for review in <b>%s</b> %s days') % \
                 (total, ' ( <b style="color:#666;">%s</b> %s ) ' % (prefix.strip(), suffix) if len(suffix) else '') )
 
+        #SWAP_TAG = datetime.datetime.now().strftime("rescheduled::re-%Y-%m-%d::re-card")
+        #SWAP_TAG = datetime.datetime.now().strftime("re-%y-%m-%d-c")
         if SWAP_TAG:
+          SWAP_TAG += unicode(mw.reviewer.card.ord+1)
           note = mw.reviewer.card.note()
           if not note.hasTag(SWAP_TAG):
             note.addTag(SWAP_TAG)

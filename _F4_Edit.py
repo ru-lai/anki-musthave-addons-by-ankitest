@@ -1,6 +1,6 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • F4 Edit
-# https://ankiweb.net/shared/info/
+# https://ankiweb.net/shared/info/2085904433
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
