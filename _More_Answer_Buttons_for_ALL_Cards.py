@@ -52,8 +52,16 @@ This can be edited to suit, but there can not be more than 4 buttons.
     ReschedMin ... same as the lower number in the Browser's "Edit/Rescedule" command
     ReschedMax ... same as the higher number in the Browser's "Edit/Rescedule" command
 """
-extra_buttons = [
-    {"Description": "5-15d", "Label": "Veni", "ShortCut": "7", "ReschedMin": 5, "ReschedMax": 15},
+import os, sys, datetime
+
+#Anki uses a single digit to track which button has been clicked.
+# We will use shortcut number from the first extra button
+#  and above to track the extra buttons.
+INTERCEPT_EASE_BASE = 6
+
+extra_buttons = [ # should start from 6 anyway
+    {"Description": "5-7d", "Label": "!!!", "ShortCut": "6", "ReschedMin": 5, "ReschedMax": 7},
+    {"Description": "8-15d", "Label": "Veni", "ShortCut": "7", "ReschedMin": 8, "ReschedMax": 15},
     {"Description": "3-4w", "Label": "Vidi", "ShortCut": "8", "ReschedMin": 15, "ReschedMax": 30},
     {"Description": "2-3mo", "Label": "Vici", "ShortCut": "9", "ReschedMin": 31, "ReschedMax": 90},
     ]
@@ -61,13 +69,11 @@ extra_buttons = [
 #Must be four or less
 assert len(extra_buttons) <= 4
 
+SWAP_TAG = False
+
 from aqt.reviewer import Reviewer
 from anki.hooks import wrap
 from aqt.utils import tooltip
-
-#Anki uses a single digit to track which button has been clicked.
-#We will use 6 and above to track the extra buttons.
-INTERCEPT_EASE_BASE = 6
 
 #todo: brittle. Replaces existing function
 def _answerButtons(self):
@@ -121,6 +127,16 @@ def answer_card_intercepting(self, actual_ease, _old):
         self.mw.checkpoint(_("Reschedule card"))
         self.mw.col.sched.reschedCards([prev_card_id], buttonItem["ReschedMin"], buttonItem["ReschedMax"])
         tooltip("<center>Rescheduled:" + "<br>" + buttonItem["Description"] + "</center>")
+
+        #SWAP_TAG = datetime.datetime.now().strftime("rescheduled::re-%Y-%m-%d::re-card")
+        #SWAP_TAG = datetime.datetime.now().strftime("re-%y-%m-%d-c")
+        if SWAP_TAG:
+          SWAP_TAG += unicode(self.mw.reviewer.card.ord+1)
+          note = self.mw.reviewer.card.note()
+          if not note.hasTag(SWAP_TAG):
+            note.addTag(SWAP_TAG)
+            note.flush()  # never forget to flush
+
         self.mw.reset()
         return True 
     else:
