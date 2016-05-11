@@ -130,12 +130,12 @@ def answer_card_intercepting(self, actual_ease, _old):
         self.mw.col.sched.reschedCards([prev_card_id], buttonItem["ReschedMin"], buttonItem["ReschedMax"])
         tooltip("<center>Rescheduled:" + "<br>" + buttonItem["Description"] + "</center>")
 
-        SWAPTAG = SWAP_TAG
-        if SWAPTAG:
-          SWAPTAG += unicode(self.mw.reviewer.card.ord+1)
+        SwapTag = SWAP_TAG
+        if SwapTag:
+          SwapTag += unicode(self.mw.reviewer.card.ord+1)
           note = self.mw.reviewer.card.note()
-          if not note.hasTag(SWAP_TAG):
-            note.addTag(SWAP_TAG)
+          if not note.hasTag(SwapTag):
+            note.addTag(SwapTag)
             note.flush()  # never forget to flush
 
         self.mw.reset()
