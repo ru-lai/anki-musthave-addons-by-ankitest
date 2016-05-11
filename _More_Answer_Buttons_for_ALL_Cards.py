@@ -70,6 +70,8 @@ extra_buttons = [ # should start from 6 anyway
 assert len(extra_buttons) <= 4
 
 SWAP_TAG = False
+#SWAP_TAG = datetime.datetime.now().strftime("rescheduled::re-%Y-%m-%d::re-card")
+#SWAP_TAG = datetime.datetime.now().strftime("re-%y-%m-%d-c")
 
 from aqt.reviewer import Reviewer
 from anki.hooks import wrap
@@ -128,10 +130,9 @@ def answer_card_intercepting(self, actual_ease, _old):
         self.mw.col.sched.reschedCards([prev_card_id], buttonItem["ReschedMin"], buttonItem["ReschedMax"])
         tooltip("<center>Rescheduled:" + "<br>" + buttonItem["Description"] + "</center>")
 
-        #SWAP_TAG = datetime.datetime.now().strftime("rescheduled::re-%Y-%m-%d::re-card")
-        #SWAP_TAG = datetime.datetime.now().strftime("re-%y-%m-%d-c")
-        if SWAP_TAG:
-          SWAP_TAG += unicode(self.mw.reviewer.card.ord+1)
+        SWAPTAG = SWAP_TAG
+        if SWAPTAG:
+          SWAPTAG += unicode(self.mw.reviewer.card.ord+1)
           note = self.mw.reviewer.card.note()
           if not note.hasTag(SWAP_TAG):
             note.addTag(SWAP_TAG)
