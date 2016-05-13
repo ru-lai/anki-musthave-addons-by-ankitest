@@ -52,6 +52,8 @@ This can be edited to suit, but there can not be more than 4 buttons.
     ReschedMin ... same as the lower number in the Browser's "Edit/Rescedule" command
     ReschedMax ... same as the higher number in the Browser's "Edit/Rescedule" command
 """
+from __future__ import division
+from __future__ import unicode_literals
 import os, sys, datetime
 
 #Anki uses a single digit to track which button has been clicked.
@@ -76,8 +78,25 @@ SWAP_TAG = False
 from aqt.reviewer import Reviewer
 from anki.hooks import wrap
 from aqt.utils import tooltip
+from aqt import mw
 
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+
+# Get language class
+import anki.lang
+lang = anki.lang.getLang()
+
+USE_INTERVALS_AS_LABELS = False # True # 
+
+def _bottomTime(self, i):
+        if not self.mw.col.conf['estTimes']:
+            return "&nbsp;"
+        txt = self.mw.col.sched.nextIvlStr(self.card, i, True) or "&nbsp;"
+        return txt
+        
 #todo: brittle. Replaces existing function
+
 def _answerButtons(self):
     times = []
     default = self._defaultEase()
@@ -87,8 +106,14 @@ def _answerButtons(self):
             extra = "id=defease"
         else:
             extra = ""
-        due = self._buttonTime(i)
-        return '''
+        if USE_INTERVALS_AS_LABELS:
+            due = _bottomTime(self,i)
+            return '''
+<td align=center><span class=nobold>&nbsp;</span><br><button %s title="%s" onclick='py.link("ease%d");'>\
+%s</button></td>''' % (extra, _("Shortcut key: %s") % i, i, due)
+        else:
+            due = self._buttonTime(i)
+            return '''
 <td align=center>%s<button %s title="%s" onclick='py.link("ease%d");'>\
 %s</button></td>''' % (due, extra, _("Shortcut key: %s") % i, i, label)
 
@@ -102,9 +127,16 @@ def _answerButtons(self):
         #assert self.mw.col.sched.answerButtons(self.card) == 3
         #python lists are 0 based
         for i, buttonItem in enumerate(extra_buttons):
-            buf += '''
-<td align=center><span class=nobold>%s</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
-%s</button></td>''' % (buttonItem["Description"], buttonItem["ShortCut"], i + INTERCEPT_EASE_BASE, buttonItem["Label"])
+            if USE_INTERVALS_AS_LABELS:
+                buf += '''
+<td align=center><span class=nobold>&nbsp;</span><br><button title="%s" onclick='py.link("ease%d");'>\
+%s</button></td>''' % (_("Shortcut key: %s")%buttonItem["ShortCut"], \
+                    i + INTERCEPT_EASE_BASE, buttonItem["Description"])
+            else:
+                buf += '''
+<td align=center><span class=nobold>%s</span><br><button title="%s" onclick='py.link("ease%d");'>\
+%s</button></td>''' % (buttonItem["Description"], _("Shortcut key: %s")%buttonItem["ShortCut"], \
+                    i + INTERCEPT_EASE_BASE, buttonItem["Label"])
             #swAdded end
     buf += "</tr></table>"
     script = """
@@ -154,6 +186,30 @@ def keyHandler(self, evt, _old):
                 return self._answerCard(i + INTERCEPT_EASE_BASE)
     return _old(self, evt)
 
+def more_proc():
+    global USE_INTERVALS_AS_LABELS
+    if more_action.isChecked():
+        USE_INTERVALS_AS_LABELS = True
+    else:
+        USE_INTERVALS_AS_LABELS = False
+    rst = mw.reviewer.state == 'answer'
+    mw.reset()
+    if rst:
+        mw.reviewer._showAnswerHack()
+
+try:
+    mw.addon_view_menu
+except AttributeError:
+    mw.addon_view_menu = QMenu(_("&Вид") if lang == 'ru' else _("&View"), mw)
+    mw.form.menubar.insertMenu(
+        mw.form.menuTools.menuAction(), mw.addon_view_menu)
+
+more_action = QAction('&Кнопки оценок - без меток' if lang == 'ru' else _('&Answer buttons without labels'), mw)
+more_action.setShortcut(QKeySequence("Ctrl+Alt+Shift+L"))
+more_action.setCheckable(True)
+more_action.setChecked(USE_INTERVALS_AS_LABELS)
+mw.connect(more_action, SIGNAL("triggered()"), more_proc)
+mw.addon_view_menu.addAction(more_action)
 
 Reviewer._keyHandler = wrap(Reviewer._keyHandler, keyHandler, "around")
 Reviewer._answerButtons = _answerButtons
