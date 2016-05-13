@@ -117,15 +117,35 @@ def _answerButtons(self):
         if USE_INTERVALS_AS_LABELS:
             due = _bottomTime(self,i)
             return '''
-<td align=center><span class=nobold>&nbsp;</span><br><button %s title="%s" onclick='py.link("ease%d");'>\
-%s</button></td>''' % (extra, _("Shortcut key: %s") % i, i, due)
+<td align=center class="but but%s"><span class=nobold>&nbsp;</span><br><button %s title="%s" onclick='py.link("ease%d");'>\
+%s</button></td>''' % (i, extra, _("Shortcut key: %s") % i, i, due)
         else:
             due = self._buttonTime(i)
             return '''
-<td align=center>%s<button %s title="%s" onclick='py.link("ease%d");'>\
-%s</button></td>''' % (due, extra, _("Shortcut key: %s") % i, i, label)
+<td align=center class="but but%s">%s<button %s title="%s" onclick='py.link("ease%d");'>\
+%s</button></td>''' % (i, due, extra, _("Shortcut key: %s") % i, i, label)
 
-    buf = "<center><table cellpading=0 cellspacing=0><tr>"
+    buf = '''<center><table cellpading=0 cellspacing=0><tbody><tr><style>
+body { overflow: hidden; }
+.but:nth-child(4),.but:nth-child(4) button{color:/*red*/#c33;}'''
+    if 2 == default:
+        buf += '''
+.but2:nth-child(4),.but2:nth-child(4) button,
+.but2:nth-child(5),.but2:nth-child(5) button{color:/*green*/#3c3;}
+.but3:nth-child(4),.but3:nth-child(4) button,
+.but3:nth-child(5),.but3:nth-child(5) button,
+.but3:nth-child(6),.but3:nth-child(6) button{color:/*blue*/#66f;}'''
+    else:
+        buf += '''
+.but2:nth-child(5),.but2:nth-child(5) button{color:darkgoldenrod;}
+.but3:nth-child(5),.but3:nth-child(5) button,
+.but3:nth-child(6),.but3:nth-child(6) button{color:/*green*/#3c3;}
+.but4:nth-child(5),.but4:nth-child(5) button,
+.but4:nth-child(6),.but4:nth-child(6) button,
+.but4:nth-child(7),.but4:nth-child(7) button{color:/*blue*/#66f;}'''
+    buf += '''
+.but button { font-weight: bold; }
+</style>'''
     if USE_INTERVALS_AS_LABELS:
         buf += '''
 <td align=center><span class=nobold>&nbsp;</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
@@ -155,7 +175,7 @@ def _answerButtons(self):
 %s</button></td>''' % (buttonItem["Description"], _("Shortcut key: %s")%buttonItem["ShortCut"], \
                     i + INTERCEPT_EASE_BASE, buttonItem["Label"])
             #swAdded end
-    buf += "</tr></table>"
+    buf += "</tr></tbody></table>"
     script = """<script>$(function () { $("#defease").focus(); });</script>"""
     return buf + script
 
