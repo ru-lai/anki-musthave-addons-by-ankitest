@@ -1,5 +1,5 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • Swap 
+# • Swap fields
 # https://ankiweb.net/shared/info/1040866511
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
@@ -8,9 +8,9 @@ from __future__ import division
 from __future__ import unicode_literals
 import os, sys, datetime
 
-if __name__ == "__main__":
-    print("This is _Swap add-on for the Anki program and it can't be run directly.")
-    print("Please download Anki 2.0 from http://ankisrs.net/")
+if __name__ == '__main__':
+    print("This is _Swap_fields add-on for the Anki program and it can't be run directly.")
+    print('Please download Anki 2.0 from http://ankisrs.net/')
     sys.exit()
 else:
     pass
@@ -22,8 +22,8 @@ if sys.version[0] == '2': # Python 3 is utf8 only already.
 CASE_SENSITIVE = True # False # 
 
 SWAP_TAG = False
-#SWAP_TAG = datetime.datetime.now().strftime("swapped::swap-%Y-%m-%d") #-%H:%M:%S")
-#SWAP_TAG = datetime.datetime.now().strftime("sw-%y-%m-%d") 
+#SWAP_TAG = datetime.datetime.now().strftime('swapped::swap-%Y-%m-%d') #-%H:%M:%S')
+#SWAP_TAG = datetime.datetime.now().strftime('sw-%y-%m-%d') 
 
 fldlst = [
     ['En','Ru'],
@@ -40,7 +40,7 @@ fldlst = [
 from aqt import mw
 from aqt.utils import tooltip, showInfo, showWarning, showCritical
 from anki.hooks import addHook, wrap, runHook
-from aqt.editor import Editor # the editor when you click "Add" in Anki
+from aqt.editor import Editor # the editor when you click 'Add' in Anki
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -55,35 +55,41 @@ except:
     MUSTHAVE_COLOR_ICONS = ''
 
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
-    'swap'  : ["F12", '', "", ''' ''', """ """], 
+    'swap'  : ['F12', '', '', ''' ''', """ """], 
     }
 
 ##
 
+import anki.notes
 from anki.consts import MODEL_STD, MODEL_CLOZE
 
 fld1st = _('Front') # Вопрос
 fld2nd = _('Back') # Ответ
 
 def JustDoIt(note, ecf):
-  global fld1st, fld2nd
-  if not (mw.reviewer.state == 'question' or mw.reviewer.state == 'answer'):
-    showCritical("""Обмен в списке колод или в окне колоды невозможен,
-    <br>только при просмотре (заучивании) карточек.""" \
-        if lang=='ru' else 'Swap is available only for cards,<br>not for decks panel nor deck overview as well.')
-  else:
-   if not hasattr(mw.reviewer.card,'model'):
-    showCritical("Извините, конечно, но пока делать просто нечего!" \
+    global fld1st, fld2nd
+    """
+    if not (mw.reviewer.state == 'question' or mw.reviewer.state == 'answer'):
+     showCritical('''Обмен в списке колод или в окне колоды невозможен,
+      <br>только при просмотре (заучивании) карточек.''' \
+        if lang=='ru' else 'Swap fields is available only for cards,<br>not for decks panel nor deck overview as well.')
+     return
+    if not hasattr(mw.reviewer.card,'model'):
+     showCritical('Извините, конечно, но пока делать просто нечего!' \
         if lang=='ru' else 'Oops, <s>I did it again!</s> there is <b>nothing to do</b> yet!')
-   else:
-    c = mw.reviewer.card
-    if c.model()['type'] == MODEL_CLOZE:
-        showCritical("<center>Обмен полей для типа записей <b>с пропусками</b><br> не поддерживается. Только вручную.</center>" \
-            if lang=='ru' else """<div style="text-align:center;">
+     return
+    """
+    #c = mw.reviewer.card
+    if note.model()['type'] == MODEL_CLOZE:
+        showCritical('''<center>Обмен полей для типа записей <b>с пропусками</b><br> \
+            не поддерживается. Только вручную.</center>''' \
+            if lang=='ru' else '''<div style="text-align:center;">
 It's unable to swap fields of CLOZE note type automatically.
-<br>Please, do it manually by yourself.</div>""") 
+<br>Please, do it manually by yourself.</div>''') 
+
         # Unfortunately, style="text-align:center;" does not work here. But <center> works.
-    elif c.model()['type'] == MODEL_STD:
+
+    elif note.model()['type'] == MODEL_STD:
         fldn = note.model()['flds']
         fldl = len(note.fields)
 
@@ -153,7 +159,7 @@ It's unable to swap fields of CLOZE note type automatically.
           break
 
         if fldl<2:
-            showCritical("У данной записи одно-единственное поле,<br> его просто не с чем обменивать." \
+            showCritical('У данной записи одно-единственное поле,<br> его просто не с чем обменивать.' \
                 if lang=='ru' else 'It is unable to swap a note with a single field in it.')
             return
 
@@ -186,13 +192,13 @@ It's unable to swap fields of CLOZE note type automatically.
 
         # There are 3 (w/o Audio/Sound) or 4 or more fields?
         elif fnd1st and fnd2nd:
-            # Swap by name if names are found in list. 
+            # Swap fields by name if names are found in list. 
             swap_fld = note[fld1st]
             note[fld1st] = note[fld2nd]
             note[fld2nd] = swap_fld
 
         else:
-            # Otherwise swap two first anyway.
+            # Otherwise swap two first fields anyway.
             fld1st = fldn[0]['name']
             fld2nd = fldn[1]['name']
             swap_fld = note[fld1st]
@@ -204,8 +210,8 @@ It's unable to swap fields of CLOZE note type automatically.
                 note.addTag(SWAP_TAG)
 
         note.flush()  # never forget to flush
-        tooltip(("Выполнен обмен значений между полями <b>%s</b> и <b>%s</b>." \
-            if lang=='ru' else '<b>%s</b> and <b>%s</b> swapped.')%(fld1st,fld2nd))
+        tooltip(('Выполнен обмен значений между полями <b>%s</b> и <b>%s</b>.' \
+            if lang=='ru' else '<b>%s</b> and <b>%s</b> swapped.')%(fld1st,fld2nd), period=2000)
 
 def JustDoItYourself():
     rst = mw.reviewer.state 
@@ -221,7 +227,7 @@ def TryItYourself(edit):
     mw.reset()  # refresh gui
     # focus field so it's saved
     edit.web.setFocus()
-    edit.web.eval("focusField(%d);" % edcufi)
+    edit.web.eval('focusField(%d);' % edcufi)
 
 ##
 
@@ -229,7 +235,7 @@ swap_action = QAction(('О&бмен полей %s и %s' if lang == 'ru' \
     else _('S&wap %s and %s fields'))%(fld1st,fld2nd), mw)
 swap_action.setShortcut(QKeySequence(HOTKEY['swap'][0]))
 swap_action.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'swap.png')))
-mw.connect(swap_action, SIGNAL("triggered()"), JustDoItYourself)
+mw.connect(swap_action, SIGNAL('triggered()'), JustDoItYourself)
 
 mw.form.menuEdit.addSeparator()
 mw.form.menuEdit.addAction(swap_action)
@@ -248,12 +254,55 @@ mw.reviewer.show = wrap(mw.reviewer.show, swap_on)
 ##
 
 def setup_buttons(editor):
-    """Add the buttons to the editor."""
-    editor._addButton("swap_fields", lambda edito=editor: TryItYourself(edito) , HOTKEY['swap'][0],
-                       text="Sw", tip="Swap fields (" + HOTKEY['swap'][0] +")")
+    '''Add the buttons to the editor.'''
+    editor._addButton('swap_fields', lambda edito=editor: TryItYourself(edito) , 
+        HOTKEY['swap'][0], text='Sw', 
+        tip=('Обмен полей' if lang=='ru' else _('Swap fields'))+' (' + HOTKEY['swap'][0] +')')
 
 # register callback function that gets executed after setupEditorButtons has run. 
 # See Editor.setupEditorButtons for details
-addHook("setupEditorButtons", setup_buttons)
+addHook('setupEditorButtons', setup_buttons)
 
-##
+# reset_card_scheduling.py
+# https://ankiweb.net/shared/info/1432861881
+# Reset card(s) scheduling information / progress
+#######################################################
+
+# Col is a collection of cards, cids are the ids of the cards to reset.
+def swapSelectedNotes(self):
+    ''' Resets statistics for selected cards, and removes them from learning queues. '''
+    nids = self.selectedNotes()
+    if not nids:
+        return
+    # Allow undo
+    self.mw.checkpoint('Обмен полей' if lang=='ru' else _('Swap fields'))
+    self.mw.progress.start(immediate=True)
+    # Not sure if beginReset is required
+    self.model.beginReset()
+
+    # Resets selected cards in current collection
+    # self.col.sched.resetCards(cids)
+    # Removes card from dynamic deck?
+    # self.col.sched.remFromDyn(cids)
+    # Removes card from learning queues
+    # self.col.sched.removeLrn(cids)
+
+    for nid in nids:
+        JustDoIt(mw.col.getNote(nid), None)
+    mw.reset()  # refresh gui
+
+    self.model.endReset()
+    self.mw.progress.finish()
+    # Update the main UI window to reflect changes in card status
+    self.mw.reset()
+
+def addMenuItem(self):
+    ''' Adds hook to the Edit menu in the note browser '''
+    swp_action = QAction('Обмен полей' if lang=='ru' else _('Swap fields'), self)
+    swp_action.setShortcut(QKeySequence(HOTKEY['swap'][0]))
+    #self.resetSelectedCardScheduling = resetSelectedCardScheduling
+    self.connect(swp_action, SIGNAL('triggered()'), lambda s=self: swapSelectedNotes(self))
+    self.form.menuEdit.addAction(swp_action)
+
+# Add-in hook; called by the AQT Browser object when it is ready for the add-on to modify the menus
+addHook('browser.setupMenus', addMenuItem)
