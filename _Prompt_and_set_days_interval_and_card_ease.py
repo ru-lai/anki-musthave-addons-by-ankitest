@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 import os, sys, datetime, random
 
 HOTKEY = {      # in mw Main Window (Reviewer)
-    'F2_ctrl'   : ['Ctrl+Alt+Space'],  
+    'F2_ctrl'   : ['Alt+Shift+Space'],  
 }
 
 if __name__ == '__main__':
@@ -23,7 +23,7 @@ if sys.version[0] == '2': # Python 3 is utf8 only already.
   if hasattr(sys,'setdefaultencoding'):
     sys.setdefaultencoding('utf8')
 
-from aqt import mw
+from aqt import mw, browser
 from aqt.utils import tooltip, getText, showInfo
 from anki.utils import intTime
 from anki.hooks import addHook, wrap, runHook
@@ -62,12 +62,15 @@ usn=:usn,mod=:mod,factor=:fact where id=:id""", d)
 # Purpose:  Quickly reschedule cards in anki to a user specified interval using sched.reschedCards()
 
 # prompt for new interval, and set it
-def promptNewInterval():
+def promptNewInterval(cids):
+    '''
     if mw.state != 'review':
         tooltip('Задавать дни до следующего просмотра можно только при просмотре карточек!' if lang=='ru' else \
             'Prompt for new interval available only on answer side (BackSide) of card\'s reviewer.')
         return
-
+    '''
+    if cids == None:
+        cids = [mw.reviewer.card.id]
     SWAP_TAG = False
     cardEase = None
     infotip = ''
@@ -80,6 +83,7 @@ def promptNewInterval():
         if lang=='ru' else \
         'Number of days until next review (current interval + 1 = %s ):') % (days), default=days)
 
+    stringY = False
     stringM = False
     stringW = False
     stringD = False
@@ -91,10 +95,15 @@ def promptNewInterval():
         if len(nextDate)==0:
             continue
 
+        dayStringY = False
         dayStringM = False
         dayStringW = False
         dayStringD = False
 
+        if nextDate.endswith('y') or nextDate.endswith(u'г'):
+            nextDate = nextDate[:-1].strip()
+            dayStringY = True
+            stringY = True
         if nextDate.endswith('m') or nextDate.endswith(u'м'):
             nextDate = nextDate[:-1].strip()
             dayStringM = True
@@ -128,6 +137,10 @@ def promptNewInterval():
                 if dayStringM:
                     dayz = abs(float(days))
                     days = 0
+                if dayStringY:
+                    dayz = abs(float(days))*12.0
+                    days = 0
+                    dayStringM = True
                 if dayStringW:
                     days = abs(days) * 7
             except ValueError:
@@ -143,11 +156,13 @@ def promptNewInterval():
                         days = 0
                         dayStringM = True
                         stringM = True
+                        if dayStringY:
+                            dayz = dayz * 12.0
                 except ValueError:
                     dayz = float(0)
 
             if dayStringM: 
-                total += int(31*abs(dayz)) 
+                total += int(30*abs(dayz)) 
             else:
                 total += abs(days) 
 
@@ -170,6 +185,10 @@ def promptNewInterval():
         total = abs(days) + random.randrange(-15, 15+1, 1)
 
       if cardEase is None:
+        if not total: # empty request line == drop cards to new queue 
+            mw.col.sched.forgetCards( cids )
+            mw.reset()
+            return
         infotip = ''
         cardEase = mw.reviewer.card.factor # 2500
       else:
@@ -179,7 +198,10 @@ def promptNewInterval():
 
       if total:
         #mw.col.sched.reschedCards( [mw.reviewer.card.id], total-1 if total>1 else 1, total+1 )
-        _reschedCards(mw.col.sched, [mw.reviewer.card.id], total-1 if total>1 else 1, total+1, indi=cardEase)
+        if total < 10:
+            _reschedCards(mw.col.sched, cids, total, total, indi=cardEase)
+        else:
+            _reschedCards(mw.col.sched, cids, total-1 if total>1 else 1, total+1, indi=cardEase)
 
         days_mod = (total % 10) if ( (total%100) < 11 or (total%100) > 14) else (total % 100)
         tooltip( infotip+('Запланирован просмотр через <b>%s</b> %s '+\
@@ -218,7 +240,7 @@ if True:
     set_new_int_action.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'schedule.png')))
     set_new_int_action.setShortcut(QKeySequence(HOTKEY['F2_ctrl'][0]))
     set_new_int_action.setEnabled(False)
-    mw.connect(set_new_int_action, SIGNAL('triggered()'), promptNewInterval)
+    mw.connect(set_new_int_action, SIGNAL('triggered()'), lambda: promptNewInterval(None))
 
     if hasattr(mw,'addon_cards_menu'):
         mw.addon_cards_menu.addAction(set_new_int_action)
@@ -231,3 +253,45 @@ if True:
     mw.deckBrowser.show = wrap(mw.deckBrowser.show, edit_actions_off)
     mw.overview.show = wrap(mw.overview.show, edit_actions_off)
     mw.reviewer.show = wrap(mw.reviewer.show, edit_actions_on)
+
+# reset_card_scheduling.py
+# https://ankiweb.net/shared/info/1432861881
+# Reset card(s) scheduling information / progress
+#######################################################
+
+# Col is a collection of cards, cids are the ids of the cards to reset.
+def resetSelectedCardScheduling(self):
+    """ Resets statistics for selected cards, and removes them from learning queues. """
+    cids = self.selectedCards()
+    if not cids:
+        return
+    # Allow undo
+    self.mw.checkpoint(_('Promt and set days interval'))
+    self.mw.progress.start(immediate=True)
+    # Not sure if beginReset is required
+    self.model.beginReset()
+
+    # Resets selected cards in current collection
+    # self.col.sched.resetCards(cids)
+    # Removes card from dynamic deck?
+    # self.col.sched.remFromDyn(cids)
+    # Removes card from learning queues
+    # self.col.sched.removeLrn(cids)
+
+    promptNewInterval(cids=cids)
+
+    self.model.endReset()
+    self.mw.progress.finish()
+    # Update the main UI window to reflect changes in card status
+    self.mw.reset()
+
+def addMenuItem(self):
+    """ Adds hook to the Edit menu in the note browser """
+    newInt_action = QAction('Promt and set days interval', self)
+    newInt_action.setShortcut(QKeySequence(HOTKEY['F2_ctrl'][0]))
+    self.resetSelectedCardScheduling = resetSelectedCardScheduling
+    self.connect(newInt_action, SIGNAL('triggered()'), lambda s=self: resetSelectedCardScheduling(self))
+    self.form.menuEdit.addAction(newInt_action)
+
+# Add-in hook; called by the AQT Browser object when it is ready for the add-on to modify the menus
+addHook('browser.setupMenus', addMenuItem)
