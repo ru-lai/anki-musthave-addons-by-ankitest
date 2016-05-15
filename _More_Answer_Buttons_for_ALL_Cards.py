@@ -59,7 +59,7 @@ This can be edited to suit, but there can not be more than 4 buttons.
 """
 from __future__ import division
 from __future__ import unicode_literals
-import os, sys, datetime
+import os, sys, datetime, random
 import json
 
 #Anki uses a single digit to track which button has been clicked.
@@ -70,21 +70,22 @@ NOT_NOW_BASE = 5
 INTERCEPT_EASE_BASE = 6
 
 extra_buttons = [ # should start from 6 anyway
-    {"Description": "5-7d", "Label": "!!!", "ShortCut": "6", "ReschedMin": 5, "ReschedMax": 7},
-    {"Description": "8-15d", "Label": "Veni", "ShortCut": "7", "ReschedMin": 8, "ReschedMax": 15},
-    {"Description": "3-4w", "Label": "Vidi", "ShortCut": "8", "ReschedMin": 15, "ReschedMax": 30},
-    {"Description": "2-3mo", "Label": "Vici", "ShortCut": "9", "ReschedMin": 31, "ReschedMax": 90},
+    {'Description': '5-7d', 'Label': '!!!', 'ShortCut': '6', 'ReschedMin': 5, 'ReschedMax': 7},
+    {'Description': '8-15d', 'Label': 'Veni', 'ShortCut': '7', 'ReschedMin': 8, 'ReschedMax': 15},
+    {'Description': '3-4w', 'Label': 'Vidi', 'ShortCut': '8', 'ReschedMin': 15, 'ReschedMax': 30},
+    {'Description': '2-3mo', 'Label': 'Vici', 'ShortCut': '9', 'ReschedMin': 31, 'ReschedMax': 90},
     ]
 
 #Must be four or less
 assert len(extra_buttons) <= 4
 
 SWAP_TAG = False
-#SWAP_TAG = datetime.datetime.now().strftime("rescheduled::re-%Y-%m-%d::re-card")
-#SWAP_TAG = datetime.datetime.now().strftime("re-%y-%m-%d-c")
+#SWAP_TAG = datetime.datetime.now().strftime('rescheduled::re-%Y-%m-%d::re-card')
+#SWAP_TAG = datetime.datetime.now().strftime('re-%y-%m-%d-c')
 
 from aqt.reviewer import Reviewer
 from anki.hooks import wrap
+from anki.utils import intTime
 from aqt.utils import tooltip
 from aqt import mw
 
@@ -99,11 +100,26 @@ USE_INTERVALS_AS_LABELS = False # True #
 
 def _bottomTime(self, i):
         if not self.mw.col.conf['estTimes']:
-            return "&nbsp;"
-        txt = self.mw.col.sched.nextIvlStr(self.card, i, True) or "&nbsp;"
+            return '&nbsp;'
+        txt = self.mw.col.sched.nextIvlStr(self.card, i, True) or '&nbsp;'
         return txt
         
 #todo: brittle. Replaces existing function
+
+def _reschedCards(self, ids, imin, imax, indi=2500):
+    "Put cards in review queue with a new interval in days (min, max)."
+    d = []
+    t = self.today
+    mod = intTime()
+    for id in ids:
+        r = random.randint(imin, imax)
+        d.append(dict(id=id, due=r+t, ivl=max(1, r), mod=mod,
+                      usn=self.col.usn(), fact=indi))
+    self.remFromDyn(ids)
+    self.col.db.executemany("""
+update cards set type=2,queue=2,ivl=:ivl,due=:due,odue=0,
+usn=:usn,mod=:mod,factor=:fact where id=:id""", d)
+    self.col.log(ids)
 
 def _answerButtons(self):
     times = []
@@ -111,19 +127,19 @@ def _answerButtons(self):
 
     def but(i, label):
         if i == default:
-            extra = "id=defease"
+            extra = 'id=defease'
         else:
-            extra = ""
+            extra = ''
         if USE_INTERVALS_AS_LABELS:
             due = _bottomTime(self,i)
             return '''
 <td align=center class="but but%s"><span class=nobold>&nbsp;</span><br><button %s title="%s" onclick='py.link("ease%d");'>\
-%s</button></td>''' % (i, extra, _("Shortcut key: %s") % i, i, due)
+%s</button></td>''' % (i, extra, _('Shortcut key: %s') % i, i, due)
         else:
             due = self._buttonTime(i)
             return '''
 <td align=center class="but but%s">%s<button %s title="%s" onclick='py.link("ease%d");'>\
-%s</button></td>''' % (i, due, extra, _("Shortcut key: %s") % i, i, label)
+%s</button></td>''' % (i, due, extra, _('Shortcut key: %s') % i, i, label)
 
     buf = '''<center><table cellpading=0 cellspacing=0><tbody><tr><style>
 body { overflow: hidden; }
@@ -131,7 +147,7 @@ body { overflow: hidden; }
     if 2 == default:
         buf += '''
 .but2:nth-child(4),.but2:nth-child(4) button,
-.but2:nth-child(5),.but2:nth-child(5) button{color:/*green*/#3c3;}
+.but2:nth-child(5),.but2:nth-child(5) button{color:/*green*/#090;}
 .but3:nth-child(4),.but3:nth-child(4) button,
 .but3:nth-child(5),.but3:nth-child(5) button,
 .but3:nth-child(6),.but3:nth-child(6) button{color:/*blue*/#66f;}'''
@@ -139,7 +155,7 @@ body { overflow: hidden; }
         buf += '''
 .but2:nth-child(5),.but2:nth-child(5) button{color:darkgoldenrod;}
 .but3:nth-child(5),.but3:nth-child(5) button,
-.but3:nth-child(6),.but3:nth-child(6) button{color:/*green*/#3c3;}
+.but3:nth-child(6),.but3:nth-child(6) button{color:/*green*/#090;}
 .but4:nth-child(5),.but4:nth-child(5) button,
 .but4:nth-child(6),.but4:nth-child(6) button,
 .but4:nth-child(7),.but4:nth-child(7) button{color:/*blue*/#66f;}'''
@@ -149,11 +165,11 @@ body { overflow: hidden; }
     if USE_INTERVALS_AS_LABELS:
         buf += '''
 <td align=center><span class=nobold>&nbsp;</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
-%s</button></td><td>&nbsp;</td>''' % ("Escape", NOT_NOW_BASE, "позже" if lang=='ru' else _("later"))
+%s</button></td><td>&nbsp;</td>''' % ('Escape', NOT_NOW_BASE, 'позже' if lang=='ru' else _('later'))
     else:
         buf += '''
 <td align=center><span class=nobold>%s</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
-%s</button></td><td>&nbsp;</td>''' % ("позже" if lang=='ru' else _("later"), "Escape", NOT_NOW_BASE, "не сейчас" if lang=='ru' else _("not now"))
+%s</button></td><td>&nbsp;</td>''' % ('позже' if lang=='ru' else _('later'), 'Escape', NOT_NOW_BASE, 'не сейчас' if lang=='ru' else _('not now'))
 
     for ease, label in self._answerButtonList():
         buf += but(ease, label)
@@ -167,15 +183,15 @@ body { overflow: hidden; }
             if USE_INTERVALS_AS_LABELS:
                 buf += '''
 <td align=center><span class=nobold>&nbsp;</span><br><button title="%s" onclick='py.link("ease%d");'>\
-%s</button></td>''' % (_("Shortcut key: %s")%buttonItem["ShortCut"], \
-                    i + INTERCEPT_EASE_BASE, buttonItem["Description"])
+%s</button></td>''' % (_('Shortcut key: %s')%buttonItem['ShortCut'], \
+                    i + INTERCEPT_EASE_BASE, buttonItem['Description'])
             else:
                 buf += '''
 <td align=center><span class=nobold>%s</span><br><button title="%s" onclick='py.link("ease%d");'>\
-%s</button></td>''' % (buttonItem["Description"], _("Shortcut key: %s")%buttonItem["ShortCut"], \
-                    i + INTERCEPT_EASE_BASE, buttonItem["Label"])
+%s</button></td>''' % (buttonItem['Description'], _('Shortcut key: %s')%buttonItem['ShortCut'], \
+                    i + INTERCEPT_EASE_BASE, buttonItem['Label'])
             #swAdded end
-    buf += "</tr></tbody></table>"
+    buf += '</tr></tbody></table>'
     script = """<script>$(function () { $("#defease").focus(); });</script>"""
     return buf + script
 
@@ -196,12 +212,15 @@ def answer_card_intercepting(self, actual_ease, _old):
         ease = 3
         #We will need this to reschedule it.
         prev_card_id = self.card.id
+        prev_card_factor = self.card.factor
         #
         buttonItem = extra_buttons[actual_ease - INTERCEPT_EASE_BASE]
         #Do the reschedule.
-        self.mw.checkpoint(_("Reschedule card"))
-        self.mw.col.sched.reschedCards([prev_card_id], buttonItem["ReschedMin"], buttonItem["ReschedMax"])
-        tooltip("<center>Rescheduled:" + "<br>" + buttonItem["Description"] + "</center>")
+        self.mw.checkpoint(_('Reschedule card'))
+        #self.mw.col.sched.reschedCards([prev_card_id], buttonItem['ReschedMin'], buttonItem['ReschedMax'])
+        _reschedCards(self.mw.col.sched, [prev_card_id], \
+            buttonItem['ReschedMin'], buttonItem['ReschedMax'], indi=prev_card_factor)
+        tooltip('<center>Rescheduled:' + '<br>' + buttonItem['Description'] + '</center>')
 
         SwapTag = SWAP_TAG
         if SwapTag:
@@ -220,9 +239,9 @@ def answer_card_intercepting(self, actual_ease, _old):
 #Handle the shortcut. Used changekeys.py addon as a guide     
 def keyHandler(self, evt, _old):
     key = unicode(evt.text())
-    if self.state == "answer":
+    if self.state == 'answer':
         for i, buttonItem in enumerate(extra_buttons):
-            if key == buttonItem["ShortCut"]:
+            if key == buttonItem['ShortCut']:
                 #early exit ok in python?
                 return self._answerCard(i + INTERCEPT_EASE_BASE)
     return _old(self, evt)
@@ -241,20 +260,20 @@ def more_proc():
 try:
     mw.addon_view_menu
 except AttributeError:
-    mw.addon_view_menu = QMenu(_("&Вид") if lang == 'ru' else _("&View"), mw)
+    mw.addon_view_menu = QMenu(_('&Вид') if lang == 'ru' else _('&View'), mw)
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_view_menu)
 
 more_action = QAction('&Кнопки оценок - без меток' if lang == 'ru' else _('&Answer buttons without labels'), mw)
-more_action.setShortcut(QKeySequence("Ctrl+Alt+Shift+L"))
+more_action.setShortcut(QKeySequence('Ctrl+Alt+Shift+L'))
 more_action.setCheckable(True)
 more_action.setChecked(USE_INTERVALS_AS_LABELS)
-mw.connect(more_action, SIGNAL("triggered()"), more_proc)
+mw.connect(more_action, SIGNAL('triggered()'), more_proc)
 mw.addon_view_menu.addAction(more_action)
 
-Reviewer._keyHandler = wrap(Reviewer._keyHandler, keyHandler, "around")
+Reviewer._keyHandler = wrap(Reviewer._keyHandler, keyHandler, 'around')
 Reviewer._answerButtons = _answerButtons
-Reviewer._answerCard = wrap(Reviewer._answerCard, answer_card_intercepting, "around")
+Reviewer._answerCard = wrap(Reviewer._answerCard, answer_card_intercepting, 'around')
 
 #
 
@@ -264,15 +283,15 @@ def onEscape():
 try:
     mw.addon_cards_menu
 except AttributeError:
-    mw.addon_cards_menu = QMenu(_(u"&Карточки") if lang == 'ru' else _(u"&Cards"), mw)
+    mw.addon_cards_menu = QMenu(_(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
 escape_action = QAction(mw)
-escape_action.setText(u'Позж&е, не сейчас' if lang=='ru' else _(u"&Later, not now"))
+escape_action.setText(u'Позж&е, не сейчас' if lang=='ru' else _(u'&Later, not now'))
 escape_action.setShortcut(QKeySequence('Escape'))
 escape_action.setEnabled(False)
-mw.connect(escape_action, SIGNAL("triggered()"), onEscape)
+mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 
 #mw.addon_cards_menu.addSeparator()
 mw.addon_cards_menu.addAction(escape_action)
@@ -297,29 +316,29 @@ def newRemaining(self):
 
 def myShowAnswerButton(self,_old):
     if newRemaining(self):
-        self.mw.moveToState("overview")
+        self.mw.moveToState('overview')
     self._bottomReady = True
     if not self.typeCorrect:
         self.bottom.web.setFocus()
 
     buf = '''
 <td align=center class=stat2><span class=stattxt>%s</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
-%s</button></td><td>&nbsp;</td>''' % ("позже" if lang=='ru' else _("later"), "Escape", NOT_NOW_BASE, "не сейчас" if lang=='ru' else _("not now"))
+%s</button></td><td>&nbsp;</td>''' % ('позже' if lang=='ru' else _('later'), 'Escape', NOT_NOW_BASE, 'не сейчас' if lang=='ru' else _('not now'))
 
     middle = '''<table cellpadding=0><tr>%s<td class=stat2 align=center>
 <span class=stattxt>%s</span><br>
 <button %s id=ansbut style="display:inline-block;width:%s;%s" onclick='py.link(\"ans\");'>%s</button>
     </td></tr></table>
 ''' % ( buf, self._remaining(), \
-        " title=' "+(_("Shortcut key: %s") % _("Space"))+" '",
-        "99%", "", _("Show Answer"))
+        " title=' "+(_('Shortcut key: %s') % _('Space'))+" '",
+        '99%', '', _('Show Answer'))
     
     if self.card.shouldShowTimer():
         maxTime = self.card.timeLimit() / 1000
     else:
         maxTime = 0
-    self.bottom.web.eval("showQuestion(%s,%d);" % (
+    self.bottom.web.eval('showQuestion(%s,%d);' % (
         json.dumps(middle), maxTime))
     return True
 
-Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, "around")
+Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, 'around')

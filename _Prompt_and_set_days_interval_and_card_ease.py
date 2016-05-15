@@ -6,15 +6,15 @@
 #
 from __future__ import division
 from __future__ import unicode_literals
-import os, sys, datetime
+import os, sys, datetime, random
 
 HOTKEY = {      # in mw Main Window (Reviewer)
-    'F2_ctrl'   : ["Ctrl+Alt+Space"],  
+    'F2_ctrl'   : ['Ctrl+Alt+Space'],  
 }
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     print("This is _Swap add-on for the Anki program and it can't be run directly.")
-    print("Please download Anki 2.0 from http://ankisrs.net/")
+    print('Please download Anki 2.0 from http://ankisrs.net/')
     sys.exit()
 else:
     pass
@@ -41,7 +41,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 def _reschedCards(self, ids, imin, imax, indi=2500):
-    "Put cards in review queue with a new interval in days (min, max)."
+    'Put cards in review queue with a new interval in days (min, max).'
     d = []
     t = self.today
     mod = intTime()
@@ -52,8 +52,7 @@ def _reschedCards(self, ids, imin, imax, indi=2500):
     self.remFromDyn(ids)
     self.col.db.executemany("""
 update cards set type=2,queue=2,ivl=:ivl,due=:due,odue=0,
-usn=:usn,mod=:mod,factor=:fact where id=:id""",
-                            d)
+usn=:usn,mod=:mod,factor=:fact where id=:id""", d)
     self.col.log(ids)
 
 # inspired by
@@ -61,8 +60,6 @@ usn=:usn,mod=:mod,factor=:fact where id=:id""",
 # Author:   Benjamin Gray
 # File:     Quick_Reschedule.py
 # Purpose:  Quickly reschedule cards in anki to a user specified interval using sched.reschedCards()
-
-import random
 
 # prompt for new interval, and set it
 def promptNewInterval():
@@ -117,6 +114,8 @@ def promptNewInterval():
 
         if nextDate.endswith('%'):
             nextDate = nextDate[:-1].strip()
+            if nextDate == '':
+               nextDate = '250'
             try:
                 cardEase = max(130,abs(int(nextDate)))
             except ValueError:
@@ -152,7 +151,7 @@ def promptNewInterval():
             else:
                 total += abs(days) 
 
-      mw.checkpoint(_("Reschedule card"))
+      mw.checkpoint(_('Reschedule card'))
 
       days = total
 
@@ -171,10 +170,10 @@ def promptNewInterval():
         total = abs(days) + random.randrange(-15, 15+1, 1)
 
       if cardEase is None:
-        infotip = ""
-        cardEase = 2500
+        infotip = ''
+        cardEase = mw.reviewer.card.factor # 2500
       else:
-        infotip = ("Лёгкость карточки <b>%s</b>%%<br><br>" if lang=='ru' else \
+        infotip = ('Лёгкость карточки <b>%s</b>%%<br><br>' if lang=='ru' else \
           'Card ease <b>%s</b>%%<br><br>') % (cardEase)
         cardEase *= 10
 
@@ -183,13 +182,14 @@ def promptNewInterval():
         _reschedCards(mw.col.sched, [mw.reviewer.card.id], total-1 if total>1 else 1, total+1, indi=cardEase)
 
         days_mod = (total % 10) if ( (total%100) < 11 or (total%100) > 14) else (total % 100)
-        tooltip( infotip+("Запланирован просмотр через <b>%s</b> %s "+\
-                ("день" if days_mod==1 else ("дня" if days_mod>=2 and days_mod<=4 else "дней")) if lang=='ru' else \
+        tooltip( infotip+('Запланирован просмотр через <b>%s</b> %s '+\
+                ('день' if days_mod==1 else ('дня' if days_mod>=2 and days_mod<=4 else 'дней')) if lang=='ru' else \
                 'Rescheduled for review in <b>%s</b> %s days') % \
-                (total, ' ( <b style="color:#666;">%s</b> %s ) ' % (prefix.strip(), suffix) if len(suffix) else '') )
+                (total, ' ( <b style="color:#666;">%s</b> %s ) ' % \
+                (prefix.strip(), suffix) if len(suffix) else ''), period=2000 )
 
-        #SWAP_TAG = datetime.datetime.now().strftime("rescheduled::re-%Y-%m-%d::re-card")
-        #SWAP_TAG = datetime.datetime.now().strftime("re-%y-%m-%d-c")
+        #SWAP_TAG = datetime.datetime.now().strftime('rescheduled::re-%Y-%m-%d::re-card')
+        #SWAP_TAG = datetime.datetime.now().strftime('re-%y-%m-%d-c')
         if SWAP_TAG:
           SWAP_TAG += unicode(mw.reviewer.card.ord+1)
           note = mw.reviewer.card.note()
@@ -198,6 +198,8 @@ def promptNewInterval():
             note.flush()  # never forget to flush
 
       elif cardEase is not None:
+        tooltip( ('Лёгкость карточки <b>%s</b>%%<br><br>' if lang=='ru' else \
+          'Card ease <b>%s</b>%%<br><br>') % int(cardEase/10), period=1000 )
         mw.reviewer.card.factor = cardEase
         mw.reviewer.card.flush()
 
@@ -207,16 +209,16 @@ if True:
     try:
         mw.addon_cards_menu
     except AttributeError:
-        mw.addon_cards_menu = QMenu(_(u"&Карточки") if lang == 'ru' else _(u"&Cards"), mw)
+        mw.addon_cards_menu = QMenu(_(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
         mw.form.menubar.insertMenu(
             mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
     set_new_int_action = QAction(mw)
-    set_new_int_action.setText(u'&Через ... дней' if lang=='ru' else _(u"&Prompt and Set ... days interval"))
+    set_new_int_action.setText(u'&Через ... дней' if lang=='ru' else _(u'&Prompt and Set ... days interval'))
     set_new_int_action.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'schedule.png')))
     set_new_int_action.setShortcut(QKeySequence(HOTKEY['F2_ctrl'][0]))
     set_new_int_action.setEnabled(False)
-    mw.connect(set_new_int_action, SIGNAL("triggered()"), promptNewInterval)
+    mw.connect(set_new_int_action, SIGNAL('triggered()'), promptNewInterval)
 
     if hasattr(mw,'addon_cards_menu'):
         mw.addon_cards_menu.addAction(set_new_int_action)
