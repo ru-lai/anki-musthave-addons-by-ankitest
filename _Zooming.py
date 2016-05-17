@@ -21,6 +21,12 @@ if sys.version[0] == '2': # Python 3 is utf8 only already.
   if hasattr(sys,'setdefaultencoding'):
     sys.setdefaultencoding('utf8')
 
+from aqt import mw
+from aqt.qt import *
+from aqt.utils import showText, showWarning, showCritical
+from anki.hooks import addHook, wrap, runHook
+import aqt.browser
+
 ZOOM_IMAGES = True # False # 
 
 # Standard zoom factors for the main views of the central area:
@@ -40,11 +46,6 @@ FONTSIZE = 0 # Use default font size
 
 FONT = 'Calibri' # Use custom typeface
 FONTSIZE = 16 #12 #18 #20 #24 
-
-from aqt import mw
-from aqt.qt import *
-from aqt.utils import showText, showWarning, showCritical
-from anki.hooks import addHook, wrap, runHook
 
 def changeFont():
     f = QFontInfo(QFont(FONT))
@@ -210,9 +211,9 @@ def zoom_info():
         '<tr><td align=right><big>overview_standard_zoom = </big>'+\
         '</td><td><big><b>'+str(overview_current_zoom)+'</b></td></tr>\n'+\
         '<tr><td align=right><big>reviewer_standard_zoom = </big>'+\
-        '</td><td><big><b>'+str(reviewer_current_zoom)+'</b><br></big></td></tr>\n'+\
+        '</td><td><big><b>'+str(reviewer_current_zoom)+'</b></big></td></tr>\n'+\
 
-        '<tr><td align=right>ZOOM_IMAGES = </td><td><b>' +unicode(ZOOM_IMAGES) +'</b></td></tr>\n'+\
+        '<tr><td align=right><br>ZOOM_IMAGES = </td><td><br><b>' +unicode(ZOOM_IMAGES) +'</b></td></tr>\n'+\
         '<tr><td align=right>textSizeMultiplier = </td><td><b>' +str(mw.web.textSizeMultiplier()) +'</b></td></tr>'+\
         '<tr><td align=right>zoomFactor = </td><td><b>' +str(mw.web.zoomFactor()) +'</b></td></tr>'+\
         '</tbody></table>',type='HTML')
@@ -354,6 +355,32 @@ def load_toolbarz_visible():
 
 addHook('unloadProfile', save_toolbarz_visible)
 addHook('profileLoaded', load_toolbarz_visible)
+
+##
+
+def openPreview(self):
+    current_zoom = reviewer_current_zoom
+
+    if ZOOM_IMAGES:
+        #self._previewWindow.setZoomFactor(current_zoom)
+        # AttributeError: 'QDialog' object has no attribute 'setZoomFactor'
+        self._previewWeb.setZoomFactor(current_zoom)
+    else:
+        self._previewWeb.setTextSizeMultiplier(current_zoom)
+
+aqt.browser.Browser._openPreview = wrap( aqt.browser.Browser._openPreview, openPreview )
+
+def browserInit(self, mw):
+    #self.form.setupUi
+    current_zoom = deck_browser_current_zoom
+
+    if ZOOM_IMAGES:
+        self.form.tree.setZoomFactor(current_zoom)
+    else:
+        self.form.tree.setTextSizeMultiplier(current_zoom)
+
+
+#aqt.browser.Browser.__init__ = wrap( aqt.browser.Browser.__init__, browserInit )
 
 ##
 

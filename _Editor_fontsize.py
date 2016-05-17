@@ -91,6 +91,18 @@ from aqt.webview import AnkiWebView
 import anki.lang
 lang = anki.lang.getLang()
 
+##
+
+editor_standard_zoom = 1.5
+
+def changeEditorFontSize (self): 
+    return [ (f['font'], f['size']*editor_standard_zoom, f['rtl']) 
+        for f in self.note.model()['flds'] ] 
+
+aqt.editor.Editor.fonts = anki.hooks.wrap(aqt.editor.Editor.fonts, changeEditorFontSize)
+
+##
+
 def particularFont(fontKey, bold=False, italic=False, underline=False):
     font = PyQt4.QtGui.QFont()
     if fontKey in FONTS:
