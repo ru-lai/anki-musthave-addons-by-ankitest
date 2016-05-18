@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# ~ Check media dont delete files
+# ~ Check media does not delete files
 # https://ankiweb.net/shared/info/1051530260
 # License: GNU GPL, version 3 or later
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/

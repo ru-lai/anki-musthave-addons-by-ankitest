@@ -18,14 +18,21 @@
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 from __future__ import unicode_literals
-import os
+from __future__ import division
+import os, sys, datetime
 from operator import  itemgetter
 
 CtrlShiftPlus  = 'Ctrl+Shift++' # Expand   Them All
 CtrlShiftMinus = 'Ctrl+Shift+-' # Collapse Them All
 CtrlAltShiftMinus = 'Ctrl+Alt+Shift+-' # Collapse Them at All
 
-CtrlShiftX = 'F4' # You can make your own e.g. = 'Ctrl+Alt+Shift+0'
+# You can set up your own hotkeys here:
+HOTKEY = {      # in Reviewer
+    'Edit_HTML'     : 'F4',         # Ctrl+Shift+X
+    'Edit_Fields'   : 'F4',         # e
+    'Edit_Cards'    : 'Shift+F4',   # 
+    'Edit_Fieldz'   : 'Ctrl+F4',    # Alt+F4 == Close Window
+    }
 
 BrowserColumns = True # if you want to enlarge ALL columns in browser
 #BrowserColumns = False # to enlarge 'Sort Field', 'Question', 'Answer' only
@@ -71,19 +78,39 @@ FONTS = {
     'Fields List':          ('Consolas', 18),
 }
 
+if __name__ == '__main__':
+    print("This is _F4_Edit add-on for the Anki program and it can't be run directly.")
+    print('Please download Anki 2.0 from http://ankisrs.net/')
+    sys.exit()
+else:
+    pass
+
+if sys.version[0] == '2': # Python 3 is utf8 only already.
+  if hasattr(sys,'setdefaultencoding'):
+    sys.setdefaultencoding('utf8')
+
 from aqt import mw
 from aqt.qt import * 
+
 import aqt.addons
 import aqt.browser
 import aqt.clayout
 import aqt.editor
 import aqt.fields
-import anki.hooks
 import aqt.utils
+import anki.hooks
+
 import PyQt4.QtGui
 import PyQt4.QtCore
+
 from BeautifulSoup import BeautifulSoup
 from aqt.webview import AnkiWebView
+from aqt.editor import Editor # the editor when you click 'Add' in Anki
+
+try:
+    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'f4edit_icons')
+except:
+    MUSTHAVE_COLOR_ICONS = ''
 
 #####################
 # Get language class
@@ -158,6 +185,88 @@ def myReadCard(self):
 
 aqt.clayout.CardLayout.readCard = myReadCard
 
+# 
+##########################################################
+
+F4_Edit_exists = os.path.exists(os.path.join(mw.pm.addonFolder(), '_F4_Edit.py'))
+
+def go_edit_current():
+    """Edit the current card when there is one."""
+    try:
+        mw.onEditCurrent()
+    except AttributeError:
+        pass
+
+def go_edit_layout():
+    """Edit the current card's note's layout if there is one."""
+    try:
+        ccard = mw.reviewer.card
+        aqt.clayout.CardLayout(mw, ccard.note(), ord=ccard.ord)
+    except AttributeError:
+        return
+
+def go_edit_fields():
+    """Edit the current card's note's fields if there is one."""
+    #try:
+    #ccard = mw.reviewer.card
+    aqt.editor.onFields(mw)
+    #except AttributeError:
+        #return
+
+try:
+    mw.addon_cards_menu
+except AttributeError:
+    mw.addon_cards_menu = QMenu(_(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
+    mw.form.menubar.insertMenu(
+        mw.form.menuTools.menuAction(), mw.addon_cards_menu)
+
+F4_edit_current_action = QAction(mw)
+F4_edit_current_action.setText(u'Р&едактирование...' if lang=='ru' else _(u'&Edit...'))
+F4_edit_current_action.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_current.png')))
+F4_edit_current_action.setShortcut(QKeySequence(HOTKEY['Edit_Fields']))
+F4_edit_current_action.setEnabled(False)
+
+F4_edit_layout_action = QAction(mw)
+F4_edit_layout_action.setText(u'&Карточки...' if lang=='ru' else _(u'&Cards...'))
+F4_edit_layout_action.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_layout.png')))
+F4_edit_layout_action.setShortcut(QKeySequence(HOTKEY['Edit_Cards']))
+F4_edit_layout_action.setEnabled(False)
+
+F4_edit_fields_action = QAction(mw)
+F4_edit_fields_action.setText(u'&Поля...' if lang=='ru' else _(u'&Fields...'))
+F4_edit_fields_action.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_fields.png')))
+F4_edit_fields_action.setShortcut(QKeySequence(HOTKEY['Edit_Fieldz']))
+F4_edit_fields_action.setEnabled(False)
+
+def swap_off():
+    F4_edit_current_action.setEnabled(False)
+    F4_edit_layout_action.setEnabled(False)
+    F4_edit_fields_action.setEnabled(False)
+
+def swap_on():
+    F4_edit_current_action.setEnabled(True)
+    F4_edit_layout_action.setEnabled(True)
+    F4_edit_fields_action.setEnabled(True)
+
+def onFields(self):
+    from aqt.fields import FieldDialog
+    FieldDialog(self, self.card.note(), parent=mw) 
+
+if not F4_Edit_exists:
+    mw.connect(F4_edit_current_action, SIGNAL('triggered()'), go_edit_current)
+    mw.connect(F4_edit_layout_action, SIGNAL('triggered()'), go_edit_layout)
+    mw.connect(F4_edit_fields_action, SIGNAL('triggered()'), lambda: onFields(mw.reviewer))
+
+    mw.addon_cards_menu.addSeparator()
+    mw.addon_cards_menu.addAction(F4_edit_current_action)
+    mw.addon_cards_menu.addAction(F4_edit_layout_action)
+    mw.addon_cards_menu.addAction(F4_edit_fields_action)
+    mw.addon_cards_menu.addSeparator()
+
+    mw.deckBrowser.show = anki.hooks.wrap(mw.deckBrowser.show, swap_off)
+    mw.overview.show = anki.hooks.wrap(mw.overview.show, swap_off)
+    mw.reviewer.show = anki.hooks.wrap(mw.reviewer.show, swap_on)
+
 # HTML editing
 ######################################################################
 
@@ -186,17 +295,23 @@ def myHtmlEdit(self):
     self.web.setFocus()
     self.web.eval('focusField(%d);' % self.currentField)
 
-aqt.editor.Editor.onHtmlEdit = myHtmlEdit
-
 # F4 as well as Ctrl+Shift+X
 ######################################################################
 
 def mySetupF4(self):
     f4 = PyQt4.QtGui.QShortcut(
-         PyQt4.QtGui.QKeySequence(CtrlShiftX), self.parentWindow)
+         PyQt4.QtGui.QKeySequence(HOTKEY['Edit_HTML']), self.parentWindow)
     f4.connect(f4, PyQt4.QtCore.SIGNAL('activated()'), self.onHtmlEdit)
 
-aqt.editor.Editor.setupButtons = anki.hooks.wrap(aqt.editor.Editor.setupButtons, mySetupF4)
+    s = QShortcut(QKeySequence(HOTKEY['Edit_Cards']), self.widget)
+    s.connect(s, SIGNAL("activated()"), self.onCardLayout)
+
+    ss = QShortcut(QKeySequence(HOTKEY['Edit_Fieldz']), self.widget)
+    ss.connect(ss, SIGNAL("activated()"), self.onFields)
+
+if not F4_Edit_exists:
+    aqt.editor.Editor.onHtmlEdit = myHtmlEdit
+    aqt.editor.Editor.setupButtons = anki.hooks.wrap(aqt.editor.Editor.setupButtons, mySetupF4)
 
 # Addons Edit...
 ######################################################################
