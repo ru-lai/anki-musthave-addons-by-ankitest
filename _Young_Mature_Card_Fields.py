@@ -14,7 +14,7 @@ from anki.utils import fmtTimeSpan
 from anki.hooks import wrap
 
 def timefn(tm):
-    str = ""
+    str = ''
     if tm >= 60:
         str = fmtTimeSpan((tm/60)*60, short=True, point=-1, unit=1)
     if tm%60 != 0 or not str:
@@ -36,7 +36,7 @@ def _renderQA(self,data,_old,qfmt=None,afmt=None):
         except:
             card = None
     def tmpFieldMap(m):
-        "Mapping of field name -> (ord, field)."
+        """Mapping of field name -> (ord, field)."""
         d = dict((f['name'], (f['ord'], f)) for f in m['flds'])
         newFields = ['info:Ord','info:Did','info:Due','info:Id', 'info:Ivl','info:Queue','info:Reviews','info:Lapses', 
         'info:FirstReview','info:LastReview','info:TimeAvg','info:TimeTotal', 'info:Young','info:Mature', 
@@ -47,53 +47,53 @@ def _renderQA(self,data,_old,qfmt=None,afmt=None):
         return d
     self.models.fieldMap = tmpFieldMap
     origdata = copy.copy(data)
-    data[6] += "\x1f"
+    data[6] += '\x1f'
     additionalFields = [str(data[4])]
     if card is not None:
         additionalFields += map(str,[card.did,card.due,card.id,card.ivl,card.queue,card.reps,card.lapses])
         (first,last,cnt, total) = self.db.first(
-                "select min(id), max(id), count(), sum(time)/1000 from revlog where cid = :id",
+                'select min(id), max(id), count(), sum(time)/1000 from revlog where cid = :id',
                 id=card.id)
         if cnt:
-            additionalFields.append(time.strftime("%Y-%m-%d", time.localtime(first/1000)))
-            additionalFields.append(time.strftime("%Y-%m-%d", time.localtime(last/1000)))
+            additionalFields.append(time.strftime('%Y-%m-%d', time.localtime(first/1000)))
+            additionalFields.append(time.strftime('%Y-%m-%d', time.localtime(last/1000)))
             additionalFields.append(timefn(total/float(cnt)))
             additionalFields.append(timefn(total))
         else:
-            additionalFields += [""] * 4
+            additionalFields += [''] * 4
         if card.type == 2 and card.ivl < 21:
-            additionalFields += [_("Young")]
+            additionalFields += [_('Young')]
         else:
-            additionalFields += [""]
+            additionalFields += ['']
         if card.type == 2 and card.ivl > 20:
-            additionalFields += [_("Mature")]
+            additionalFields += [_('Mature')]
         else:
-            additionalFields += [""]
+            additionalFields += ['']
         additionalFields += [str(card.type)]
         additionalFields += [str(card.nid)]
         #additionalFields += [str(card.mod)]
-        additionalFields.append(time.strftime("%Y-%m-%d", time.localtime(card.mod)))
+        additionalFields.append(time.strftime('%Y-%m-%d', time.localtime(card.mod)))
         additionalFields += [str(card.usn)]
         additionalFields += [str(card.factor)]
         if card.type == 0:
-            additionalFields += [_("New")]
+            additionalFields += [_('New')]
         else:
-            additionalFields += [""]
+            additionalFields += ['']
         if card.type == 1:
-            additionalFields += [_("Learn")]
+            additionalFields += [_('Learn')]
         else:
-            additionalFields += [""]
+            additionalFields += ['']
         if card.type == 1 and card.queue == 3:
-            additionalFields += [_("Learning")]
+            additionalFields += [_('Learning')]
         else:
-            additionalFields += [""]
+            additionalFields += ['']
         if card.type == 2:
-            additionalFields += [_("Review")]
+            additionalFields += [_('Review')]
         else:
-            additionalFields += [""]
+            additionalFields += ['']
     else:
-        additionalFields += [""] * 22
-    data[6] += "\x1f".join(additionalFields)
+        additionalFields += [''] * 22
+    data[6] += '\x1f'.join(additionalFields)
     #result = oldRenderQA(self,data,qfmt,afmt)
     result = _old(self,data,qfmt,afmt)
     data = origdata
@@ -121,7 +121,7 @@ def previewCards(self, note, type=0):
     return cards
 
 #_Collection._renderQA = _renderQA
-_Collection._renderQA = wrap(_Collection._renderQA, _renderQA, "around")
+_Collection._renderQA = wrap(_Collection._renderQA, _renderQA, 'around')
 
 _Collection.previewCards = previewCards
-#_Collection.previewCards = wrap(_Collection.previewCards, previewCards, "around")
+#_Collection.previewCards = wrap(_Collection.previewCards, previewCards, 'around')

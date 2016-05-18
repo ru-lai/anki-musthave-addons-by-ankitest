@@ -10,8 +10,8 @@
 #
 from __future__ import unicode_literals
 
-CtrlShiftPlus  = "Ctrl+Shift++"  # Expand   Them All
-CtrlShiftMinus = "Ctrl+Shift+-" # Collapse Them All
+CtrlShiftPlus  = 'Ctrl+Shift++'  # Expand   Them All
+CtrlShiftMinus = 'Ctrl+Shift+-' # Collapse Them All
 
 from anki.hooks import addHook
 
@@ -30,11 +30,11 @@ def setupMenu(self):
 
     a = menu.addAction('Развернуть всё дерево' if lang=='ru' else _('Expand Them All'))
     a.setShortcut(QKeySequence(CtrlShiftPlus))
-    self.connect(a, SIGNAL("triggered()"), lambda b=self: ExpandThemAll(b, True))
+    self.connect(a, SIGNAL('triggered()'), lambda b=self: ExpandThemAll(b, True))
 
     a = menu.addAction('Свернуть все ветки' if lang=='ru' else _('Collapse Them All'))
     a.setShortcut(QKeySequence(CtrlShiftMinus))
-    self.connect(a, SIGNAL("triggered()"), lambda b=self: ExpandThemAll(b, False))
+    self.connect(a, SIGNAL('triggered()'), lambda b=self: ExpandThemAll(b, False))
 
     menu.addSeparator()
 
@@ -44,4 +44,4 @@ def ExpandThemAll(self, action):
     else:
         self.form.tree.collapseAll()
 
-addHook("browser.setupMenus", setupMenu)
+addHook('browser.setupMenus', setupMenu)

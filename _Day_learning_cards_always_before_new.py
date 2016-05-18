@@ -37,7 +37,7 @@
 import anki.sched
 
 def _getCardReordered(self):
-    "Return the next due card id, or None."
+    'Return the next due card id, or None.'
 
     # learning card due?
     c = self._getLrnCard()

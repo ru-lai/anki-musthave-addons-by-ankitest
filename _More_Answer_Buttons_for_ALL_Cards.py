@@ -133,12 +133,12 @@ def _answerButtons(self):
         if USE_INTERVALS_AS_LABELS:
             due = _bottomTime(self,i)
             return '''
-<td align=center class="but but%s"><span class=nobold>&nbsp;</span><br><button %s title="%s" onclick='py.link("ease%d");'>\
+<td align=center class="but but%s"><span class=nobold>&nbsp;</span><br><button %s title="%s" onclick="py.link('ease%d');">\
 %s</button></td>''' % (i, extra, _('Shortcut key: %s') % i, i, due)
         else:
             due = self._buttonTime(i)
             return '''
-<td align=center class="but but%s">%s<button %s title="%s" onclick='py.link("ease%d");'>\
+<td align=center class="but but%s">%s<button %s title="%s" onclick="py.link('ease%d');">\
 %s</button></td>''' % (i, due, extra, _('Shortcut key: %s') % i, i, label)
 
     buf = '''<center><table cellpading=0 cellspacing=0><tbody><tr><style>
@@ -164,11 +164,11 @@ body { overflow: hidden; }
 </style>'''
     if USE_INTERVALS_AS_LABELS:
         buf += '''
-<td align=center><span class=nobold>&nbsp;</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
+<td align=center><span class=nobold>&nbsp;</span><br><button title="Short key: %s" onclick="py.link('ease%d');">\
 %s</button></td><td>&nbsp;</td>''' % ('Escape', NOT_NOW_BASE, 'позже' if lang=='ru' else _('later'))
     else:
         buf += '''
-<td align=center><span class=nobold>%s</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
+<td align=center><span class=nobold>%s</span><br><button title="Short key: %s" onclick="py.link('ease%d');">\
 %s</button></td><td>&nbsp;</td>''' % ('позже' if lang=='ru' else _('later'), 'Escape', NOT_NOW_BASE, 'не сейчас' if lang=='ru' else _('not now'))
 
     for ease, label in self._answerButtonList():
@@ -182,17 +182,17 @@ body { overflow: hidden; }
         for i, buttonItem in enumerate(extra_buttons):
             if USE_INTERVALS_AS_LABELS:
                 buf += '''
-<td align=center><span class=nobold>&nbsp;</span><br><button title="%s" onclick='py.link("ease%d");'>\
+<td align=center><span class=nobold>&nbsp;</span><br><button title="%s" onclick="py.link('ease%d');">\
 %s</button></td>''' % (_('Shortcut key: %s')%buttonItem['ShortCut'], \
                     i + INTERCEPT_EASE_BASE, buttonItem['Description'])
             else:
                 buf += '''
-<td align=center><span class=nobold>%s</span><br><button title="%s" onclick='py.link("ease%d");'>\
+<td align=center><span class=nobold>%s</span><br><button title="%s" onclick="py.link('ease%d');">\
 %s</button></td>''' % (buttonItem['Description'], _('Shortcut key: %s')%buttonItem['ShortCut'], \
                     i + INTERCEPT_EASE_BASE, buttonItem['Label'])
             #swAdded end
     buf += '</tr></tbody></table>'
-    script = """<script>$(function () { $("#defease").focus(); });</script>"""
+    script = "<script>$(function () { $('#defease').focus(); });</script>"
     return buf + script
 
 #This wraps existing Reviewer._answerCard function.    
@@ -208,7 +208,7 @@ def answer_card_intercepting(self, actual_ease, _old):
     if is_extra_button:
         #Make sure this is as expected.
         #assert self.mw.col.sched.answerButtons(self.card) == 3
-        #So this is one of our buttons. First answer the card as if "Easy" clicked.
+        #So this is one of our buttons. First answer the card as if 'Easy' clicked.
         ease = 3
         #We will need this to reschedule it.
         prev_card_id = self.card.id
@@ -322,15 +322,15 @@ def myShowAnswerButton(self,_old):
         self.bottom.web.setFocus()
 
     buf = '''
-<td align=center class=stat2><span class=stattxt>%s</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
+<td align=center class=stat2><span class=stattxt>%s</span><br><button title="Short key: %s" onclick="py.link('ease%d');">\
 %s</button></td><td>&nbsp;</td>''' % ('позже' if lang=='ru' else _('later'), 'Escape', NOT_NOW_BASE, 'не сейчас' if lang=='ru' else _('not now'))
 
     middle = '''<table cellpadding=0><tr>%s<td class=stat2 align=center>
 <span class=stattxt>%s</span><br>
-<button %s id=ansbut style="display:inline-block;width:%s;%s" onclick='py.link(\"ans\");'>%s</button>
+<button %s id=ansbut style="display:inline-block;width:%s;%s" onclick="py.link('ans');">%s</button>
     </td></tr></table>
 ''' % ( buf, self._remaining(), \
-        " title=' "+(_('Shortcut key: %s') % _('Space'))+" '",
+        ' title=" '+(_('Shortcut key: %s') % _('Space'))+' "',
         '99%', '', _('Show Answer'))
     
     if self.card.shouldShowTimer():

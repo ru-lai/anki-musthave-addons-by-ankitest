@@ -21,14 +21,14 @@ from __future__ import unicode_literals
 import os
 from operator import  itemgetter
 
-CtrlShiftPlus  = "Ctrl+Shift++" # Expand   Them All
-CtrlShiftMinus = "Ctrl+Shift+-" # Collapse Them All
-CtrlAltShiftMinus = "Ctrl+Alt+Shift+-" # Collapse Them at All
+CtrlShiftPlus  = 'Ctrl+Shift++' # Expand   Them All
+CtrlShiftMinus = 'Ctrl+Shift+-' # Collapse Them All
+CtrlAltShiftMinus = 'Ctrl+Alt+Shift+-' # Collapse Them at All
 
-CtrlShiftX = "F4" # You can make your own e.g. = "Ctrl+Alt+Shift+0"
+CtrlShiftX = 'F4' # You can make your own e.g. = 'Ctrl+Alt+Shift+0'
 
 BrowserColumns = True # if you want to enlarge ALL columns in browser
-#BrowserColumns = False # to enlarge "Sort Field", "Question", "Answer" only
+#BrowserColumns = False # to enlarge 'Sort Field', 'Question', 'Answer' only
 
 FONTS = {
     # {{}} height of curly braces is near font's height in pixels 
@@ -166,8 +166,8 @@ def myHtmlEdit(self):
     d = PyQt4.QtGui.QDialog(self.widget)
     form = aqt.forms.edithtml.Ui_Dialog()
     form.setupUi(d)
-    d.connect(form.buttonBox, PyQt4.QtCore.SIGNAL("helpRequested()"),
-             lambda: aqt.utils.openHelp("editor"))
+    d.connect(form.buttonBox, PyQt4.QtCore.SIGNAL('helpRequested()'),
+             lambda: aqt.utils.openHelp('editor'))
     aqt.utils.restoreGeom(d,'HTMLedit')
 
     form.textEdit.setFont(particularFont('HTML Editor'))
@@ -184,7 +184,7 @@ def myHtmlEdit(self):
     self.loadNote()
     # focus field so it's saved
     self.web.setFocus()
-    self.web.eval("focusField(%d);" % self.currentField)
+    self.web.eval('focusField(%d);' % self.currentField)
 
 aqt.editor.Editor.onHtmlEdit = myHtmlEdit
 
@@ -194,7 +194,7 @@ aqt.editor.Editor.onHtmlEdit = myHtmlEdit
 def mySetupF4(self):
     f4 = PyQt4.QtGui.QShortcut(
          PyQt4.QtGui.QKeySequence(CtrlShiftX), self.parentWindow)
-    f4.connect(f4, PyQt4.QtCore.SIGNAL("activated()"), self.onHtmlEdit)
+    f4.connect(f4, PyQt4.QtCore.SIGNAL('activated()'), self.onHtmlEdit)
 
 aqt.editor.Editor.setupButtons = anki.hooks.wrap(aqt.editor.Editor.setupButtons, mySetupF4)
 
@@ -208,10 +208,10 @@ def myEdit(self, path):
     d.setWindowTitle(os.path.basename(path))
 
     frm.text.setFont(particularFont('Add-ons Edit...'))
-    frm.text.setPlainText(unicode(open(path).read(), "utf8"))
+    frm.text.setPlainText(unicode(open(path).read(), 'utf8'))
     aqt.utils.restoreGeom(d,'AddonEditor')
 
-    d.connect(frm.buttonBox, PyQt4.QtCore.SIGNAL("accepted()"),
+    d.connect(frm.buttonBox, PyQt4.QtCore.SIGNAL('accepted()'),
               lambda: self.onAcceptEdit(path, frm))
     d.exec_()
     aqt.utils.saveGeom(d,'AddonEditor')
@@ -221,12 +221,12 @@ aqt.addons.AddonManager.onEdit = myEdit
 # showText with title=,minWidth=,minHeight= key parameters
 ######################################################################
 
-def showTextik(txt, parent=None, type="text", run=True, geomKey=None, \
+def showTextik(txt, parent=None, type='text', run=True, geomKey=None, \
     minWidth=500, minHeight=400, title=''):
     if not parent:
         parent = aqt.mw.app.activeWindow() or aqt.mw
     diag = PyQt4.QtGui.QDialog(parent)
-    diag.setWindowTitle("Anki " + title)
+    diag.setWindowTitle('Anki ' + title)
     layout = PyQt4.QtGui.QVBoxLayout(diag)
     diag.setLayout(layout)
 
@@ -234,7 +234,7 @@ def showTextik(txt, parent=None, type="text", run=True, geomKey=None, \
     text.setReadOnly(True)
 
     text.setFont(particularFont('showText'))
-    if type == "text":
+    if type == 'text':
         text.setPlainText(txt)
     else:
         text.setHtml(txt)
@@ -248,7 +248,7 @@ def showTextik(txt, parent=None, type="text", run=True, geomKey=None, \
             aqt.utils.saveGeom(diag, geomKey)
         PyQt4.QtGui.QDialog.reject(diag)
 
-    diag.connect(box, PyQt4.QtCore.SIGNAL("rejected()"), onReject)
+    diag.connect(box, PyQt4.QtCore.SIGNAL('rejected()'), onReject)
     diag.setMinimumHeight(minHeight)
     diag.setMinimumWidth(minWidth)
     if geomKey:
@@ -262,18 +262,18 @@ aqt.utils.showText = showTextik
 
 '''
     try:
-      showText(yourText, type="HTML", minHeight=150, minWidth=450, title="• Your title")
+      showText(yourText, type='HTML', minHeight=150, minWidth=450, title='• Your title')
     except TypeError:
-      showText(yourText, type="HTML")
+      showText(yourText, type='HTML')
 '''
 
 # Is there a way to increase the size of text in the Search bar?
 ######################################################################
 
 def onBrowserSearch(self, reset=True):
-    "Careful: if reset is true, the current note is saved."
+    'Careful: if reset is true, the current note is saved.'
     txt = unicode(self.form.searchEdit.lineEdit().text()).strip()
-    prompt = _("<type here to search; hit enter to show current deck>")
+    prompt = _('<type here to search; hit enter to show current deck>')
     sh = self.mw.pm.profile['searchHistory']
     # update search history
     if txt in sh:
@@ -286,30 +286,30 @@ def onBrowserSearch(self, reset=True):
 
     self.form.searchEdit.lineEdit().setFont(particularFont('Browser Search',bold=True))
 
-    if self.mw.state == "review" and "is:current" in txt:
+    if self.mw.state == 'review' and 'is:current' in txt:
         # search for current card, but set search to easily display whole
         # deck
         if reset:
             self.model.beginReset()
             self.model.focusedCard = self.mw.reviewer.card.id
-        self.model.search("nid:%d"%self.mw.reviewer.card.nid, False)
+        self.model.search('nid:%d'%self.mw.reviewer.card.nid, False)
         if reset:
             self.model.endReset()
         self.form.searchEdit.lineEdit().setText(prompt)
         self.form.searchEdit.lineEdit().selectAll()
         return
-    elif "is:current" in txt:
+    elif 'is:current' in txt:
         self.form.searchEdit.lineEdit().setText(prompt)
         self.form.searchEdit.lineEdit().selectAll()
     elif txt == prompt:
-        self.form.searchEdit.lineEdit().setText("deck:current ")
-        txt = "deck:current "
+        self.form.searchEdit.lineEdit().setText('deck:current ')
+        txt = 'deck:current '
 
     self.model.search(txt, reset)
     if not self.model.cards:
         # no row change will fire
         self.onRowChanged(None, None)
-    elif self.mw.state == "review":
+    elif self.mw.state == 'review':
         self.focusCid(self.mw.reviewer.card.id)
 
 aqt.browser.Browser.onSearch = onBrowserSearch
@@ -323,19 +323,19 @@ def allData(self, index, role):
     if role == Qt.FontRole:
         if not BrowserColumns:
           if self.activeCols[index.column()] not in (
-            "question", "answer", "noteFld"):
+            'question', 'answer', 'noteFld'):
             return
         f = particularFont('Browser Columns') #QFont()
         row = index.row()
         c = self.getCard(index)
         t = c.template()
-        #f.setFamily(t.get("bfont", self.browser.mw.fontFamily))
-        #f.setPixelSize(t.get("bsize", self.browser.mw.fontHeight))
+        #f.setFamily(t.get('bfont', self.browser.mw.fontFamily))
+        #f.setPixelSize(t.get('bsize', self.browser.mw.fontHeight))
         return f
     elif role == Qt.TextAlignmentRole:
         align = Qt.AlignVCenter
-        if self.activeCols[index.column()] not in ("question", "answer",
-           "template", "deck", "noteFld", "note"):
+        if self.activeCols[index.column()] not in ('question', 'answer',
+           'template', 'deck', 'noteFld', 'note'):
             align |= Qt.AlignHCenter
         return align
     elif role == Qt.DisplayRole or role == Qt.EditRole:
@@ -356,32 +356,32 @@ def onClick(limb):
 
 def _systemTagTree(self, root):
     tags = (
-        (_("Whole Collection"), "ankibw", ""),
-        (_("Current Deck"), "deck16", "deck:current"),
-        (_("Added Today"), "view-pim-calendar.png", "added:1"),
-        (_("Studied Today"), "view-pim-calendar.png", "rated:1"),
-        (_("Again Today"), "view-pim-calendar.png", "rated:1:1"),
-        (_("New"), "plus16.png", "is:new"),
-        (_("Learning"), "stock_new_template_red.png", "is:learn"),
-        (_("Review"), "clock16.png", "is:review"),
-        (_("Due"), "clock16.png", "is:due"),
-        (_("Marked"), "star16.png", "tag:marked"),
-        (_("Suspended"), "media-playback-pause.png", "is:suspended"),
-        (_("Leech"), "emblem-important.png", "tag:leech"))
+        (_('Whole Collection'), 'ankibw', ''),
+        (_('Current Deck'), 'deck16', 'deck:current'),
+        (_('Added Today'), 'view-pim-calendar.png', 'added:1'),
+        (_('Studied Today'), 'view-pim-calendar.png', 'rated:1'),
+        (_('Again Today'), 'view-pim-calendar.png', 'rated:1:1'),
+        (_('New'), 'plus16.png', 'is:new'),
+        (_('Learning'), 'stock_new_template_red.png', 'is:learn'),
+        (_('Review'), 'clock16.png', 'is:review'),
+        (_('Due'), 'clock16.png', 'is:due'),
+        (_('Marked'), 'star16.png', 'tag:marked'),
+        (_('Suspended'), 'media-playback-pause.png', 'is:suspended'),
+        (_('Leech'), 'emblem-important.png', 'tag:leech'))
     def onCollapse():
         mw.col.conf['_collapseRootage'] = limb.isExpanded()
-    limb = self.CallbackItem(root, "Коренные" if lang=='ru' else _("Rootage"), \
+    limb = self.CallbackItem(root, 'Коренные' if lang=='ru' else _('Rootage'), \
                              lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseRootage' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseRootage'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(":/icons/ankibw"))
+    limb.setIcon(0, QIcon(':/icons/ankibw'))
     limb.setFont(0, particularFont('Browser sysTree',italic=True))
     for name, icon, cmd in tags:
         item = self.CallbackItem(
             limb, name, lambda c=cmd: self.setFilter(c))
-        item.setIcon(0, QIcon(":/icons/" + icon))
+        item.setIcon(0, QIcon(':/icons/' + icon))
         item.setFont(0, particularFont('Browser sysTree'))
     return root
 
@@ -392,39 +392,39 @@ def _favTree(self, root):
         return
     def onCollapse():
         mw.col.conf['_collapseFavorites'] = limb.isExpanded()
-    limb = self.CallbackItem(root, _("My Searches"), \
+    limb = self.CallbackItem(root, _('My Searches'), \
                              lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseFavorites' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseFavorites'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
+    limb.setIcon(0, QIcon(':/icons/emblem-favorite-dark.png'))
     limb.setFont(0, particularFont('Browser favTree',italic=True))
     for name, filt in sorted(saved.items()):
         item = self.CallbackItem(limb, name, lambda s=filt: self.setFilter(s))
-        item.setIcon(0, QIcon(":/icons/emblem-favorite-dark.png"))
+        item.setIcon(0, QIcon(':/icons/emblem-favorite-dark.png'))
         item.setFont(0, particularFont('Browser favTree',italic=True))
 
 def _decksTree(self, root):
     def onCollapse():
         mw.col.conf['_collapseDecks'] = limb.isExpanded()
-    limb = self.CallbackItem(root, _("Decks"), #lambda: root.collapseAll(),
+    limb = self.CallbackItem(root, _('Decks'), #lambda: root.collapseAll(),
                              lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseDecks' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseDecks'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(":/icons/deck16.png"))
+    limb.setIcon(0, QIcon(':/icons/deck16.png'))
     limb.setFont(0, particularFont('Browser deckTree',italic=True))
-    def fillGroups(root, grps, head=""):
+    def fillGroups(root, grps, head=''):
         for g in grps:
             item = self.CallbackItem(
                 root, g[0],
-                lambda g=g: self.setFilter("deck", head+g[0]),
+                lambda g=g: self.setFilter('deck', head+g[0]),
                 lambda g=g: self.mw.col.decks.collapseBrowser(g[1]))
-            item.setIcon(0, QIcon(":/icons/deck16.png"))
+            item.setIcon(0, QIcon(':/icons/deck16.png'))
             item.setFont(0, particularFont('Browser deckTree'))
-            newhead = head + g[0]+"::"
+            newhead = head + g[0]+'::'
             collapsed = self.mw.col.decks.get(g[1]).get('browserCollapsed', False)
             item.setExpanded(not collapsed)
             fillGroups(item, g[5], newhead)
@@ -433,18 +433,18 @@ def _decksTree(self, root):
 def _modelTree(self, root):
     def onCollapse():
         mw.col.conf['_collapseNoteTypes'] = limb.isExpanded()
-    limb = self.CallbackItem(root, _("Note Types"), \
+    limb = self.CallbackItem(root, _('Note Types'), \
                              lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseNoteTypes' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseNoteTypes'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(":/icons/product_design.png"))
+    limb.setIcon(0, QIcon(':/icons/product_design.png'))
     limb.setFont(0, particularFont('Browser noteTree',italic=True))
-    for m in sorted(self.col.models.all(), key=itemgetter("name")):
+    for m in sorted(self.col.models.all(), key=itemgetter('name')):
         mitem = self.CallbackItem(
-            limb, m['name'], lambda m=m: self.setFilter("mid", str(m['id'])))
-        mitem.setIcon(0, QIcon(":/icons/product_design.png"))
+            limb, m['name'], lambda m=m: self.setFilter('mid', str(m['id'])))
+        mitem.setIcon(0, QIcon(':/icons/product_design.png'))
         mitem.setFont(0, particularFont('Browser noteTree'))
 
 # thanks to Patrice Neff http://patrice.ch/
@@ -460,17 +460,17 @@ SEPARATOR = '::'
 def _userTagTree(self, root):
     def onCollapse():
         mw.col.conf['_collapseTags'] = limb.isExpanded()
-    limb = self.CallbackItem(root, _("Tags"), \
+    limb = self.CallbackItem(root, _('Tags'), \
                              lambda: onClick(limb), oncollapse=onCollapse)
     if '_collapseTags' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseTags'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(":/icons/anki-tag.png"))
+    limb.setIcon(0, QIcon(':/icons/anki-tag.png'))
     limb.setFont(0, particularFont('Browser tagTree',italic=True))
     tags_tree = {}
     for t in sorted(self.col.tags.all()):
-      if t.lower() == "marked" or t.lower() == "leech":
+      if t.lower() == 'marked' or t.lower() == 'leech':
          continue
 
       if HIERARCHICAL_TAGS:
@@ -487,19 +487,19 @@ def _userTagTree(self, root):
                     parent = tags_tree[parent_tag]
                 if emax == idx:
                     item = self.CallbackItem(parent, c,
-                        lambda ptg=partial_tag: self.setFilter("tag", ptg))
+                        lambda ptg=partial_tag: self.setFilter('tag', ptg))
                 else:
                     item = self.CallbackItem(parent, c,
-                        lambda ptg=partial_tag: self.setFilter("tag", ptg + '::*'))
+                        lambda ptg=partial_tag: self.setFilter('tag', ptg + '::*'))
 
-                item.setIcon(0, QIcon(":/icons/anki-tag.png"))
+                item.setIcon(0, QIcon(':/icons/anki-tag.png'))
                 item.setFont(0, particularFont('Browser tagTree'))
 
                 tags_tree[partial_tag] = item
       else:
         item = self.CallbackItem(
-            limb, t, lambda t=t: self.setFilter("tag", t))
-        item.setIcon(0, QIcon(":/icons/anki-tag.png"))
+            limb, t, lambda t=t: self.setFilter('tag', t))
+        item.setIcon(0, QIcon(':/icons/anki-tag.png'))
         item.setFont(0, particularFont('Browser tagTree'))
 
 aqt.browser.Browser._systemTagTree = _systemTagTree
@@ -514,15 +514,15 @@ def setupMenu(self):
 
     a = menu.addAction('Развернуть всё дерево' if lang=='ru' else _('Expand Them All'))
     a.setShortcut(QKeySequence(CtrlShiftPlus))
-    self.connect(a, PyQt4.QtCore.SIGNAL("triggered()"), lambda b=self: ExpandThemAll(b, True, False))
+    self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'), lambda b=self: ExpandThemAll(b, True, False))
 
     a = menu.addAction('Свернуть все ветки' if lang=='ru' else _('Collapse Them All'))
     a.setShortcut(QKeySequence(CtrlShiftMinus))
-    self.connect(a, PyQt4.QtCore.SIGNAL("triggered()"), lambda b=self: ExpandThemAll(b, False, False))
+    self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'), lambda b=self: ExpandThemAll(b, False, False))
 
     a = menu.addAction('Свернуть вообще всё' if lang=='ru' else _('Collapse Them at All'))
     a.setShortcut(QKeySequence(CtrlAltShiftMinus))
-    self.connect(a, PyQt4.QtCore.SIGNAL("triggered()"), lambda b=self: ExpandThemAll(b, False, True))
+    self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'), lambda b=self: ExpandThemAll(b, False, True))
 
     menu.addSeparator()
 
@@ -535,7 +535,7 @@ def ExpandThemAll(self, action, atAll):
         self.form.tree.collapseAll()
         self.form.tree.expandToDepth(0)
 
-anki.hooks.addHook("browser.setupMenus", setupMenu)
+anki.hooks.addHook('browser.setupMenus', setupMenu)
 
 # Fields List dialog window
 ##########################################################################
@@ -548,10 +548,10 @@ def FieldDialog__init__(self, mw, note, ord=0, parent=None):
         self.col = self.mw.col
         self.mm = self.mw.col.models
         self.model = note.model()
-        self.mw.checkpoint(_("Fields"))
+        self.mw.checkpoint(_('Fields'))
         self.form = aqt.forms.fields.Ui_Dialog()
         self.form.setupUi(self)
-        self.setWindowTitle(_("Fields for %s") % self.model['name'])
+        self.setWindowTitle(_('Fields for %s') % self.model['name'])
         self.form.buttonBox.button(QDialogButtonBox.Help).setAutoDefault(False)
         self.form.buttonBox.button(QDialogButtonBox.Close).setAutoDefault(False)
         self.currentIdx = None
@@ -572,10 +572,10 @@ aqt.fields.FieldDialog.__init__ = FieldDialog__init__
 
 def _openPreview(self):
     c = self.connect
-    self._previewState = "question"
+    self._previewState = 'question'
     self._previewWindow = PyQt4.QtGui.QDialog(None, Qt.Window)
-    self._previewWindow.setWindowTitle(_("Preview"))
-    c(self._previewWindow, SIGNAL("finished(int)"), self._onPreviewFinished)
+    self._previewWindow.setWindowTitle(_('Preview'))
+    c(self._previewWindow, SIGNAL('finished(int)'), self._onPreviewFinished)
 
     vbox = QVBoxLayout()
     vbox.setMargin(0)
@@ -583,28 +583,28 @@ def _openPreview(self):
     vbox.addWidget(self._previewWeb)
     bbox = QDialogButtonBox()
 
-    self._previewReplay = bbox.addButton(_("Replay Audio"), QDialogButtonBox.ActionRole)
+    self._previewReplay = bbox.addButton(_('Replay Audio'), QDialogButtonBox.ActionRole)
     self._previewReplay.setAutoDefault(False)
-    self._previewReplay.setShortcut(PyQt4.QtGui.QKeySequence("R"))
-    self._previewReplay.setToolTip(_("Shortcut key: %s" % "R"))
+    self._previewReplay.setShortcut(PyQt4.QtGui.QKeySequence('R'))
+    self._previewReplay.setToolTip(_('Shortcut key: %s' % 'R'))
 
-    self._previewPrev = bbox.addButton("<", PyQt4.QtGui.QDialogButtonBox.ActionRole)
+    self._previewPrev = bbox.addButton('<', PyQt4.QtGui.QDialogButtonBox.ActionRole)
     self._previewPrev.setAutoDefault(False)
-    self._previewPrev.setShortcut(PyQt4.QtGui.QKeySequence("Left"))
-    self._previewPrev.setToolTip(_("Shortcut key: ← Left arrow ⇐ "))
+    self._previewPrev.setShortcut(PyQt4.QtGui.QKeySequence('Left'))
+    self._previewPrev.setToolTip(_('Shortcut key: ← Left arrow ⇐ '))
 
-    self._previewNext = bbox.addButton(">", PyQt4.QtGui.QDialogButtonBox.ActionRole)
+    self._previewNext = bbox.addButton('>', PyQt4.QtGui.QDialogButtonBox.ActionRole)
     self._previewNext.setAutoDefault(True)
-    self._previewNext.setShortcut(PyQt4.QtGui.QKeySequence("Right"))
-    self._previewNext.setToolTip(_("Shortcut key: → Right arrow ⇒ or Enter ↵ ")) # &crarr;
+    self._previewNext.setShortcut(PyQt4.QtGui.QKeySequence('Right'))
+    self._previewNext.setToolTip(_('Shortcut key: → Right arrow ⇒ or Enter ↵ ')) # &crarr;
 
-    c(self._previewPrev, PyQt4.QtCore.SIGNAL("clicked()"), self._onPreviewPrev)
-    c(self._previewNext, PyQt4.QtCore.SIGNAL("clicked()"), self._onPreviewNext)
-    c(self._previewReplay, PyQt4.QtCore.SIGNAL("clicked()"), self._onReplayAudio)
+    c(self._previewPrev, PyQt4.QtCore.SIGNAL('clicked()'), self._onPreviewPrev)
+    c(self._previewNext, PyQt4.QtCore.SIGNAL('clicked()'), self._onPreviewNext)
+    c(self._previewReplay, PyQt4.QtCore.SIGNAL('clicked()'), self._onReplayAudio)
 
     vbox.addWidget(bbox)
     self._previewWindow.setLayout(vbox)
-    aqt.utils.restoreGeom(self._previewWindow, "preview")
+    aqt.utils.restoreGeom(self._previewWindow, 'preview')
     self._previewWindow.show()
     self._renderPreview(True)
 

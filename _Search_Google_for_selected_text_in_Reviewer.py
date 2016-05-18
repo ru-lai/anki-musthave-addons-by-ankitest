@@ -37,14 +37,14 @@ import urllib
 
 def selected_text_as_query(web_view):
     sel = web_view.page().selectedText()
-    return " ".join(sel.split())
+    return ' '.join(sel.split())
 
 def on_search_for_selection(web_view, location):
     sel_encode = selected_text_as_query(web_view).encode('utf8', 'ignore')
     #need to do this the long way around to avoid double % encoding
     adres = QUrl.fromEncoded(location % urllib.quote(sel_encode))
     #openLink(SEARCH_URL + sel_encode)
-    tooltip(_("Loading..."), period=1000)
+    tooltip(_('Loading...'), period=1000)
     QDesktopServices.openUrl(adres)
 
 def insert_search_menu_action(anki_web_view, m):
@@ -58,7 +58,7 @@ def insert_search_menu_action(anki_web_view, m):
     a = m.addAction('Search %s for "%s" ' % (SEARCH_PROVIDER, truncated))
     if len(selected) == 0:
         a.setDisabled(True)
-    a.connect(a, SIGNAL("triggered()"),
+    a.connect(a, SIGNAL('triggered()'),
               lambda wv=anki_web_view, loc=SEARCH_URL: on_search_for_selection(wv, loc))
 
-addHook("AnkiWebView.contextMenuEvent", insert_search_menu_action)
+addHook('AnkiWebView.contextMenuEvent', insert_search_menu_action)

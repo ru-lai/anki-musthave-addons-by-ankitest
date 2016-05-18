@@ -31,23 +31,23 @@ def _answerButtons(self):
 
     def but(i, label):
         if i == default:
-            extra = "id=defease"
+            extra = 'id=defease'
         else:
-            extra = ""
+            extra = ''
         due = self._buttonTime(i)
         return '''
-<td align=center>%s<button %s title="%s" onclick='py.link("ease%d");'>\
-%s</button></td>''' % (due, extra, _("Shortcut key: %s") % i, i, label)
+<td align=center>%s<button %s title="%s" onclick="py.link('ease%d');">\
+%s</button></td>''' % (due, extra, _('Shortcut key: %s') % i, i, label)
 
-    buf = "<center><table cellpading=0 cellspacing=0><tr>"
+    buf = '<center><table cellpading=0 cellspacing=0><tr>'
     buf += '''
-<td align=center><span class=nobold>%s</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
-%s</button></td><td>&nbsp;</td>''' % ("позже" if lang=='ru' else _("later"), "Escape", NOT_NOW_BASE, "не сейчас" if lang=='ru' else _("not now"))
+<td align=center><span class=nobold>%s</span><br><button title="Short key: %s" onclick="py.link('ease%d');">\
+%s</button></td><td>&nbsp;</td>''' % ('позже' if lang=='ru' else _('later'), 'Escape', NOT_NOW_BASE, 'не сейчас' if lang=='ru' else _('not now'))
 
     for ease, label in self._answerButtonList():
         buf += but(ease, label)
-    buf += "</tr></table>"
-    script = """<script>$(function () { $("#defease").focus(); });</script>"""
+    buf += '</tr></table>'
+    script = "<script>$(function () { $('#defease').focus(); });</script>"
     return buf + script
 
 def answer_card_intercepting(self, actual_ease, _old):
@@ -59,7 +59,7 @@ def answer_card_intercepting(self, actual_ease, _old):
         return _old(self, ease)
 
 Reviewer._answerButtons = _answerButtons
-Reviewer._answerCard = wrap(Reviewer._answerCard, answer_card_intercepting, "around")
+Reviewer._answerCard = wrap(Reviewer._answerCard, answer_card_intercepting, 'around')
 
 def onEscape():
     mw.reviewer.nextCard()
@@ -67,15 +67,15 @@ def onEscape():
 try:
     mw.addon_cards_menu
 except AttributeError:
-    mw.addon_cards_menu = QMenu(_(u"&Карточки") if lang == 'ru' else _(u"&Cards"), mw)
+    mw.addon_cards_menu = QMenu(_(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
 escape_action = QAction(mw)
-escape_action.setText(u'Позж&е, не сейчас' if lang=='ru' else _(u"&Later, not now"))
+escape_action.setText(u'Позж&е, не сейчас' if lang=='ru' else _(u'&Later, not now'))
 escape_action.setShortcut(QKeySequence('Escape'))
 escape_action.setEnabled(False)
-mw.connect(escape_action, SIGNAL("triggered()"), onEscape)
+mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 
 #mw.addon_cards_menu.addSeparator()
 mw.addon_cards_menu.addAction(escape_action)
@@ -98,30 +98,30 @@ def newRemaining(self):
 
 def myShowAnswerButton(self,_old):
     if newRemaining(self):
-        #self.mw.moveToState("deckBrowser")
-        self.mw.moveToState("overview")
+        #self.mw.moveToState('deckBrowser')
+        self.mw.moveToState('overview')
     self._bottomReady = True
     if not self.typeCorrect:
         self.bottom.web.setFocus()
 
     buf = '''
-<td align=center class=stat2><span class=stattxt>%s</span><br><button title="Short key: %s" onclick='py.link("ease%d");'>\
-%s</button></td><td>&nbsp;</td>''' % ("позже" if lang=='ru' else _("later"), "Escape", NOT_NOW_BASE, "не сейчас" if lang=='ru' else _("not now"))
+<td align=center class=stat2><span class=stattxt>%s</span><br><button title="Short key: %s" onclick="py.link('ease%d');">\
+%s</button></td><td>&nbsp;</td>''' % ('позже' if lang=='ru' else _('later'), 'Escape', NOT_NOW_BASE, 'не сейчас' if lang=='ru' else _('not now'))
 
     middle = '''<table cellpadding=0><tr>%s<td class=stat2 align=center>
 <span class=stattxt>%s</span><br>
-<button %s id=ansbut style="display:inline-block;width:%s;%s" onclick='py.link(\"ans\");'>%s</button>
+<button %s id=ansbut style="display:inline-block;width:%s;%s" onclick="py.link('ans');">%s</button>
     </td></tr></table>
 ''' % ( buf, self._remaining(), \
-        " title=' "+(_("Shortcut key: %s") % _("Space"))+" '",
-        "99%", "", _("Show Answer"))
+        ' title=" '+(_('Shortcut key: %s') % _('Space'))+' "',
+        '99%', '', _('Show Answer'))
     
     if self.card.shouldShowTimer():
         maxTime = self.card.timeLimit() / 1000
     else:
         maxTime = 0
-    self.bottom.web.eval("showQuestion(%s,%d);" % (
+    self.bottom.web.eval('showQuestion(%s,%d);' % (
         json.dumps(middle), maxTime))
     return True
 
-Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, "around")
+Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, 'around')

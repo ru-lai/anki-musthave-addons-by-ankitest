@@ -23,10 +23,10 @@ from anki.sound import playFromText, clearAudioQueue, play
 def maNextCard(self,_old):
     elapsed = self.mw.col.timeboxReached()
     if elapsed:
-        part1 = ngettext("%d card studied in", "%d cards studied in", elapsed[1]) % elapsed[1]
+        part1 = ngettext('%d card studied in', '%d cards studied in', elapsed[1]) % elapsed[1]
         mins = int(round(elapsed[0]/60))
-        part2 = ngettext("%s minute.", "%s minutes.", mins) % mins
-        tooltip("%s %s" % (part1, part2))
+        part2 = ngettext('%s minute.', '%s minutes.', mins) % mins
+        tooltip('%s %s' % (part1, part2))
         self.mw.col.startTimebox()
     if self.cardQueue:
         # undone/edited cards to show
@@ -43,7 +43,7 @@ def maNextCard(self,_old):
     self.card = c
     clearAudioQueue()
     if not c:
-        self.mw.moveToState("overview")
+        self.mw.moveToState('overview')
         return
     if self._reps is None or self._reps % 100 == 0:
         # we recycle the webview periodically so webkit can free memory
@@ -51,4 +51,4 @@ def maNextCard(self,_old):
     else:
         self._showQuestion()
 
-Reviewer.nextCard = wrap( Reviewer.nextCard, maNextCard, "around" )
+Reviewer.nextCard = wrap( Reviewer.nextCard, maNextCard, 'around' )

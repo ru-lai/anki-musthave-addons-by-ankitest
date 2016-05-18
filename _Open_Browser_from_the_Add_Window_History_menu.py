@@ -31,10 +31,10 @@ from aqt.utils import shortcut
 def onHistory(self):
     m = QMenu(self)
     for nid, txt in self.history:
-        a = m.addAction(_("Edit %s") % txt)
-        a.connect(a, SIGNAL("triggered()"),
+        a = m.addAction(_('Edit %s') % txt)
+        a.connect(a, SIGNAL('triggered()'),
                   lambda nid=nid: self.editHistory(nid))
-    runHook("AddCards.onHistory", self, m)
+    runHook('AddCards.onHistory', self, m)
     m.exec_(self.historyButton.mapToGlobal(QPoint(0, 0)))
 
 #
@@ -42,8 +42,8 @@ def onHistory(self):
 def insert_open_browser_action(self, m):
     m.addSeparator()
     a = m.addAction("Open Browser on 'Added Today'")
-    #a.setShortcut(QKeySequence("H")) # It does not work.
-    a.connect(a, SIGNAL("triggered()"),
+    #a.setShortcut(QKeySequence('H')) # It does not work.
+    a.connect(a, SIGNAL('triggered()'),
               lambda slf=self: show_browser_on_added_today(slf))
 
 #
@@ -51,18 +51,18 @@ def insert_open_browser_action(self, m):
 def setupButtons(self): 
     bb = self.form.buttonBox
     ar = QDialogButtonBox.ActionRole
-    self.addButton = bb.addButton(_("Today"), ar)
-    self.addButton.setShortcut(QKeySequence("Ctrl+T"))
-    self.addButton.setToolTip(shortcut(_("Open Browser with Added Today (shortcut: Ctrl+T)")))
-    self.connect(self.addButton, SIGNAL("clicked()"), lambda: show_browser_on_added_today(self))
+    self.addButton = bb.addButton(_('Today'), ar)
+    self.addButton.setShortcut(QKeySequence('Ctrl+T'))
+    self.addButton.setToolTip(shortcut(_('Open Browser with Added Today (shortcut: Ctrl+T)')))
+    self.connect(self.addButton, SIGNAL('clicked()'), lambda: show_browser_on_added_today(self))
 
 aqt.addcards.AddCards.setupButtons = wrap(aqt.addcards.AddCards.setupButtons, setupButtons)
 
 #
 
 def show_browser_on_added_today(self):
-    browser = aqt.dialogs.open("Browser", self.mw)
-    browser.form.searchEdit.lineEdit().setText("added:1")
+    browser = aqt.dialogs.open('Browser', self.mw)
+    browser.form.searchEdit.lineEdit().setText('added:1')
     browser.onSearch()
     if u'noteCrt' in browser.model.activeCols:
         col_index = browser.model.activeCols.index(u'noteCrt')
@@ -74,13 +74,13 @@ def mySetupButtons(self):
     self.historyButton.setEnabled(True)
 
 # from distutils.version import LooseVersion
-# if LooseVersion (aqt.appVersion) < LooseVersion ("2.0.12"):
+# if LooseVersion (aqt.appVersion) < LooseVersion ('2.0.12'):
 def versiontuple(v):
     #http://stackoverflow.com/questions/11887762/how-to-compare-version-style-strings
-    return tuple(map(int, (v.split("."))))
+    return tuple(map(int, (v.split('.'))))
 
-if versiontuple (aqt.appVersion) < versiontuple ("2.0.12"):
+if versiontuple (aqt.appVersion) < versiontuple ('2.0.12'):
     AddCards.onHistory = onHistory
 AddCards.showBrowserOnAddedToday = show_browser_on_added_today
-AddCards.setupButtons = wrap(AddCards.setupButtons, mySetupButtons, "after")
-addHook("AddCards.onHistory", insert_open_browser_action)
+AddCards.setupButtons = wrap(AddCards.setupButtons, mySetupButtons, 'after')
+addHook('AddCards.onHistory', insert_open_browser_action)

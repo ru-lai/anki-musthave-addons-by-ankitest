@@ -8,10 +8,10 @@ from __future__ import division
 from __future__ import unicode_literals
 import os, sys, re
 
-if __name__ == "__main__":
-    print "This is _Edit_Audio_Images add-on for the Anki program"
+if __name__ == '__main__':
+    print 'This is _Edit_Audio_Images add-on for the Anki program'
     print " and it can't be run directly."
-    print("Please download Anki 2.0 from http://ankisrs.net/")
+    print('Please download Anki 2.0 from http://ankisrs.net/')
     sys.exit()
 else:
     pass
@@ -23,7 +23,7 @@ if sys.version[0] == '2': # Python 3 is utf8 only already.
 from aqt import mw
 from aqt.utils import tooltip, showInfo, showWarning, showCritical
 from anki.hooks import addHook, wrap, runHook
-from aqt.editor import Editor # the editor when you click "Add" in Anki
+from aqt.editor import Editor # the editor when you click 'Add' in Anki
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -38,7 +38,7 @@ except:
     MUSTHAVE_COLOR_ICONS = ''
 
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
-    'edit'  : ["F10", '', "", ''' ''', """ """], 
+    'edit'  : ['F10', '', '', ''' ''', """ """], 
     }
 
 ##
@@ -97,14 +97,14 @@ def TryItByYourself(edit):
     mw.reset()  # refresh gui
     # focus field so it's saved
     edit.web.setFocus()
-    edit.web.eval("focusField(%d);" % ecf)
+    edit.web.eval('focusField(%d);' % ecf)
 
 ##
 
 edit_action = QAction(('&Правка Аудио и Картинок из полей' if lang == 'ru' else _('&Edit Audio Images from fields')), mw)
 edit_action.setShortcut(QKeySequence(HOTKEY['edit'][0]))
 edit_action.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit-audio-images.png')))
-mw.connect(edit_action, SIGNAL("triggered()"), JustDoItByYourself)
+mw.connect(edit_action, SIGNAL('triggered()'), JustDoItByYourself)
 
 mw.form.menuEdit.addSeparator()
 mw.form.menuEdit.addAction(edit_action)
@@ -124,12 +124,12 @@ mw.reviewer.show = wrap(mw.reviewer.show, edit_ai_on)
 
 def edit_ai_buttons(editor):
     """Add the buttons to the editor."""
-    editor._addButton("image", lambda edito=editor: TryItByYourself(edito) , HOTKEY['edit'][0],
-                       #text="", icon=os.path.join(MUSTHAVE_COLOR_ICONS, 'edit-audio-images.png'),
-                       tip="Edit Audio Images from fields in external editor (" + HOTKEY['edit'][0] +")")
+    editor._addButton('image', lambda edito=editor: TryItByYourself(edito) , HOTKEY['edit'][0],
+                       #text='', icon=os.path.join(MUSTHAVE_COLOR_ICONS, 'edit-audio-images.png'),
+                       tip='Edit Audio Images from fields in external editor (' + HOTKEY['edit'][0] +')')
 
 # register callback function that gets executed after setupEditorButtons has run. 
 # See Editor.setupEditorButtons for details
-addHook("setupEditorButtons", edit_ai_buttons)
+addHook('setupEditorButtons', edit_ai_buttons)
 
 ##

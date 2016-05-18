@@ -37,25 +37,25 @@ from aqt.utils import tooltip, showInfo
 # from Ignore accents in browser search add-on
 # https://ankiweb.net/shared/info/1924690148
 def stripCombining(txt):
-    "Return txt with all combining characters removed."
+    """Return txt with all combining characters removed."""
     norm = unicodedata.normalize('NFKD', txt)
-    return "".join([c for c in norm if not unicodedata.combining(c)])
+    return ''.join([c for c in norm if not unicodedata.combining(c)])
 
 def maTypeAnsAnswerFilter(self, buf): 
     # tell webview to call us back with the input content
-    self.web.eval("_getTypedText();")
+    self.web.eval('_getTypedText();')
     if not self.typeCorrect:
         return buf
     origSize = len(buf)
-    buf = buf.replace("<hr id=answer>", "")
+    buf = buf.replace('<hr id=answer>', '')
     hadHR = len(buf) != origSize
     # munge correct value
     parser = HTMLParser.HTMLParser()
     cor = stripHTML(self.mw.col.media.strip(self.typeCorrect))
     # ensure we don't chomp multiple whitespace
-    cor = cor.replace(" ", "&nbsp;")
+    cor = cor.replace(' ', '&nbsp;')
     cor = parser.unescape(cor)
-    cor = cor.replace(u"\xa0", " ")
+    cor = cor.replace(u'\xa0', ' ')
     given = self.typedAnswer
 
     if not EXACT_COMPARING:
@@ -79,27 +79,27 @@ def maTypeAnsAnswerFilter(self, buf):
         if hadHR:
             # a hack to ensure the q/a separator falls before the answer
             # comparison when user is using {{FrontSide}}
-            s = "<hr id=answer>" + s
+            s = '<hr id=answer>' + s
         return s
     return re.sub(self.typeAnsPat, repl, buf)
 
 def myTypeAnsAnswerFilter(self, buf, i):
     if i >= len(self.typeCorrect):
-        return re.sub(self.typeAnsPat, "", buf)
+        return re.sub(self.typeAnsPat, '', buf)
     # tell webview to call us back with the input content
-    self.web.eval("_getTypedText(%d);" % i)
+    self.web.eval('_getTypedText(%d);' % i)
     if not self.typeCorrect:
         return buf
     origSize = len(buf)
-    buf = buf.replace("<hr id=answer>", "")
+    buf = buf.replace('<hr id=answer>', '')
     hadHR = len(buf) != origSize
     # munge correct value
     parser = HTMLParser.HTMLParser()
     cor = stripHTML(self.mw.col.media.strip(self.typeCorrect[i]))
     # ensure we don't chomp multiple whitespace
-    cor = cor.replace(" ", "&nbsp;")
+    cor = cor.replace(' ', '&nbsp;')
     cor = parser.unescape(cor)
-    cor = cor.replace(u"\xa0", " ")
+    cor = cor.replace(u'\xa0', ' ')
     given = self.typedAnswer
 
     if not EXACT_COMPARING:
@@ -123,7 +123,7 @@ def myTypeAnsAnswerFilter(self, buf, i):
         if hadHR:
             # a hack to ensure the q/a separator falls before the answer
             # comparison when user is using {{FrontSide}}
-            s = "<hr id=answer>" + s
+            s = '<hr id=answer>' + s
         return s
     buf = re.sub(self.typeAnsPat, repl, buf, 1)
     return self.typeAnsAnswerFilter(buf, i + 1)
@@ -145,15 +145,15 @@ Reviewer._showQuestion = wrap(Reviewer._showQuestion, maybe_skip_question)
 
 def maLinkHandler(self, url):
 
-    if ":" in url:
-        (cmd, arg) = url.split(":", 1)
+    if ':' in url:
+        (cmd, arg) = url.split(':', 1)
     else:
         cmd = url
         arg = ''
 
-    if cmd == "study":
+    if cmd == 'study':
         my_studyDeck(self, arg)
-    elif url.startswith("typeans:"):
+    elif url.startswith('typeans:'):
         self.typedAnswers.append(unicode(arg))
 
 Reviewer._linkHandler = wrap(Reviewer._linkHandler, maLinkHandler)
@@ -161,12 +161,12 @@ Reviewer._linkHandler = wrap(Reviewer._linkHandler, maLinkHandler)
 def JustDoIt(parm):
     try:
         arg = stripHTML(mw.col.media.strip(unicode(parm)))
-        arg = parm.replace(" ", "&nbsp;")
+        arg = parm.replace(' ', '&nbsp;')
     except UnicodeDecodeError:
         arg = ''
     # ensure we don't chomp multiple whitespace
     arg = HTMLParser.HTMLParser().unescape(arg) 
-    return arg #unicode(arg.replace(u"\xa0", " ")) #arg
+    return arg #unicode(arg.replace(u'\xa0', ' ')) #arg
 
 def myDefaultEase(self, _old):
   #if self.mw.reviewer.state == 'question': # на стороне вопроса не делать ничего - там данные от прошлой карточки
@@ -220,9 +220,9 @@ def myDefaultEase(self, _old):
                         cor[i] = stripCombining(cor[i])
                         gvn[i] = stripCombining(gvn[i])
 
-                    if (gvn[i]  !=  "" and gvn[i]  !=  cor[i]):
+                    if (gvn[i]  !=  '' and gvn[i]  !=  cor[i]):
                         res = False
-                    if (gvn[i]  !=  ""):
+                    if (gvn[i]  !=  ''):
                         given += gvn[i]
 
         retv = self.mw.col.sched.answerButtons(self.card)
@@ -252,4 +252,4 @@ def myDefaultEase(self, _old):
 
   return retv
 
-Reviewer._defaultEase = wrap(Reviewer._defaultEase, myDefaultEase, "around")
+Reviewer._defaultEase = wrap(Reviewer._defaultEase, myDefaultEase, 'around')

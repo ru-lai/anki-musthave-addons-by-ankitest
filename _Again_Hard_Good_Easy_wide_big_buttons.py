@@ -12,14 +12,14 @@
 # Hotkey 4 means maximum available easiness anyhow
 #  (it is Good for 2 buttons and Easy for 3 or 4 buttons).
 # 
-# 2016-05-07 added button "Later Not now"
+# 2016-05-07 added button 'Later Not now'
 # 
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 from __future__ import division
 from __future__ import unicode_literals
 
-# It is a part of "• Must Have" addon's functionality:
+# It is a part of '• Must Have' addon's functionality:
 #  --musthave.py
 #   https://ankiweb.net/shared/info/67643234
 
@@ -51,10 +51,10 @@ remap = { 2:  [None, 1, 2, 2, 2],    # nil     Again   Good    Good    Good
           4:  [None, 1, 2, 3, 4]}    # nil     Again   Hard    Good    Easy
       
 # -- width of Show Answer button, triple, double and single answers buttons in pixels
-BEAMS4 = "99%"
-BEAMS3 = "74%"
-BEAMS2 = "48%"
-BEAMS1 = "24%"
+BEAMS4 = '99%'
+BEAMS3 = '74%'
+BEAMS2 = '48%'
+BEAMS1 = '24%'
 
 black = '#999'
 orange = '#c90'
@@ -93,32 +93,32 @@ def newRemaining(self):
 
 def laterNotNow():
     return '''<style>td{vertical-align:bottom;}td button{font-size:x-large;color:#999;}</style><table cellpadding=0 cellspacing=0 width=100%%><tr><td align=center><span class=stattxt>%s</span><button title="Short key: %s" \
-onclick='py.link("ease%d");' style="width:100%%;%s">%s</button></td><td>&nbsp;</td>''' % \
-        ("позже" if lang=='ru' else _("later"), "Escape", NOT_NOW_BASE, \
-        "color:"+black, "&nbsp;не&nbsp;сейчас&nbsp;" if lang=='ru' else _("&nbsp;not&nbsp;now&nbsp;"))
+onclick="py.link('ease%d');" style="width:100%%;%s">%s</button></td><td>&nbsp;</td>''' % \
+        ('позже' if lang=='ru' else _('later'), 'Escape', NOT_NOW_BASE, \
+        'color:'+black, '&nbsp;не&nbsp;сейчас&nbsp;' if lang=='ru' else _('&nbsp;not&nbsp;now&nbsp;'))
 
 def myShowAnswerButton(self,_old):
     if newRemaining(self):
-        self.mw.moveToState("overview")
+        self.mw.moveToState('overview')
     self._bottomReady = True
     if not self.typeCorrect:
         self.bottom.web.setFocus()
 
-    middle = laterNotNow() + '''<td align=center style="width:%s;"><span class=stattxt>%s</span><button %s id=ansbut style="width:100%%;%s" onclick='py.link(\"ans\");'>%s</button></td></tr></table>''' % ( BEAMS4, self._remaining(), \
-        ((" title=' "+_("Shortcut key: %s") % _("Space"))+" '"),
-        "color:"+black, _("Show Answer"))
+    middle = laterNotNow() + '''<td align=center style="width:%s;"><span class=stattxt>%s</span><button %s id=ansbut style="width:100%%;%s" onclick="py.link('ans');">%s</button></td></tr></table>''' % ( BEAMS4, self._remaining(), \
+        ((' title=" '+_('Shortcut key: %s') % _('Space'))+' "'),
+        'color:'+black, _('Show Answer'))
 
     # place it in a table so it has the same top margin as the ease buttons
-    #middle = "<!div align=center style='width:%s!important;'>%s</div>" % (BEAMS4, middle)
+    #middle = '<!div align=center style='width:%s!important;'>%s</div>' % (BEAMS4, middle)
     if self.card.shouldShowTimer():
         maxTime = self.card.timeLimit() / 1000
     else:
         maxTime = 0
-    self.bottom.web.eval("showQuestion(%s,%d);" % (
+    self.bottom.web.eval('showQuestion(%s,%d);' % (
         json.dumps(middle), maxTime))
     return True
 
-Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, "around")
+Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, 'around')
 
 #Anki uses a single digit to track which button has been clicked.
 NOT_NOW_BASE = 5
@@ -131,23 +131,23 @@ def AKR_answerCard(self, ease, _old):
         pass
     _old(self, ease)
 
-Reviewer._answerCard = wrap(Reviewer._answerCard, AKR_answerCard, "around")
-# "before" does not working as intended cause ease is changing inside AKR
+Reviewer._answerCard = wrap(Reviewer._answerCard, AKR_answerCard, 'around')
+# 'before' does not working as intended cause ease is changing inside AKR
 
 # Replace _answerButtonList method 
 def answerButtonList(self):
-    l = ((1, "" + BUTTON_LABEL[0] + "", BEAMS1),)
+    l = ((1, '' + BUTTON_LABEL[0] + '', BEAMS1),)
     cnt = self.mw.col.sched.answerButtons(self.card)
     if cnt == 2:
-        return l + ((2, "" + BUTTON_LABEL[2] + "", BEAMS3),)
+        return l + ((2, '' + BUTTON_LABEL[2] + '', BEAMS3),)
         # the comma at the end is mandatory, a subtle bug occurs without it
     elif cnt == 3:
-        return l + ((2, "" + BUTTON_LABEL[2] + "", BEAMS2), 
-                    (3, "" + BUTTON_LABEL[3] + "", BEAMS1))
+        return l + ((2, '' + BUTTON_LABEL[2] + '', BEAMS2), 
+                    (3, '' + BUTTON_LABEL[3] + '', BEAMS1))
     else:
-        return l + ((2, "" + BUTTON_LABEL[1] + "", BEAMS1), 
-                    (3, "" + BUTTON_LABEL[2] + "", BEAMS1),
-                    (4, "" + BUTTON_LABEL[3] + "", BEAMS1))
+        return l + ((2, '' + BUTTON_LABEL[1] + '', BEAMS1), 
+                    (3, '' + BUTTON_LABEL[2] + '', BEAMS1),
+                    (4, '' + BUTTON_LABEL[3] + '', BEAMS1))
 # all buttons are with coloured text
 # and have an equal width with buttons in Night Mode
 
@@ -159,21 +159,21 @@ def myAnswerButtons(self,_old):
 
     def but(i, label, beam):
         if i == default:
-            extra = "id=defease"
+            extra = 'id=defease'
         else:
-            extra = ""
+            extra = ''
         due = self._buttonTime(i)
-        return '''<td align=center style="width:%s;"><span class=stattxt>%s</span><button %s %s style="width:100%%;%s" onclick='py.link("ease%d");'>%s</button></td>''' % (beam, due, extra, \
-        ((" title=' "+_("Shortcut key: %s") % i)+" '"), "color:"+black, i, label)
+        return '''<td align=center style="width:%s;"><span class=stattxt>%s</span><button %s %s style="width:100%%;%s" onclick="py.link('ease%d');">%s</button></td>''' % (beam, due, extra, \
+        ((' title=" '+_('Shortcut key: %s') % i)+' "'), 'color:'+black, i, label)
 
     buf = laterNotNow()
 
     for ease, lbl, beams in answerButtonList(self):
         buf += but(ease, lbl, beams)
 
-    return buf + """</tr></table><script>$(function () { $("#defease").focus(); });</script>"""
+    return buf + """</tr></table><script>$(function () { $('#defease').focus(); });</script>"""
 
-Reviewer._answerButtons = wrap(Reviewer._answerButtons, myAnswerButtons, "around")
+Reviewer._answerButtons = wrap(Reviewer._answerButtons, myAnswerButtons, 'around')
 
 def answer_card_intercepting(self, actual_ease, _old):
     ease = actual_ease
@@ -183,7 +183,7 @@ def answer_card_intercepting(self, actual_ease, _old):
     else:
         return _old(self, ease)
 
-Reviewer._answerCard = wrap(Reviewer._answerCard, answer_card_intercepting, "around")
+Reviewer._answerCard = wrap(Reviewer._answerCard, answer_card_intercepting, 'around')
 
 def onEscape():
     mw.reviewer.nextCard()
@@ -191,15 +191,15 @@ def onEscape():
 try:
     mw.addon_cards_menu
 except AttributeError:
-    mw.addon_cards_menu = QMenu(_(u"&Карточки") if lang == 'ru' else _(u"&Cards"), mw)
+    mw.addon_cards_menu = QMenu(_(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
 escape_action = QAction(mw)
-escape_action.setText(u'Позж&е, не сейчас' if lang=='ru' else _(u"&Later, not now"))
+escape_action.setText(u'Позж&е, не сейчас' if lang=='ru' else _(u'&Later, not now'))
 escape_action.setShortcut(QKeySequence('Escape'))
 escape_action.setEnabled(False)
-mw.connect(escape_action, SIGNAL("triggered()"), onEscape)
+mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 
 #mw.addon_cards_menu.addSeparator()
 mw.addon_cards_menu.addAction(escape_action)
