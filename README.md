@@ -10,7 +10,7 @@ All these add-ons also shared on AnkiWeb.net:
 
 Info | Code
 ------------- | -------------:
-[~ Check media dont delete files](https://ankiweb.net/shared/info/1051530260) | 1051530260 
+[~ Check media does not delete files](https://ankiweb.net/shared/info/1051530260) | 1051530260 
 [~ More Answer Buttons for ALL Cards](https://ankiweb.net/shared/info/755044381) | 755044381 
 [~ Open Browser from the Add Window History menu](https://ankiweb.net/shared/info/166963014) | 166963014 
 [~ Search Google for selected text in Reviewer](https://ankiweb.net/shared/info/1514982403) | 1514982403 
