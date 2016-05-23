@@ -45,7 +45,7 @@ fldlst = [
     ]
 
 from aqt import mw
-from aqt.utils import tooltip, showInfo, showCritical, getText, askUser
+from aqt.utils import tooltip, showInfo, showCritical, getText, askUser, showText
 from anki.hooks import addHook, wrap, runHook
 from aqt.editor import Editor # the editor when you click 'Add' in Anki
 
@@ -371,7 +371,7 @@ def createDuplicate(self):
     # Create new deck with name from input box if not exists.
     deck = mw.col.decks.get(mw.col.decks.id(deckName))
 
-    doSwap = askUser(_('<center>  &nbsp; After duplicating notes of selected cards &nbsp;  \n<br>  &nbsp; into <i>%s</i> &nbsp;  \n<br> <b>Swap fields</b> in duplicated notes?</center>'%deckName))
+    doSwap = askUser(_('<center><code>  &nbsp; After duplicating notes of selected cards &nbsp;  \n<br>  &nbsp; into <i>%s</i> &nbsp;  \n<br> <b>Swap fields</b> in duplicated notes? </code></center>'%deckName)) # <big> does not work here 
 
     # Set checkpoint
     mw.progress.start()
@@ -438,3 +438,29 @@ def setupMenu(self):
     menu.addSeparator()
 
 addHook('browser.setupMenus', setupMenu)
+
+##
+
+old_addons = (
+    '_Swap.py', 
+    '_Swap_fields.py', 
+    'Create_Copy_of_Selected_Cards.py', 
+    'Create_Duplicate_Notes.py', 
+    'Duplicate_Selected_Notes.py', 
+    'anki-browser-create-duplicate.py', 
+    )
+
+old_addons2delete = ''
+for old_addon in old_addons:
+  if len(old_addon) > 0:
+    old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+    if os.path.exists(old_filename): 
+       old_addons2delete += old_addon[:-3] + ' \n'
+
+if old_addons2delete != '':
+    if lang == 'ru':
+       showText('В каталоге\n\n '+mw.pm.addonFolder()+'\n\nнайдены дополнения, которые уже включены в дополнение\n `• Duplicate notes and Swap fields`,\nи поэтому будут конфликтовать с ним.\n\n' + old_addons2delete + '\nУдалите эти дополнения и перезапустите Anki.')
+    else:
+       showText('There are some add-ons in the folder \n\n '+mw.pm.addonFolder()+'\n\nThey are already part of\n `• Duplicate notes and Swap fields` addon,\n\n' + old_addons2delete + '\nPlease, delete them and restart Anki.')
+
+##
