@@ -229,7 +229,7 @@ def zoom_images(act):
 try:
     mw.addon_view_menu
 except AttributeError:
-    mw.addon_view_menu = QMenu(_('&Вид') if lang == 'ru' else _('&View'), mw)
+    mw.addon_view_menu = QMenu(_('&Вид') if lang == 'ru' else _('&View'), mw.menuBar())
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_view_menu)
 
@@ -238,7 +238,7 @@ zoom_images_action = None # global
 def zoom_setup_menu():
     global zoom_images_action
 
-    mw.zoom_submenu = QMenu('Мас&штаб' if lang == 'ru' else _('&Zoom'), mw)
+    mw.zoom_submenu = QMenu('Мас&штаб' if lang == 'ru' else _('&Zoom'), mw.menuBar())
     mw.zoom_submenu.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'zoom.png')))
 
     zoom_info_action = QAction('Масштаб &показать' if lang == 'ru' else _('Zoom In&fo'), mw)

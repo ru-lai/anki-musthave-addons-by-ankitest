@@ -54,8 +54,13 @@ FONTS = {
     #   (just use # sharp at the very beginning)
 
     #'Force custom font':  (None, 0),
-    #'Force custom font':  ('Calibri', 14),
-    'Force custom font':  ('Times New Roman', 16),
+    'Force custom font':  ('Calibri', 14),
+    #'Force custom font':  ('Times New Roman', 16),
+
+    'Menu':    ('Comic Sans MS', 15),
+    #'Menu':    ('Comic Sans MS', 0),
+    #'Menu':    (None, 14),
+    #'Menu':    (None, 0),
 
     'Front Template':   ('Courier New', 16),
     'Styling':          ('Courier New', 16),
@@ -95,6 +100,7 @@ from aqt.qt import *
 import aqt.addons
 import aqt.browser
 import aqt.clayout
+import aqt.deckconf
 import aqt.editor
 import aqt.fields
 import aqt.utils
@@ -106,6 +112,7 @@ import PyQt4.QtCore
 from BeautifulSoup import BeautifulSoup
 from aqt.webview import AnkiWebView
 from aqt.editor import Editor # the editor when you click 'Add' in Anki
+from anki.consts import *
 
 try:
     MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'f4edit_icons')
@@ -216,7 +223,7 @@ def go_edit_fields():
 try:
     mw.addon_cards_menu
 except AttributeError:
-    mw.addon_cards_menu = QMenu(_(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
+    mw.addon_cards_menu = QMenu(_(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw.menuBar())
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
@@ -454,7 +461,7 @@ def allData(self, index, role):
             align |= Qt.AlignHCenter
         return align
     elif role == Qt.DisplayRole or role == Qt.EditRole:
-        return self.columnData(index)
+        return self.columnData(index) # ??? TODO !!!
     else:
         return
 
@@ -724,3 +731,88 @@ def _openPreview(self):
     self._renderPreview(True)
 
 aqt.browser.Browser._openPreview = _openPreview
+
+# Context menu
+##########################################################################
+
+def onHistory(self):
+    m = QMenu(mw) #self)
+    #m.setFont(particularFont('Menu')) # !!!
+    for nid, txt in self.history:
+        a = m.addAction(_("Edit %s") % txt)
+        a.connect(a, SIGNAL("triggered()"),
+                  lambda nid=nid: self.editHistory(nid))
+    anki.hooks.runHook("AddCards.onHistory", self, m) # !!!
+    m.exec_(self.historyButton.mapToGlobal(QPoint(0,0)))
+
+aqt.addcards.AddCards.onHistory = onHistory
+
+def onHeaderContext(self, pos):
+    gpos = self.form.tableView.mapToGlobal(pos)
+    m = QMenu(mw) #)
+    #m.setFont(particularFont('Menu')) # !!!
+    for type, name in self.columns:
+        a = m.addAction(name)
+        a.setCheckable(True)
+        a.setChecked(type in self.model.activeCols)
+        a.connect(a, SIGNAL("toggled(bool)"),
+                  lambda b, t=type: self.toggleField(t))
+    m.exec_(gpos)
+
+aqt.browser.Browser.onHeaderContext = onHeaderContext
+
+def _contextMenuEvent(self, evt):
+    m = QMenu(mw) #self) # self.mw) # !!! AttributeError: 'EditorWebView' object has no attribute 'mw'
+    #m.setFont(particularFont('Menu')) # !!!
+    a = m.addAction(_("Cut"))
+    a.connect(a, SIGNAL("triggered()"), self.onCut)
+    a = m.addAction(_("Copy"))
+    a.connect(a, SIGNAL("triggered()"), self.onCopy)
+    a = m.addAction(_("Paste"))
+    a.connect(a, SIGNAL("triggered()"), self.onPaste)
+    anki.hooks.runHook("EditorWebView.contextMenuEvent", self, m)
+    m.popup(QCursor.pos())
+
+aqt.editor.EditorWebView.contextMenuEvent = _contextMenuEvent
+
+def contextMenuEvent_(self, evt):
+    if not self._canFocus:
+        return
+    m = QMenu(mw) #self)
+    #m.setFont(particularFont('Menu')) # !!!
+    a = m.addAction(_("Copy"))
+    a.connect(a, SIGNAL("triggered()"),
+              lambda: self.triggerPageAction(QWebPage.Copy))
+    anki.hooks.runHook("AnkiWebView.contextMenuEvent", self, m)
+    m.popup(QCursor.pos())
+
+aqt.webview.AnkiWebView.contextMenuEvent = contextMenuEvent_
+
+# Menu, title bar & status
+##########################################################################
+
+mainMenu = mw.menuBar()
+mainMenu.setFont(particularFont('Menu')) 
+
+try:
+    appStyle="""
+QMenu { font-family:%s; font-size:%spx; selection-background-color: #ffaa00; selection-color: black; background-color: #999; border-style: solid; border: 0px solid #EBEBEB; border-radius: 0; color: #EBEBEB; padding: 0px 0px 0px 0px; }
+QMenu:on  {padding-top: 0px; padding-left: 0px; background-color: #7A7A7A; selection-background-color: #ffaa00; color: #fff; border-radius: 0;}
+QMenu QAbstractItemView  { border: 0px solid black; background-color: #7A7A7A; color: #EBEBEB; border-radius: 0; }
+QMenu:hover { border: 0px solid #ffa02f; }
+QMenu::disabled { color: #ccc; }
+QMenu::drop-down  { border-radius: 0px; background-color: #7A7A7A; color: #EBEBEB; }"""%\
+            (FONTS['Menu'][0], FONTS['Menu'][1]) 
+    mainMenu.setStyleSheet(appStyle) 
+    mw.setStyleSheet(mw.styleSheet()+appStyle) 
+except KeyError:
+    pass
+
+def setupBrowserMenu(self):
+    self.menuBar().setFont(particularFont('Menu')) 
+    self.menuBar().setStyleSheet(appStyle) 
+
+anki.hooks.addHook('browser.setupMenus', setupBrowserMenu)
+
+##
+
