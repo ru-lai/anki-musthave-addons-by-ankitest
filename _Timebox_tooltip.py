@@ -13,18 +13,21 @@
             return (self.conf['timeLim'], self.sched.reps - self._startReps)
 """
 
-from aqt.reviewer import Reviewer
 from anki.hooks import wrap
-from aqt import mw
-from aqt.utils import tooltip 
 from anki.sound import playFromText, clearAudioQueue, play
+from aqt import mw
+from aqt.reviewer import Reviewer
+from aqt.utils import tooltip
 
 # aqt/reviewer.py Monkey Patch
-def maNextCard(self,_old):
+
+
+def maNextCard(self, _old):
     elapsed = self.mw.col.timeboxReached()
     if elapsed:
-        part1 = ngettext('%d card studied in', '%d cards studied in', elapsed[1]) % elapsed[1]
-        mins = int(round(elapsed[0]/60))
+        part1 = ngettext('%d card studied in',
+                         '%d cards studied in', elapsed[1]) % elapsed[1]
+        mins = int(round(elapsed[0] / 60))
         part2 = ngettext('%s minute.', '%s minutes.', mins) % mins
         tooltip('%s %s' % (part1, part2))
         self.mw.col.startTimebox()
@@ -51,4 +54,4 @@ def maNextCard(self,_old):
     else:
         self._showQuestion()
 
-Reviewer.nextCard = wrap( Reviewer.nextCard, maNextCard, 'around' )
+Reviewer.nextCard = wrap(Reviewer.nextCard, maNextCard, 'around')

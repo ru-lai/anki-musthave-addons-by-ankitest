@@ -10,14 +10,14 @@
 
 # This is a simple monkey patch add-on that inserts day learning cards
 # (learning cards with intervals that crossed the day turnover)
-# always before new cards without depending due reviews. 
+# always before new cards without depending due reviews.
 
 # By default Anki do so:
 #  learning; new if before; due; day learning; new if after
 # With this add-on card will be displayed in the following order:
 #  learning; (day learning; new) if before; due; (day learning; new) if after
 
-# Normally these cards go after due, but I want them to go before new. 
+# Normally these cards go after due, but I want them to go before new.
 
 # If Tools -> Preferences... -> Basic -> Show new cards before reviews
 #    learning; day learning; new; due
@@ -30,11 +30,12 @@
 # ####################################################################
 # That is a simple add-on that inserts the daily-learning cards, i.e.
 # cards in the learning queue with intervals that crossed the day turnover,
-# before starting other reviews (new cards, review cards). Normally these cards
-# go last, but I want them to go first. 
+# before starting other reviews (new cards, review cards). \
+# Normally these cards go last, but I want them to go first.
 # ####################################################################
 
 import anki.sched
+
 
 def _getCardReordered(self):
     'Return the next due card id, or None.'

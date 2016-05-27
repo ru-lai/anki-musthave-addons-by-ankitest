@@ -25,8 +25,10 @@ from anki.lang import _
 from aqt.qt import *
 from aqt.addcards import AddCards
 from anki.hooks import wrap, runHook, addHook
-import aqt, aqt.addcards
+import aqt
+import aqt.addcards
 from aqt.utils import shortcut
+
 
 def onHistory(self):
     m = QMenu(self)
@@ -39,26 +41,32 @@ def onHistory(self):
 
 #
 
+
 def insert_open_browser_action(self, m):
     m.addSeparator()
     a = m.addAction("Open Browser on 'Added Today'")
-    #a.setShortcut(QKeySequence('H')) # It does not work.
+    # a.setShortcut(QKeySequence('H')) # It does not work.
     a.connect(a, SIGNAL('triggered()'),
               lambda slf=self: show_browser_on_added_today(slf))
 
 #
 
-def setupButtons(self): 
+
+def setupButtons(self):
     bb = self.form.buttonBox
     ar = QDialogButtonBox.ActionRole
     self.addButton = bb.addButton(_('Today'), ar)
     self.addButton.setShortcut(QKeySequence('Ctrl+T'))
-    self.addButton.setToolTip(shortcut(_('Open Browser with Added Today (shortcut: Ctrl+T)')))
-    self.connect(self.addButton, SIGNAL('clicked()'), lambda: show_browser_on_added_today(self))
+    self.addButton.setToolTip(
+        shortcut(_('Open Browser with Added Today (shortcut: Ctrl+T)')))
+    self.connect(self.addButton, SIGNAL('clicked()'),
+                 lambda: show_browser_on_added_today(self))
 
-aqt.addcards.AddCards.setupButtons = wrap(aqt.addcards.AddCards.setupButtons, setupButtons)
+aqt.addcards.AddCards.setupButtons = wrap(
+    aqt.addcards.AddCards.setupButtons, setupButtons)
 
 #
+
 
 def show_browser_on_added_today(self):
     browser = aqt.dialogs.open('Browser', self.mw)
@@ -75,11 +83,13 @@ def mySetupButtons(self):
 
 # from distutils.version import LooseVersion
 # if LooseVersion (aqt.appVersion) < LooseVersion ('2.0.12'):
+# stackoverflow.com/questions/11887762/how-to-compare-version-style-strings
+
+
 def versiontuple(v):
-    #http://stackoverflow.com/questions/11887762/how-to-compare-version-style-strings
     return tuple(map(int, (v.split('.'))))
 
-if versiontuple (aqt.appVersion) < versiontuple ('2.0.12'):
+if versiontuple(aqt.appVersion) < versiontuple('2.0.12'):
     AddCards.onHistory = onHistory
 AddCards.showBrowserOnAddedToday = show_browser_on_added_today
 AddCards.setupButtons = wrap(AddCards.setupButtons, mySetupButtons, 'after')

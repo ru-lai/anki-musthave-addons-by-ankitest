@@ -5,7 +5,7 @@
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # кнопка «Позже, не сейчас»
-# 
+#
 # inspired by More Answer Buttons for New Cards add-on
 # https://ankiweb.net/shared/info/468253198
 ################################################################
@@ -22,8 +22,9 @@ from PyQt4.QtCore import *
 import anki.lang
 lang = anki.lang.getLang()
 
-#Anki uses a single digit to track which button has been clicked.
+# Anki uses a single digit to track which button has been clicked.
 NOT_NOW_BASE = 5
+
 
 def _answerButtons(self):
     times = []
@@ -41,14 +42,18 @@ def _answerButtons(self):
 
     buf = '<center><table cellpading=0 cellspacing=0><tr>'
     buf += '''
-<td align=center><span class=nobold>%s</span><br><button title="Short key: %s" onclick="py.link('ease%d');">\
-%s</button></td><td>&nbsp;</td>''' % ('позже' if lang=='ru' else _('later'), 'Escape', NOT_NOW_BASE, 'не сейчас' if lang=='ru' else _('not now'))
+<td align=center><span class=nobold>%s</span><br><button
+title="Short key: %s" onclick="py.link('ease%d');">\
+%s</button></td><td>&nbsp;</td>''' % (
+        'позже' if lang == 'ru' else _('later'), 'Escape', NOT_NOW_BASE,
+        'не сейчас' if lang == 'ru' else _('not now'))
 
     for ease, label in self._answerButtonList():
         buf += but(ease, label)
     buf += '</tr></table>'
     script = "<script>$(function () { $('#defease').focus(); });</script>"
     return buf + script
+
 
 def answer_card_intercepting(self, actual_ease, _old):
     ease = actual_ease
@@ -59,7 +64,9 @@ def answer_card_intercepting(self, actual_ease, _old):
         return _old(self, ease)
 
 Reviewer._answerButtons = _answerButtons
-Reviewer._answerCard = wrap(Reviewer._answerCard, answer_card_intercepting, 'around')
+Reviewer._answerCard = wrap(
+    Reviewer._answerCard, answer_card_intercepting, 'around')
+
 
 def onEscape():
     mw.reviewer.nextCard()
@@ -67,23 +74,29 @@ def onEscape():
 try:
     mw.addon_cards_menu
 except AttributeError:
-    mw.addon_cards_menu = QMenu(_(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
+    mw.addon_cards_menu = QMenu(
+        _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
 escape_action = QAction(mw)
-escape_action.setText(u'Позж&е, не сейчас' if lang=='ru' else _(u'&Later, not now'))
+escape_action.setText(u'Позж&е, не сейчас' if lang ==
+                      'ru' else _(u'&Later, not now'))
 escape_action.setShortcut(QKeySequence('Escape'))
 escape_action.setEnabled(False)
 mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 
-#mw.addon_cards_menu.addSeparator()
+# mw.addon_cards_menu.addSeparator()
 mw.addon_cards_menu.addAction(escape_action)
-#mw.addon_cards_menu.addSeparator()
+# mw.addon_cards_menu.addSeparator()
 
-mw.deckBrowser.show = wrap(mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
-mw.overview.show = wrap(mw.overview.show, lambda: escape_action.setEnabled(False))
-mw.reviewer.show = wrap(mw.reviewer.show, lambda: escape_action.setEnabled(True))
+mw.deckBrowser.show = wrap(
+    mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
+mw.overview.show = wrap(
+    mw.overview.show, lambda: escape_action.setEnabled(False))
+mw.reviewer.show = wrap(
+    mw.reviewer.show, lambda: escape_action.setEnabled(True))
+
 
 def newRemaining(self):
     if not self.mw.col.conf['dueCounts']:
@@ -94,28 +107,33 @@ def newRemaining(self):
         counts = list(self.mw.col.sched.counts())
     else:
         counts = list(self.mw.col.sched.counts(self.card))
-    return (idx==0 and counts[0] < 1)
+    return (idx == 0 and counts[0] < 1)
 
-def myShowAnswerButton(self,_old):
+
+def myShowAnswerButton(self, _old):
     if newRemaining(self):
-        #self.mw.moveToState('deckBrowser')
+        # self.mw.moveToState('deckBrowser')
         self.mw.moveToState('overview')
     self._bottomReady = True
     if not self.typeCorrect:
         self.bottom.web.setFocus()
 
     buf = '''
-<td align=center class=stat2><span class=stattxt>%s</span><br><button title="Short key: %s" onclick="py.link('ease%d');">\
-%s</button></td><td>&nbsp;</td>''' % ('позже' if lang=='ru' else _('later'), 'Escape', NOT_NOW_BASE, 'не сейчас' if lang=='ru' else _('not now'))
+<td align=center class=stat2><span class=stattxt>%s</span><br><button
+title="Short key: %s" onclick="py.link('ease%d');">\
+%s</button></td><td>&nbsp;</td>''' % (
+        'позже' if lang == 'ru' else _('later'), 'Escape', NOT_NOW_BASE,
+        'не сейчас' if lang == 'ru' else _('not now'))
 
     middle = '''<table cellpadding=0><tr>%s<td class=stat2 align=center>
 <span class=stattxt>%s</span><br>
-<button %s id=ansbut style="display:inline-block;width:%s;%s" onclick="py.link('ans');">%s</button>
+<button %s id=ansbut style="display:inline-block;width:%s;%s"
+onclick="py.link('ans');">%s</button>
     </td></tr></table>
-''' % ( buf, self._remaining(), \
-        ' title=" '+(_('Shortcut key: %s') % _('Space'))+' "',
-        '99%', '', _('Show Answer'))
-    
+''' % (buf, self._remaining(),
+       ' title=" ' + (_('Shortcut key: %s') % _('Space')) + ' "',
+       '99%', '', _('Show Answer'))
+
     if self.card.shouldShowTimer():
         maxTime = self.card.timeLimit() / 1000
     else:
@@ -124,4 +142,5 @@ def myShowAnswerButton(self,_old):
         json.dumps(middle), maxTime))
     return True
 
-Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, 'around')
+Reviewer._showAnswerButton = wrap(
+    Reviewer._showAnswerButton, myShowAnswerButton, 'around')

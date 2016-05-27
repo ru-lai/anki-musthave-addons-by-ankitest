@@ -3,8 +3,8 @@
 # https://ankiweb.net/shared/info/1114708966
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
-#  Made by request: 
-#   Clear Field Formatting (HTML) in Bulk needs improvement 
+#  Made by request:
+#   Clear Field Formatting (HTML) in Bulk needs improvement
 #    https://anki.tenderapp.com/discussions/add-ons/7526-clear-field-formatting-html-in-bulk-needs-improvement
 # Based on
 # https://ankiweb.net/shared/info/728131107
@@ -13,11 +13,10 @@
 #
 from __future__ import division
 from __future__ import unicode_literals
-import os, sys, datetime, re
-
-# Get language class
-import anki.lang
-lang = anki.lang.getLang()
+import os
+import sys
+import datetime
+import re
 
 import aqt.deckbrowser
 import aqt.editor
@@ -29,10 +28,14 @@ from aqt import mw
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+# Get language class
+import anki.lang
+lang = anki.lang.getLang()
+
 HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
-    'clear'  : ['Ctrl+F12', '', '', ''' ''', """ """], 
-    'full'   : ['Ctrl+Shift+F12', '', '', ''' ''', """ """], 
-    }
+    'clear':    ['Ctrl+F12', '', '', ''' ''', """ """],
+    'full':     ['Ctrl+Shift+F12', '', '', ''' ''', """ """],
+}
 
 ##
 
@@ -44,15 +47,17 @@ for the Anki program and it can't be run directly.""")
 else:
     pass
 
-if sys.version[0] == '2': # Python 3 is utf8 only already.
-  if hasattr(sys,'setdefaultencoding'):
-    sys.setdefaultencoding('utf8')
+if sys.version[0] == '2':  # Python 3 is utf8 only already.
+    if hasattr(sys, 'setdefaultencoding'):
+        sys.setdefaultencoding('utf8')
 
 ##
 
+
 def stripFormatting(txt, imgbr, divbr):
     """
-    Removes all html tags, except if they begin like this: <img...> <br...> <div > </div>
+    Removes all html tags, except if they begin like this:
+        <img...> <br...> <div > </div>
     This allows inserted images and line breaks to remain.
 
     Parameters
@@ -64,25 +69,29 @@ def stripFormatting(txt, imgbr, divbr):
     string
         the modified string as described above
     """
-    return re.sub(imgbr, '', re.sub(divbr, '\n', re.sub('<div .*?>', '<div>', txt)))
+    return re.sub(imgbr, '', re.sub(divbr, '\n',
+                  re.sub('<div .*?>', '<div>', txt)))
+
 
 def onClearFormat(self, nids=None, dids=None, note=None):
     mw.checkpoint('Clear Fields Format HTML')
     mw.progress.start()
+
     def clearFields(field):
-        if not field: return ''
+        if not field:
+            return ''
         return stripFormatting(field, '<(?!img|br|div|/div).*?>', '(^$)')
     if dids:
-       nids=[]
-       for did in dids:
-          deck = self.mw.col.decks.nameOrNone(did)
-          query = 'deck:"%s"' % ( deck )
-          nids.extend(self.mw.col.findNotes(query))
+        nids = []
+        for did in dids:
+            deck = self.mw.col.decks.nameOrNone(did)
+            query = 'deck:"%s"' % (deck)
+            nids.extend(self.mw.col.findNotes(query))
     if nids:
-      for nid in nids: #self.selectedNotes():
-        note = mw.col.getNote(nid)
-        note.fields = map(clearFields, note.fields)
-        note.flush()
+        for nid in nids:  # self.selectedNotes():
+            note = mw.col.getNote(nid)
+            note.fields = map(clearFields, note.fields)
+            note.flush()
     elif note:
         note.fields = map(clearFields, note.fields)
         note.flush()
@@ -94,6 +103,8 @@ def onClearFormat(self, nids=None, dids=None, note=None):
     mw.reset()
     if rst == 'answer':
         mw.reviewer._showAnswerHack()
+    tooltip('Clear Fields Format HTML done.', period=1500)
+
 
 def onClearFormatting(self, nids=None, dids=None, note=None):
     """
@@ -107,24 +118,27 @@ def onClearFormatting(self, nids=None, dids=None, note=None):
     """
     mw.checkpoint('Clear Fields Formatting HTML')
     mw.progress.start()
+
     def clearFields(field):
-        if not field: return ''
-        result = stripFormatting(field, '<(?!img).*?>', '</div><div>|</div>|<div>|<br />');
+        if not field:
+            return ''
+        result = stripFormatting(
+            field, '<(?!img).*?>', '</div><div>|</div>|<div>|<br />')
         # if result != field:
         #     sys.stderr.write('Changed: \"' + field
         #                      + '\' ==> \"' + result + '\"')
         return result
     if dids:
-       nids=[]
-       for did in dids:
-          deck = self.mw.col.decks.nameOrNone(did)
-          query = 'deck:"%s"' % ( deck )
-          nids.extend(self.mw.col.findNotes(query))
+        nids = []
+        for did in dids:
+            deck = self.mw.col.decks.nameOrNone(did)
+            query = 'deck:"%s"' % (deck)
+            nids.extend(self.mw.col.findNotes(query))
     if nids:
-      for nid in nids: #self.selectedNotes():
-        note = mw.col.getNote(nid)
-        note.fields = map(clearFields, note.fields)
-        note.flush()
+        for nid in nids:  # self.selectedNotes():
+            note = mw.col.getNote(nid)
+            note.fields = map(clearFields, note.fields)
+            note.flush()
     elif note:
         note.fields = map(clearFields, note.fields)
         note.flush()
@@ -136,6 +150,8 @@ def onClearFormatting(self, nids=None, dids=None, note=None):
     mw.reset()
     if rst == 'answer':
         mw.reviewer._showAnswerHack()
+    tooltip('Clear Fields Formatting HTML done.', period=1500)
+
 
 def setupMenu(self):
     """
@@ -145,12 +161,14 @@ def setupMenu(self):
 
     a = QAction(_('Clear Fields Formatting HTML (remain new lines)'), self)
     a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
-    self.connect(a, SIGNAL('triggered()'), lambda e=self: onClearFormat(e, nids=e.selectedNotes()))
+    self.connect(a, SIGNAL('triggered()'),
+                 lambda e=self: onClearFormat(e, nids=e.selectedNotes()))
     self.form.menuEdit.addAction(a)
 
     b = QAction(_('Clear Fields Formatting HTML (at all)'), self)
     b.setShortcut(QKeySequence(HOTKEY['full'][0]))
-    self.connect(b, SIGNAL('triggered()'), lambda e=self: onClearFormatting(e, nids=e.selectedNotes()))
+    self.connect(b, SIGNAL('triggered()'),
+                 lambda e=self: onClearFormatting(e, nids=e.selectedNotes()))
     self.form.menuEdit.addAction(b)
 
     self.form.menuEdit.addSeparator()
@@ -159,6 +177,7 @@ addHook('browser.setupMenus', setupMenu)
 
 # Options
 ##########################################################################
+
 
 def showOptions(self, did):
     m = QMenu(self.mw)
@@ -177,23 +196,25 @@ def showOptions(self, did):
 
 aqt.deckbrowser.DeckBrowser._showOptions = showOptions
 
+
 def deckHooker(self, did, m):
     m.addSeparator()
-    
+
     a = m.addAction(_('Clear Fields Formatting HTML (remain new lines)'))
-    a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did: \
-        onClearFormat(e, dids=[did]))
+    a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did:
+              onClearFormat(e, dids=[did]))
 
     a = m.addAction(_('Clear Fields Formatting HTML (at all)'))
-    a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did: \
-        onClearFormatting(e, dids=[did]))
+    a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did:
+              onClearFormatting(e, dids=[did]))
 
-    m.addSeparator() 
+    m.addSeparator()
 
 addHook('deckHooker', deckHooker)
 
 # Advanced menu
 ######################################################################
+
 
 def onAdvanced(self):
     m = QMenu(self.mw)
@@ -213,16 +234,16 @@ def onAdvanced(self):
     m.addSeparator()
 
     a = m.addAction(_('Clear Fields Formatting HTML (remain new lines)'))
-    #a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
-    a.connect(a, SIGNAL("triggered()"), lambda e=self: \
-        onClearFormat(e, note=self.note))
+    # a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
+    a.connect(a, SIGNAL("triggered()"), lambda e=self:
+              onClearFormat(e, note=self.note))
 
     a = m.addAction(_('Clear Fields Formatting HTML (at all)'))
-    #a.setShortcut(QKeySequence(HOTKEY['full'][0]))
-    a.connect(a, SIGNAL("triggered()"), lambda e=self: \
-        onClearFormatting(e, note=self.note))
+    # a.setShortcut(QKeySequence(HOTKEY['full'][0]))
+    a.connect(a, SIGNAL("triggered()"), lambda e=self:
+              onClearFormatting(e, note=self.note))
 
-    #m.addSeparator()
+    # m.addSeparator()
 
     m.exec_(QCursor.pos())
 
@@ -232,22 +253,24 @@ aqt.editor.Editor.onAdvanced = onAdvanced
 
 c = QAction(_('Clear Fields Formatting HTML (remain new lines)'), mw)
 c.setShortcut(QKeySequence(HOTKEY['clear'][0]))
-mw.connect(c, SIGNAL('triggered()'), lambda e=mw: \
-    onClearFormat(e, nids=[e.reviewer.card.nid]))
+mw.connect(c, SIGNAL('triggered()'), lambda e=mw:
+           onClearFormat(e, nids=[e.reviewer.card.nid]))
 
 d = QAction(_('Clear Fields Formatting HTML (at all)'), mw)
 d.setShortcut(QKeySequence(HOTKEY['full'][0]))
-mw.connect(d, SIGNAL('triggered()'), lambda e=mw: \
-    onClearFormatting(e, nids=[e.reviewer.card.nid]))
+mw.connect(d, SIGNAL('triggered()'), lambda e=mw:
+           onClearFormatting(e, nids=[e.reviewer.card.nid]))
 
 mw.form.menuEdit.addSeparator()
 mw.form.menuEdit.addAction(c)
 mw.form.menuEdit.addAction(d)
 mw.form.menuEdit.addSeparator()
 
+
 def swap_off():
     c.setEnabled(False)
     d.setEnabled(False)
+
 
 def swap_on():
     c.setEnabled(True)
@@ -260,29 +283,31 @@ mw.reviewer.show = wrap(mw.reviewer.show, swap_on)
 ##
 
 old_addons = (
-    'Clear_Field_Formatting_HTML_in_Bulk.py', 
-    '_Clear_Field_Formatting_HTML_in_Bulk.py', 
-    )
+    'Clear_Field_Formatting_HTML_in_Bulk.py',
+    '_Clear_Field_Formatting_HTML_in_Bulk.py',
+)
 
 old_addons2delete = ''
 for old_addon in old_addons:
-  if len(old_addon) > 0:
-    old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
-    if os.path.exists(old_filename): 
-       old_addons2delete += old_addon[:-3] + ' \n'
+    if len(old_addon) > 0:
+        old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+        if os.path.exists(old_filename):
+            old_addons2delete += old_addon[:-3] + ' \n'
 
 if old_addons2delete != '':
     if lang == 'ru':
-       showText('В каталоге\n\n '+mw.pm.addonFolder()+\
-        '\n\nнайдены дополнения, которые уже включены в дополнение\n'+\
-        ' ~ Clear Fields Formatting HTML \nи поэтому будут конфликтовать с ним.\n\n' +\
-        old_addons2delete + '\nУдалите эти дополнения и перезапустите Anki.')
+        showText(
+            'В каталоге\n\n ' + mw.pm.addonFolder() +
+            '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
+            ' ~ Clear Fields Formatting HTML \n' +
+            'и поэтому будут конфликтовать с ним.\n\n' +
+            old_addons2delete +
+            '\nУдалите эти дополнения и перезапустите Anki.')
     else:
-       showText('<big>There are some add-ons in the folder <br>\n<br>\n'+\
-       ' &nbsp; '+mw.pm.addonFolder()+\
-       '<pre>' + old_addons2delete +'</pre>'+\
-       'They are already part of<br>\n'+\
-       ' <b> &nbsp; ~ Clear Fields Formatting HTML</b> addon.<br>\n'+\
-       'Please, delete them and restart Anki.</big>',type='html')
-
-##
+        showText(
+            '<big>There are some add-ons in the folder <br>\n<br>\n' +
+            ' &nbsp; ' + mw.pm.addonFolder() +
+            '<pre>' + old_addons2delete + '</pre>' +
+            'They are already part of<br>\n' +
+            ' <b> &nbsp; ~ Clear Fields Formatting HTML</b> addon.<br>\n' +
+            'Please, delete them and restart Anki.</big>', type='html')

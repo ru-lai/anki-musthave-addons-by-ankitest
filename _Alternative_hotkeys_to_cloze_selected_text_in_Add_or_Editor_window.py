@@ -1,11 +1,12 @@
 # -*- mode: Python ; coding: utf-8 -*-
 
+from anki.hooks import wrap
+import aqt.editor
+from aqt.editor import *
+
 CtrlSpace = 'Ctrl+Space'
 CtrlAltSpace = 'Ctrl+Alt+Space'
 
-import aqt.editor
-from aqt.editor import *
-from anki.hooks import wrap
 
 def setupButtonz(self):
     s = QShortcut(
@@ -16,4 +17,5 @@ def setupButtonz(self):
         QKeySequence(CtrlAltSpace), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
-aqt.editor.Editor.setupButtons = wrap(aqt.editor.Editor.setupButtons, setupButtonz)
+aqt.editor.Editor.setupButtons = wrap(
+    aqt.editor.Editor.setupButtons, setupButtonz)

@@ -2,16 +2,13 @@
 # • Collapse Them All
 # https://ankiweb.net/shared/info/1846969611
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
-# 
+#
 # Expand/Collapse Browser Tree
-# 
+#
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 from __future__ import unicode_literals
-
-CtrlShiftPlus  = 'Ctrl+Shift++'  # Expand   Them All
-CtrlShiftMinus = 'Ctrl+Shift+-' # Collapse Them All
 
 from anki.hooks import addHook
 
@@ -24,19 +21,28 @@ from PyQt4.QtGui import QKeySequence
 import anki.lang
 lang = anki.lang.getLang()
 
+CtrlShiftPlus = 'Ctrl+Shift++'  # Expand   Them All
+CtrlShiftMinus = 'Ctrl+Shift+-'  # Collapse Them All
+
+
 def setupMenu(self):
-    menu = self.form.menuJump #.menuEdit
+    menu = self.form.menuJump  # .menuEdit
     menu.addSeparator()
 
-    a = menu.addAction('Развернуть всё дерево' if lang=='ru' else _('Expand Them All'))
+    a = menu.addAction('Развернуть всё дерево' if lang ==
+                       'ru' else _('Expand Them All'))
     a.setShortcut(QKeySequence(CtrlShiftPlus))
-    self.connect(a, SIGNAL('triggered()'), lambda b=self: ExpandThemAll(b, True))
+    self.connect(a, SIGNAL('triggered()'),
+                 lambda b=self: ExpandThemAll(b, True))
 
-    a = menu.addAction('Свернуть все ветки' if lang=='ru' else _('Collapse Them All'))
+    a = menu.addAction('Свернуть все ветки' if lang ==
+                       'ru' else _('Collapse Them All'))
     a.setShortcut(QKeySequence(CtrlShiftMinus))
-    self.connect(a, SIGNAL('triggered()'), lambda b=self: ExpandThemAll(b, False))
+    self.connect(a, SIGNAL('triggered()'),
+                 lambda b=self: ExpandThemAll(b, False))
 
     menu.addSeparator()
+
 
 def ExpandThemAll(self, action):
     if action:

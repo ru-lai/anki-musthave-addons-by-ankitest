@@ -122,9 +122,9 @@ def myShowAnswerButton(self, _old):
         ((' title=" '+_('Shortcut key: %s') % _('Space'))+' "'),
         BEAMS4, 'font-size:x-large;color:'+black, _('Show Answer'))
     # place it in a table so it has the same top margin as the ease buttons
-    middle =
-    '<div class=stat2 align=center style="width:%s!important;">%s</div>'
-    % (BEAMS4, middle)
+    middle = (
+        '<div class=stat2 align=center ' +
+        'style="width:%s!important;">%s</div>') % (BEAMS4, middle)
     if self.card.shouldShowTimer():
         maxTime = self.card.timeLimit() / 1000
     else:
