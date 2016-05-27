@@ -9,6 +9,13 @@
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 from __future__ import division
 from __future__ import unicode_literals
+import os #, sys, datetime
+
+# Get language class
+import anki.lang
+lang = anki.lang.getLang()
+
+from aqt.utils import showText
 
 # inspired by
 #  Answer_Key_Remap.py 
@@ -116,4 +123,32 @@ def myShowAnswerButton(self,_old):
 Reviewer._answerButtons = wrap(Reviewer._answerButtons, myAnswerButtons, 'around')
 Reviewer._showAnswerButton = wrap(Reviewer._showAnswerButton, myShowAnswerButton, 'around')
 
+##
 
+old_addons = (
+    'Answer_Key_Remap.py', 
+    'Bigger_Show_Answer_Button.py', 
+    'Button_Colours_Good_Again.py', 
+    'Bigger_Show_All_Answer_Buttons.py', 
+    )
+
+old_addons2delete = ''
+for old_addon in old_addons:
+  if len(old_addon) > 0:
+    old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+    if os.path.exists(old_filename): 
+       old_addons2delete += old_addon[:-3] + ' \n'
+
+if old_addons2delete != '':
+    if lang == 'ru':
+       showText('В каталоге\n\n '+mw.pm.addonFolder()+\
+        '\n\nнайдены дополнения, которые уже включены в дополнение\n'+\
+        ' • Again Hard \nи поэтому будут конфликтовать с ним.\n\n' +\
+        old_addons2delete + '\nУдалите эти дополнения и перезапустите Anki.')
+    else:
+       showText('<big>There are some add-ons in the folder <br>\n<br>\n'+\
+       ' &nbsp; '+mw.pm.addonFolder()+'<br>\n<br>\nThey are already part of<br>\n'+\
+       ' <b> &nbsp; • Again Hard</b> addon:<pre>' + old_addons2delete +\
+       '</pre>Please, delete them and restart Anki.</big>',type="html")
+
+##

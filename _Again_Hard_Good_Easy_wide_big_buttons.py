@@ -18,6 +18,13 @@
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 from __future__ import division
 from __future__ import unicode_literals
+import os #, sys, datetime
+
+# Get language class
+import anki.lang
+lang = anki.lang.getLang()
+
+from aqt.utils import showText
 
 # It is a part of '• Must Have' addon's functionality:
 #  --musthave.py
@@ -39,7 +46,8 @@ from __future__ import unicode_literals
 #  Bigger Show All Answer Buttons
 #   https://ankiweb.net/shared/info/2034935033
 #  More_Answer_Buttons_for_New_Cards.py
-#   https://ankiweb.net/shared/info/468253198
+#   https://ankiweb.net/shared/info/468253198 invalid id
+#   https://ankiweb.net/shared/info/153603893
 
 from aqt import mw
 from aqt.reviewer import Reviewer
@@ -208,3 +216,38 @@ mw.addon_cards_menu.addAction(escape_action)
 mw.deckBrowser.show = wrap(mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
 mw.overview.show = wrap(mw.overview.show, lambda: escape_action.setEnabled(False))
 mw.reviewer.show = wrap(mw.reviewer.show, lambda: escape_action.setEnabled(True))
+
+##
+
+old_addons = (
+    'Answer_Key_Remap.py', 
+    'Bigger_Show_Answer_Button.py', 
+    'Button_Colours_Good_Again.py', 
+    'Bigger_Show_All_Answer_Buttons.py', 
+    'More_Answer_Buttons_for_New_Cards.py', 
+    '_Again_Hard.py', 
+    '_Later_not_now_button.py', 
+    )
+
+old_addons2delete = ''
+for old_addon in old_addons:
+  if len(old_addon) > 0:
+    old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+    if os.path.exists(old_filename): 
+       old_addons2delete += old_addon[:-3] + ' \n'
+
+if old_addons2delete != '':
+    if lang == 'ru':
+       showText('В каталоге\n\n '+mw.pm.addonFolder()+\
+        '\n\nнайдены дополнения, которые уже включены в дополнение\n'+\
+        ' • Again Hard Good Easy wide big buttons \nи поэтому будут конфликтовать с ним.\n\n' +\
+        old_addons2delete + '\nУдалите эти дополнения и перезапустите Anki.')
+    else:
+       showText('<big>There are some add-ons in the folder <br>\n<br>\n'+\
+       ' &nbsp; '+mw.pm.addonFolder()+\
+       '<pre>' + old_addons2delete +'</pre>'+\
+       'They are already part of<br>\n'+\
+       ' <b> &nbsp; • Again Hard Good Easy wide big buttons</b> addon.<br>\n'+\
+       'Please, delete them and restart Anki.</big>',type="html")
+
+##
