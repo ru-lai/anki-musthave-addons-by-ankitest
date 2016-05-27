@@ -21,7 +21,7 @@ lang = anki.lang.getLang()
 
 import aqt.deckbrowser
 import aqt.editor
-from aqt.utils import showText
+from aqt.utils import showText, tooltip
 
 from anki.hooks import addHook, wrap, runHook
 from aqt import mw
@@ -66,9 +66,12 @@ def stripFormatting(txt, imgbr, divbr):
     """
     return re.sub(imgbr, '', re.sub(divbr, '\n', re.sub('<div .*?>', '<div>', txt)))
 
-def onClearFormat(self, nids=None, dids=None):
+def onClearFormat(self, nids=None, dids=None, note=None):
     mw.checkpoint('Clear Fields Format HTML')
     mw.progress.start()
+    def clearFields(field):
+        if not field: return ''
+        return stripFormatting(field, '<(?!img|br|div|/div).*?>', '(^$)')
     if dids:
        nids=[]
        for did in dids:
@@ -76,10 +79,11 @@ def onClearFormat(self, nids=None, dids=None):
           query = 'deck:"%s"' % ( deck )
           nids.extend(self.mw.col.findNotes(query))
     if nids:
-      for nid in nids:
+      for nid in nids: #self.selectedNotes():
         note = mw.col.getNote(nid)
-        def clearFields(field):
-            return stripFormatting(field, '<(?!img|br|div|/div).*?>', '(^$)')
+        note.fields = map(clearFields, note.fields)
+        note.flush()
+    elif note:
         note.fields = map(clearFields, note.fields)
         note.flush()
     mw.progress.finish()
@@ -91,7 +95,7 @@ def onClearFormat(self, nids=None, dids=None):
     if rst == 'answer':
         mw.reviewer._showAnswerHack()
 
-def onClearFormatting(self, nids=None, dids=None):
+def onClearFormatting(self, nids=None, dids=None, note=None):
     """
     Clears the formatting for every selected note.
     Also creates a restore point, allowing a single undo operation.
@@ -103,6 +107,13 @@ def onClearFormatting(self, nids=None, dids=None):
     """
     mw.checkpoint('Clear Fields Formatting HTML')
     mw.progress.start()
+    def clearFields(field):
+        if not field: return ''
+        result = stripFormatting(field, '<(?!img).*?>', '</div><div>|</div>|<div>|<br />');
+        # if result != field:
+        #     sys.stderr.write('Changed: \"' + field
+        #                      + '\' ==> \"' + result + '\"')
+        return result
     if dids:
        nids=[]
        for did in dids:
@@ -112,13 +123,10 @@ def onClearFormatting(self, nids=None, dids=None):
     if nids:
       for nid in nids: #self.selectedNotes():
         note = mw.col.getNote(nid)
-        def clearField(field):
-            result = stripFormatting(field, '<(?!img).*?>', '</div><div>|</div>|<div>|<br />');
-            # if result != field:
-            #     sys.stderr.write('Changed: \"' + field
-            #                      + '\' ==> \"' + result + '\"')
-            return result
-        note.fields = map(clearField, note.fields)
+        note.fields = map(clearFields, note.fields)
+        note.flush()
+    elif note:
+        note.fields = map(clearFields, note.fields)
         note.flush()
     mw.progress.finish()
     if mw.state == 'review':
@@ -207,12 +215,12 @@ def onAdvanced(self):
     a = m.addAction(_('Clear Fields Formatting HTML (remain new lines)'))
     #a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
     a.connect(a, SIGNAL("triggered()"), lambda e=self: \
-        onClearFormat(e, nids=[e.note.id]))
+        onClearFormat(e, note=self.note))
 
     a = m.addAction(_('Clear Fields Formatting HTML (at all)'))
     #a.setShortcut(QKeySequence(HOTKEY['full'][0]))
     a.connect(a, SIGNAL("triggered()"), lambda e=self: \
-        onClearFormatting(e, nids=[e.note.id]))
+        onClearFormatting(e, note=self.note))
 
     #m.addSeparator()
 
