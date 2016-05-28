@@ -19,7 +19,7 @@ from anki.hooks import wrap
 from anki.utils import intTime
 from aqt import mw
 from aqt.reviewer import Reviewer
-from aqt.utils import tooltip
+from aqt.utils import tooltip, showText
 
 # Get language class
 import anki.lang
@@ -113,6 +113,46 @@ SWAP_TAG = False
 # SWAP_TAG = datetime.datetime.now().strftime('re-%y-%m-%d-c')
 
 USE_INTERVALS_AS_LABELS = False  # True #
+##
+
+old_addons = (
+    'Answer_Key_Remap.py',
+    'Bigger_Show_Answer_Button.py',
+    'Button_Colours_Good_Again.py',
+    'Bigger_Show_All_Answer_Buttons.py',
+    'More_Answer_Buttons_for_New_Cards.py',
+    '_Again_Hard.py',
+    '_Again_Hard_Good_Easy_wide_big_buttons.py',
+    '_Later_not_now_button.py',
+)
+
+old_addons2delete = ''
+for old_addon in old_addons:
+    if len(old_addon) > 0:
+        old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+        if os.path.exists(old_filename):
+            old_addons2delete += old_addon[:-3] + ' \n'
+
+if old_addons2delete != '':
+    if lang == 'ru':
+        showText(
+            'В каталоге\n\n ' + mw.pm.addonFolder() +
+            '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
+            ' ~ More Answer Buttons for ALL Cards  \n' +
+            'и поэтому будут конфликтовать с ним.\n\n' +
+            old_addons2delete +
+            '\nУдалите эти дополнения и перезапустите Anki.')
+    else:
+        showText(
+            '<big>There are some add-ons in the folder <br>\n<br>\n' +
+            ' &nbsp; ' + mw.pm.addonFolder() +
+            '<pre>' + old_addons2delete + '</pre>' +
+            'They are already part of<br>\n' +
+            ' <b> &nbsp; ~ More Answer Buttons for ALL Cards</b>' +
+            ' addon.<br>\n' +
+            'Please, delete them and restart Anki.</big>', type="html")
+
+##
 
 
 def _bottomTime(self, i):
@@ -297,61 +337,6 @@ def more_proc():
     if rst:
         mw.reviewer._showAnswerHack()
 
-try:
-    mw.addon_view_menu
-except AttributeError:
-    mw.addon_view_menu = QMenu(
-        _('&Вид') if lang == 'ru' else _('&View'), mw)
-    mw.form.menubar.insertMenu(
-        mw.form.menuTools.menuAction(), mw.addon_view_menu)
-
-more_action = QAction('&Кнопки оценок - без меток' if lang ==
-                      'ru' else _('&Answer buttons without labels'), mw)
-more_action.setShortcut(QKeySequence('Ctrl+Alt+Shift+L'))
-more_action.setCheckable(True)
-more_action.setChecked(USE_INTERVALS_AS_LABELS)
-mw.connect(more_action, SIGNAL('triggered()'), more_proc)
-mw.addon_view_menu.addAction(more_action)
-
-Reviewer._keyHandler = wrap(Reviewer._keyHandler, keyHandler, 'around')
-Reviewer._answerButtons = _answerButtons
-Reviewer._answerCard = wrap(
-    Reviewer._answerCard, answer_card_intercepting, 'around')
-
-#
-
-
-def onEscape():
-    mw.reviewer.nextCard()
-
-try:
-    mw.addon_cards_menu
-except AttributeError:
-    mw.addon_cards_menu = QMenu(
-        _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
-    mw.form.menubar.insertMenu(
-        mw.form.menuTools.menuAction(), mw.addon_cards_menu)
-
-escape_action = QAction(mw)
-escape_action.setText(u'Позж&е, не сейчас' if lang ==
-                      'ru' else _(u'&Later, not now'))
-escape_action.setShortcut(QKeySequence('Escape'))
-escape_action.setEnabled(False)
-mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
-
-# mw.addon_cards_menu.addSeparator()
-mw.addon_cards_menu.addAction(escape_action)
-# mw.addon_cards_menu.addSeparator()
-
-mw.deckBrowser.show = wrap(
-    mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
-mw.overview.show = wrap(
-    mw.overview.show, lambda: escape_action.setEnabled(False))
-mw.reviewer.show = wrap(
-    mw.reviewer.show, lambda: escape_action.setEnabled(True))
-
-#
-
 
 def newRemaining(self):
     if not self.mw.col.conf['dueCounts']:
@@ -398,5 +383,61 @@ onclick="py.link('ans');">%s</button>
         json.dumps(middle), maxTime))
     return True
 
-Reviewer._showAnswerButton = wrap(
-    Reviewer._showAnswerButton, myShowAnswerButton, 'around')
+if old_addons2delete == '':
+    try:
+        mw.addon_view_menu
+    except AttributeError:
+        mw.addon_view_menu = QMenu(
+            _('&Вид') if lang == 'ru' else _('&View'), mw)
+        mw.form.menubar.insertMenu(
+            mw.form.menuTools.menuAction(), mw.addon_view_menu)
+
+    more_action = QAction('&Кнопки оценок - без меток' if lang ==
+                          'ru' else _('&Answer buttons without labels'), mw)
+    more_action.setShortcut(QKeySequence('Ctrl+Alt+Shift+L'))
+    more_action.setCheckable(True)
+    more_action.setChecked(USE_INTERVALS_AS_LABELS)
+    mw.connect(more_action, SIGNAL('triggered()'), more_proc)
+    mw.addon_view_menu.addAction(more_action)
+
+    Reviewer._keyHandler = wrap(Reviewer._keyHandler, keyHandler, 'around')
+    Reviewer._answerButtons = _answerButtons
+    Reviewer._answerCard = wrap(
+        Reviewer._answerCard, answer_card_intercepting, 'around')
+
+    #
+
+
+    def onEscape():
+        mw.reviewer.nextCard()
+
+    try:
+        mw.addon_cards_menu
+    except AttributeError:
+        mw.addon_cards_menu = QMenu(
+            _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
+        mw.form.menubar.insertMenu(
+            mw.form.menuTools.menuAction(), mw.addon_cards_menu)
+
+    escape_action = QAction(mw)
+    escape_action.setText(u'Позж&е, не сейчас' if lang ==
+                          'ru' else _(u'&Later, not now'))
+    escape_action.setShortcut(QKeySequence('Escape'))
+    escape_action.setEnabled(False)
+    mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
+
+    # mw.addon_cards_menu.addSeparator()
+    mw.addon_cards_menu.addAction(escape_action)
+    # mw.addon_cards_menu.addSeparator()
+
+    mw.deckBrowser.show = wrap(
+        mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
+    mw.overview.show = wrap(
+        mw.overview.show, lambda: escape_action.setEnabled(False))
+    mw.reviewer.show = wrap(
+        mw.reviewer.show, lambda: escape_action.setEnabled(True))
+
+    #
+
+    Reviewer._showAnswerButton = wrap(
+        Reviewer._showAnswerButton, myShowAnswerButton, 'around')

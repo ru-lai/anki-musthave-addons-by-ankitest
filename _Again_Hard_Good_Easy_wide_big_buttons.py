@@ -80,6 +80,44 @@ BUTTON_LABEL = ['<span style="color:' + red + ';">o_0</span>',
                 '<b style="color:' + green + ';">:-|</b>',
                 '<b style="color:' + blue + ';">:-)</b>']
 
+##
+
+old_addons = (
+    'Answer_Key_Remap.py',
+    'Bigger_Show_Answer_Button.py',
+    'Button_Colours_Good_Again.py',
+    'Bigger_Show_All_Answer_Buttons.py',
+    'More_Answer_Buttons_for_New_Cards.py',
+    '_Again_Hard.py',
+    '_Later_not_now_button.py',
+)
+
+old_addons2delete = ''
+for old_addon in old_addons:
+    if len(old_addon) > 0:
+        old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+        if os.path.exists(old_filename):
+            old_addons2delete += old_addon[:-3] + ' \n'
+
+if old_addons2delete != '':
+    if lang == 'ru':
+        showText(
+            'В каталоге\n\n ' + mw.pm.addonFolder() +
+            '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
+            ' • Again Hard Good Easy wide big buttons \n' +
+            'и поэтому будут конфликтовать с ним.\n\n' +
+            old_addons2delete +
+            '\nУдалите эти дополнения и перезапустите Anki.')
+    else:
+        showText(
+            '<big>There are some add-ons in the folder <br>\n<br>\n' +
+            ' &nbsp; ' + mw.pm.addonFolder() +
+            '<pre>' + old_addons2delete + '</pre>' +
+            'They are already part of<br>\n' +
+            ' <b> &nbsp; • Again Hard Good Easy wide big buttons</b>' +
+            ' addon.<br>\n' +
+            'Please, delete them and restart Anki.</big>', type="html")
+
 """
 # Bigger Show Answer Button
 For people who do their reps with a mouse.
@@ -107,7 +145,8 @@ def laterNotNow():
         '<td align=center><span class=stattxt>%s</span>' +
         '''<button title=" %s " onclick="py.link('ease%d');" ''' +
         'style="width:100%%;%s">%s</button></td><td>&nbsp;</td>') % (
-            'позже' if lang == 'ru' else _('later'), _("Shortcut key: %s")%(_('Escape')), NOT_NOW_BASE,
+            'позже' if lang == 'ru' else _('later'), 
+            _("Shortcut key: %s")%(_('Escape')), NOT_NOW_BASE,
             'color:' + black + ';', ('&nbsp;не&nbsp;сейчас&nbsp;' 
             if lang == 'ru' else _('&nbsp;not&nbsp;now&nbsp;')))
 
@@ -140,8 +179,9 @@ def myShowAnswerButton(self, _old):
         json.dumps(middle), maxTime))
     return True
 
-Reviewer._showAnswerButton = wrap(
-    Reviewer._showAnswerButton, myShowAnswerButton, 'around')
+if old_addons2delete == '':
+    Reviewer._showAnswerButton = wrap(
+        Reviewer._showAnswerButton, myShowAnswerButton, 'around')
 
 # Anki uses a single digit to track which button has been clicked.
 NOT_NOW_BASE = 5
@@ -155,7 +195,8 @@ def AKR_answerCard(self, ease, _old):
         pass
     _old(self, ease)
 
-Reviewer._answerCard = wrap(Reviewer._answerCard, AKR_answerCard, 'around')
+if old_addons2delete == '':
+    Reviewer._answerCard = wrap(Reviewer._answerCard, AKR_answerCard, 'around')
 # 'before' does not working as intended cause ease is changing inside AKR
 
 # Replace _answerButtonList method
@@ -210,9 +251,6 @@ def myAnswerButtons(self, _old):
         buf + "</tr></table>" +
         "<script>$(function(){$('#defease').focus();});</script>")
 
-Reviewer._answerButtons = wrap(
-    Reviewer._answerButtons, myAnswerButtons, 'around')
-
 
 def answer_card_intercepting(self, actual_ease, _old):
     ease = actual_ease
@@ -222,73 +260,39 @@ def answer_card_intercepting(self, actual_ease, _old):
     else:
         return _old(self, ease)
 
-Reviewer._answerCard = wrap(
-    Reviewer._answerCard, answer_card_intercepting, 'around')
+if old_addons2delete == '':
+    Reviewer._answerButtons = wrap(
+        Reviewer._answerButtons, myAnswerButtons, 'around')
+
+    Reviewer._answerCard = wrap(
+        Reviewer._answerCard, answer_card_intercepting, 'around')
 
 
-def onEscape():
-    mw.reviewer.nextCard()
+    def onEscape():
+        mw.reviewer.nextCard()
 
-try:
-    mw.addon_cards_menu
-except AttributeError:
-    mw.addon_cards_menu = QMenu(
-        _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
-    mw.form.menubar.insertMenu(
-        mw.form.menuTools.menuAction(), mw.addon_cards_menu)
+    try:
+        mw.addon_cards_menu
+    except AttributeError:
+        mw.addon_cards_menu = QMenu(
+            _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
+        mw.form.menubar.insertMenu(
+            mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
-escape_action = QAction(mw)
-escape_action.setText(u'Позж&е, не сейчас' if lang ==
-                      'ru' else _(u'&Later, not now'))
-escape_action.setShortcut(QKeySequence('Escape'))
-escape_action.setEnabled(False)
-mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
+    escape_action = QAction(mw)
+    escape_action.setText(u'Позж&е, не сейчас' if lang ==
+                          'ru' else _(u'&Later, not now'))
+    escape_action.setShortcut(QKeySequence('Escape'))
+    escape_action.setEnabled(False)
+    mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 
-# mw.addon_cards_menu.addSeparator()
-mw.addon_cards_menu.addAction(escape_action)
-# mw.addon_cards_menu.addSeparator()
+    # mw.addon_cards_menu.addSeparator()
+    mw.addon_cards_menu.addAction(escape_action)
+    # mw.addon_cards_menu.addSeparator()
 
-mw.deckBrowser.show = wrap(
-    mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
-mw.overview.show = wrap(
-    mw.overview.show, lambda: escape_action.setEnabled(False))
-mw.reviewer.show = wrap(
-    mw.reviewer.show, lambda: escape_action.setEnabled(True))
-
-##
-
-old_addons = (
-    'Answer_Key_Remap.py',
-    'Bigger_Show_Answer_Button.py',
-    'Button_Colours_Good_Again.py',
-    'Bigger_Show_All_Answer_Buttons.py',
-    'More_Answer_Buttons_for_New_Cards.py',
-    '_Again_Hard.py',
-    '_Later_not_now_button.py',
-)
-
-old_addons2delete = ''
-for old_addon in old_addons:
-    if len(old_addon) > 0:
-        old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
-        if os.path.exists(old_filename):
-            old_addons2delete += old_addon[:-3] + ' \n'
-
-if old_addons2delete != '':
-    if lang == 'ru':
-        showText(
-            'В каталоге\n\n ' + mw.pm.addonFolder() +
-            '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
-            ' • Again Hard Good Easy wide big buttons \n' +
-            'и поэтому будут конфликтовать с ним.\n\n' +
-            old_addons2delete +
-            '\nУдалите эти дополнения и перезапустите Anki.')
-    else:
-        showText(
-            '<big>There are some add-ons in the folder <br>\n<br>\n' +
-            ' &nbsp; ' + mw.pm.addonFolder() +
-            '<pre>' + old_addons2delete + '</pre>' +
-            'They are already part of<br>\n' +
-            ' <b> &nbsp; • Again Hard Good Easy wide big buttons</b>' +
-            ' addon.<br>\n' +
-            'Please, delete them and restart Anki.</big>', type="html")
+    mw.deckBrowser.show = wrap(
+        mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
+    mw.overview.show = wrap(
+        mw.overview.show, lambda: escape_action.setEnabled(False))
+    mw.reviewer.show = wrap(
+        mw.reviewer.show, lambda: escape_action.setEnabled(True))
