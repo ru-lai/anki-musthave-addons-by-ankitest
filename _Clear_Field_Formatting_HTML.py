@@ -11,7 +11,9 @@
 # https://ankiweb.net/shared/info/728131107
 # Removes the field formatting of all selected notes.
 # Author: xelif@icqmail.com
-#
+# Inspired by
+# https://ankiweb.net/shared/info/1290231794
+# RemoveLinebreak
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -55,7 +57,7 @@ if sys.version[0] == '2':  # Python 3 is utf8 only already.
 ##
 
 
-def stripFormatting(txt, imgbr, divbr):
+def stripFormatting(txt, removeTags, newlineTags):
     """
     Removes all html tags, except if they begin like this:
         <img...> <br...> <div > </div>
@@ -69,20 +71,19 @@ def stripFormatting(txt, imgbr, divbr):
     -------
     string
         the modified string as described above
-
-    # if result != field:
-    #     sys.stderr.write('Changed: \"' + field
-    #                      + '\' ==> \"' + result + '\"')
     """
+    result = ''
     if not txt:
         return ''
-    result = re.sub(
-        imgbr, '',
-        re.sub(
-            divbr, '\n',
-            re.sub('<div.*?>', '<div>', txt)
-            )
-        )
+    if newlineTags:
+        result = re.sub(newlineTags, '\n', txt)
+    else:
+        result = txt
+    if removeTags:
+        result = re.sub(removeTags, '', result)
+    # if result != txt:
+    #     sys.stderr.write('Changed: \"' + txt
+    #                      + '\' ==> \"' + result + '\"')
     return result
 
 
@@ -115,9 +116,8 @@ def clearFormatting(self, nids=None, dids=None, note=None,
                 note.fields)
             note.flush()
     elif note:
-        note.fields = map(
-            lambda x: stripFormatting(x, removeTags, newlineTags),
-            note.fields)
+        note.fields[self.currentField] = stripFormatting(
+            note.fields[self.currentField], removeTags, newlineTags)
         note.flush()
 
     mw.progress.finish()
@@ -134,24 +134,21 @@ def clearFormatting(self, nids=None, dids=None, note=None,
 def onClearFormat(self, nids=None, dids=None, note=None):
     clearFormatting(
         self, nids=nids, dids=dids, note=note,
-        removeTags='<(?!img|br|div|/div).*?>',
-        newlineTags='(^$)')
+        removeTags='<(?!img|br|div|/div).*?>',)
 
 
 def onClearFormatting(self, nids=None, dids=None, note=None):
     clearFormatting(
         self, nids=nids, dids=dids, note=note,
         removeTags='<(?!img).*?>',
-        newlineTags='</div><div>|</div>|<div>|<br />')
+        newlineTags='</div><div.*?>|</div>|<div.*?>|<br.*?>')
 
 
 def onClearFormatted(self, nids=None, dids=None, note=None):
     clearFormatting(
         self, nids=nids, dids=dids, note=note,
-        removeTags='</div><div>|</div>|<div>|<br />',
-        newlineTags='(^$)')
-        # надо заменять на пробел, а не просто удалять
-        # ну и неплохо сначала div заменять на span
+        newlineTags='</div><div.*?>|</div>|<div.*?>|<br.*?>')
+        # to keep attr=... first replace DIV with SPAN
 
 
 def setupMenu(self):
@@ -251,28 +248,34 @@ def onAdvanced(self):
     a.setShortcut(QKeySequence("Ctrl+Shift+X"))
     a.connect(a, SIGNAL("triggered()"), self.onHtmlEdit)
 
+    runHook("latexHooker", self, m)
+
+    m.exec_(QCursor.pos())
+
+aqt.editor.Editor.onAdvanced = onAdvanced
+
+
+def latexHooker(self, m):
     m.addSeparator()
 
-    a = m.addAction(_('Clear Fields Formatting HTML (remain new lines)'))
+    a = m.addAction(_('Clear Field Formatting HTML (remain new lines)'))
     # a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormat(e, note=self.note))
 
-    a = m.addAction(_('Clear Fields Formatting HTML (at all)'))
+    a = m.addAction(_('Clear Field Formatting HTML (at all)'))
     # a.setShortcut(QKeySequence(HOTKEY['full'][0]))
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormatting(e, note=self.note))
 
-    a = m.addAction(_('Clear Fields Format HTML (remove new lines only)'))
+    a = m.addAction(_('Clear Field Format HTML (remove new lines only)'))
     # a.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormatted(e, note=self.note))
 
     m.addSeparator()
 
-    m.exec_(QCursor.pos())
-
-aqt.editor.Editor.onAdvanced = onAdvanced
+addHook('latexHooker', latexHooker)
 
 ##
 
