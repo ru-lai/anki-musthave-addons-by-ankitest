@@ -5,7 +5,8 @@
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #  Made by request:
 #   Clear Field Formatting (HTML) in Bulk needs improvement
-#    https://anki.tenderapp.com/discussions/add-ons/7526-clear-field-formatting-html-in-bulk-needs-improvement
+#    https://anki.tenderapp.com/discussions/add-ons/
+#    7526-clear-field-formatting-html-in-bulk-needs-improvement
 # Based on
 # https://ankiweb.net/shared/info/728131107
 # Removes the field formatting of all selected notes.
@@ -15,8 +16,10 @@ from __future__ import division
 from __future__ import unicode_literals
 import os
 import sys
-import datetime
 import re
+
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 import aqt.deckbrowser
 import aqt.editor
@@ -25,9 +28,6 @@ from aqt.utils import showText, tooltip
 from anki.hooks import addHook, wrap, runHook
 from aqt import mw
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
 # Get language class
 import anki.lang
 lang = anki.lang.getLang()
@@ -35,6 +35,7 @@ lang = anki.lang.getLang()
 HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
     'clear':    ['Ctrl+F12', '', '', ''' ''', """ """],
     'full':     ['Ctrl+Shift+F12', '', '', ''' ''', """ """],
+    'brdiv':    ['Alt+Shift+F12', '', '', ''' ''', """ """],
 }
 
 ##
@@ -68,45 +69,25 @@ def stripFormatting(txt, imgbr, divbr):
     -------
     string
         the modified string as described above
+
+    # if result != field:
+    #     sys.stderr.write('Changed: \"' + field
+    #                      + '\' ==> \"' + result + '\"')
     """
-    return re.sub(imgbr, '', re.sub(divbr, '\n',
-                  re.sub('<div .*?>', '<div>', txt)))
+    if not txt:
+        return ''
+    result = re.sub(
+        imgbr, '',
+        re.sub(
+            divbr, '\n',
+            re.sub('<div.*?>', '<div>', txt)
+            )
+        )
+    return result
 
 
-def onClearFormat(self, nids=None, dids=None, note=None):
-    mw.checkpoint('Clear Fields Format HTML')
-    mw.progress.start()
-
-    def clearFields(field):
-        if not field:
-            return ''
-        return stripFormatting(field, '<(?!img|br|div|/div).*?>', '(^$)')
-    if dids:
-        nids = []
-        for did in dids:
-            deck = self.mw.col.decks.nameOrNone(did)
-            query = 'deck:"%s"' % (deck)
-            nids.extend(self.mw.col.findNotes(query))
-    if nids:
-        for nid in nids:  # self.selectedNotes():
-            note = mw.col.getNote(nid)
-            note.fields = map(clearFields, note.fields)
-            note.flush()
-    elif note:
-        note.fields = map(clearFields, note.fields)
-        note.flush()
-    mw.progress.finish()
-    if mw.state == 'review':
-        rst = mw.reviewer.state
-    else:
-        rst = None
-    mw.reset()
-    if rst == 'answer':
-        mw.reviewer._showAnswerHack()
-    tooltip('Clear Fields Format HTML done.', period=1500)
-
-
-def onClearFormatting(self, nids=None, dids=None, note=None):
+def clearFormatting(self, nids=None, dids=None, note=None,
+                      removeTags='', newlineTags=''):
     """
     Clears the formatting for every selected note.
     Also creates a restore point, allowing a single undo operation.
@@ -119,29 +100,26 @@ def onClearFormatting(self, nids=None, dids=None, note=None):
     mw.checkpoint('Clear Fields Formatting HTML')
     mw.progress.start()
 
-    def clearFields(field):
-        if not field:
-            return ''
-        result = stripFormatting(
-            field, '<(?!img).*?>', '</div><div>|</div>|<div>|<br />')
-        # if result != field:
-        #     sys.stderr.write('Changed: \"' + field
-        #                      + '\' ==> \"' + result + '\"')
-        return result
     if dids:
         nids = []
         for did in dids:
             deck = self.mw.col.decks.nameOrNone(did)
             query = 'deck:"%s"' % (deck)
             nids.extend(self.mw.col.findNotes(query))
+
     if nids:
         for nid in nids:  # self.selectedNotes():
             note = mw.col.getNote(nid)
-            note.fields = map(clearFields, note.fields)
+            note.fields = map(
+                lambda x: stripFormatting(x, removeTags, newlineTags),
+                note.fields)
             note.flush()
     elif note:
-        note.fields = map(clearFields, note.fields)
+        note.fields = map(
+            lambda x: stripFormatting(x, removeTags, newlineTags),
+            note.fields)
         note.flush()
+
     mw.progress.finish()
     if mw.state == 'review':
         rst = mw.reviewer.state
@@ -153,25 +131,63 @@ def onClearFormatting(self, nids=None, dids=None, note=None):
     tooltip('Clear Fields Formatting HTML done.', period=1500)
 
 
+def onClearFormat(self, nids=None, dids=None, note=None):
+    clearFormatting(
+        self, nids=nids, dids=dids, note=note,
+        removeTags='<(?!img|br|div|/div).*?>',
+        newlineTags='(^$)')
+
+
+def onClearFormatting(self, nids=None, dids=None, note=None):
+    clearFormatting(
+        self, nids=nids, dids=dids, note=note,
+        removeTags='<(?!img).*?>',
+        newlineTags='</div><div>|</div>|<div>|<br />')
+
+
+def onClearFormatted(self, nids=None, dids=None, note=None):
+    clearFormatting(
+        self, nids=nids, dids=dids, note=note,
+        removeTags='</div><div>|</div>|<div>|<br />',
+        newlineTags='(^$)')
+        # надо заменять на пробел, а не просто удалять
+        # ну и неплохо сначала div заменять на span
+
+
 def setupMenu(self):
     """
     Add the items to the browser menu Edit
     """
-    self.form.menuEdit.addSeparator()
+    try:
+        self.form.addon_notes_menu
+    except AttributeError:
+        self.form.addon_notes_menu = QMenu(
+            _(u'&Записи') if lang == 'ru' else _(u'&Notes'), mw)
+        self.form.menubar.insertMenu(
+            self.form.menu_Help.menuAction(), self.form.addon_notes_menu)
+
+    # self.form.menuEdit.addSeparator()
+    self.form.addon_notes_menu.addSeparator()
 
     a = QAction(_('Clear Fields Formatting HTML (remain new lines)'), self)
     a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
     self.connect(a, SIGNAL('triggered()'),
                  lambda e=self: onClearFormat(e, nids=e.selectedNotes()))
-    self.form.menuEdit.addAction(a)
+    self.form.addon_notes_menu.addAction(a)
 
     b = QAction(_('Clear Fields Formatting HTML (at all)'), self)
     b.setShortcut(QKeySequence(HOTKEY['full'][0]))
     self.connect(b, SIGNAL('triggered()'),
                  lambda e=self: onClearFormatting(e, nids=e.selectedNotes()))
-    self.form.menuEdit.addAction(b)
+    self.form.addon_notes_menu.addAction(b)
 
-    self.form.menuEdit.addSeparator()
+    c = QAction(_('Clear Fields Format HTML (remove new lines only)'), self)
+    c.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
+    self.connect(c, SIGNAL('triggered()'),
+                 lambda e=self: onClearFormatted(e, nids=e.selectedNotes()))
+    self.form.addon_notes_menu.addAction(c)
+
+    self.form.addon_notes_menu.addSeparator()
 
 addHook('browser.setupMenus', setupMenu)
 
@@ -208,6 +224,10 @@ def deckHooker(self, did, m):
     a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did:
               onClearFormatting(e, dids=[did]))
 
+    a = m.addAction(_('Clear Fields Format HTML (remove new lines only)'))
+    a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did:
+              onClearFormatted(e, dids=[did]))
+
     m.addSeparator()
 
 addHook('deckHooker', deckHooker)
@@ -243,7 +263,12 @@ def onAdvanced(self):
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormatting(e, note=self.note))
 
-    # m.addSeparator()
+    a = m.addAction(_('Clear Fields Format HTML (remove new lines only)'))
+    # a.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
+    a.connect(a, SIGNAL("triggered()"), lambda e=self:
+              onClearFormatted(e, note=self.note))
+
+    m.addSeparator()
 
     m.exec_(QCursor.pos())
 
@@ -251,30 +276,46 @@ aqt.editor.Editor.onAdvanced = onAdvanced
 
 ##
 
-c = QAction(_('Clear Fields Formatting HTML (remain new lines)'), mw)
-c.setShortcut(QKeySequence(HOTKEY['clear'][0]))
-mw.connect(c, SIGNAL('triggered()'), lambda e=mw:
+aa = QAction(_('Clear Fields Formatting HTML (remain new lines)'), mw)
+aa.setShortcut(QKeySequence(HOTKEY['clear'][0]))
+mw.connect(aa, SIGNAL('triggered()'), lambda e=mw:
            onClearFormat(e, nids=[e.reviewer.card.nid]))
 
-d = QAction(_('Clear Fields Formatting HTML (at all)'), mw)
-d.setShortcut(QKeySequence(HOTKEY['full'][0]))
-mw.connect(d, SIGNAL('triggered()'), lambda e=mw:
+bb = QAction(_('Clear Fields Formatting HTML (at all)'), mw)
+bb.setShortcut(QKeySequence(HOTKEY['full'][0]))
+mw.connect(bb, SIGNAL('triggered()'), lambda e=mw:
            onClearFormatting(e, nids=[e.reviewer.card.nid]))
 
-mw.form.menuEdit.addSeparator()
-mw.form.menuEdit.addAction(c)
-mw.form.menuEdit.addAction(d)
-mw.form.menuEdit.addSeparator()
+cc = QAction(_('Clear Fields Format HTML (remove new lines only)'), mw)
+cc.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
+mw.connect(cc, SIGNAL('triggered()'), lambda e=mw:
+           onClearFormatted(e, nids=[e.reviewer.card.nid]))
+
+try:
+    mw.addon_notes_menu
+except AttributeError:
+    mw.addon_notes_menu = QMenu(
+        _(u'&Записи') if lang == 'ru' else _(u'&Notes'), mw)
+    mw.form.menubar.insertMenu(
+        mw.form.menuTools.menuAction(), mw.addon_notes_menu)
+
+mw.addon_notes_menu.addSeparator()
+mw.addon_notes_menu.addAction(aa)
+mw.addon_notes_menu.addAction(bb)
+mw.addon_notes_menu.addAction(cc)
+mw.addon_notes_menu.addSeparator()
 
 
 def swap_off():
-    c.setEnabled(False)
-    d.setEnabled(False)
+    aa.setEnabled(False)
+    bb.setEnabled(False)
+    cc.setEnabled(False)
 
 
 def swap_on():
-    c.setEnabled(True)
-    d.setEnabled(True)
+    aa.setEnabled(True)
+    bb.setEnabled(True)
+    cc.setEnabled(True)
 
 mw.deckBrowser.show = wrap(mw.deckBrowser.show, swap_off)
 mw.overview.show = wrap(mw.overview.show, swap_off)
