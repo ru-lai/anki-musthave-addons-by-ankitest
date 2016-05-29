@@ -299,6 +299,7 @@ except AttributeError:
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_notes_menu)
 
+# mw.form.menuEdit.addSeparator()
 mw.addon_notes_menu.addSeparator()
 mw.addon_notes_menu.addAction(aa)
 mw.addon_notes_menu.addAction(bb)
