@@ -25,7 +25,7 @@ from PyQt4.QtGui import *
 
 import aqt.deckbrowser
 import aqt.editor
-from aqt.utils import showText, tooltip
+from aqt.utils import showText, tooltip, askUser, getText
 
 from anki.hooks import addHook, wrap, runHook
 from aqt import mw
@@ -38,6 +38,7 @@ HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
     'clear':    ['Ctrl+F12', '', '', ''' ''', """ """],
     'full':     ['Ctrl+Shift+F12', '', '', ''' ''', """ """],
     'brdiv':    ['Alt+Shift+F12', '', '', ''' ''', """ """],
+    'retags':   ['Ctrl+Alt+Shift+F12', '', '', ''' ''', """ """],
 }
 
 ##
@@ -57,7 +58,7 @@ if sys.version[0] == '2':  # Python 3 is utf8 only already.
 ##
 
 
-def stripFormatting(txt, removeTags, newlineTags):
+def stripFormatting(txt, removeTags, newlineTags, replaceTags):
     """
     Removes all html tags, except if they begin like this:
         <img...> <br...> <div > </div>
@@ -80,7 +81,10 @@ def stripFormatting(txt, removeTags, newlineTags):
     else:
         result = txt
     if removeTags:
-        result = re.sub(removeTags, '', result)
+        if replaceTags:
+            result = re.sub(removeTags, replaceTags, result)
+        else:
+            result = re.sub(removeTags, '', result)
     # if result != txt:
     #     sys.stderr.write('Changed: \"' + txt
     #                      + '\' ==> \"' + result + '\"')
@@ -88,7 +92,7 @@ def stripFormatting(txt, removeTags, newlineTags):
 
 
 def clearFormatting(self, nids=None, dids=None, note=None,
-                      removeTags='', newlineTags=''):
+                      removeTags='', newlineTags='', replaceTags=''):
     """
     Clears the formatting for every selected note.
     Also creates a restore point, allowing a single undo operation.
@@ -112,12 +116,14 @@ def clearFormatting(self, nids=None, dids=None, note=None,
         for nid in nids:  # self.selectedNotes():
             note = mw.col.getNote(nid)
             note.fields = map(
-                lambda x: stripFormatting(x, removeTags, newlineTags),
+                lambda x: stripFormatting(
+                    x, removeTags, newlineTags, replaceTags),
                 note.fields)
             note.flush()
     elif note:
         note.fields[self.currentField] = stripFormatting(
-            note.fields[self.currentField], removeTags, newlineTags)
+            note.fields[self.currentField], 
+            removeTags, newlineTags, replaceTags)
         note.flush()
 
     mw.progress.finish()
@@ -151,6 +157,63 @@ def onClearFormatted(self, nids=None, dids=None, note=None):
         # to keep attr=... first replace DIV with SPAN
 
 
+def onClearFormattag(self, nids=None, dids=None, note=None):
+    OLDcolor = ''
+    NEWcolor = ''
+
+    valid = ['a', 'b', 'i', 'u', 'p', 's', 'sub', 'sup', 'font']
+    demand = getText(
+        'Remove some of HTML tags <b>' + ' '.join(valid) +
+        '</b><br>   or replace   <i>OLDcolor NEWcolor</i>' +
+        '</b><br>   or delete    <i>OLDcolor</i>')
+    stencil = []
+    if not demand[1]: # cancelled by user
+        return
+
+    requests = demand[0].strip().lower().split()
+    for req in requests:
+        if req in valid:
+            stencil.extend(['<%s.*?>|</%s>' % (req, req)])
+        else:
+            if not OLDcolor:
+                OLDcolor = req
+            else:
+                NEWcolor = req
+        if req == 'b':
+            stencil.extend(['<strong.*?>|</strong>'])
+        if req == 'i':
+            stencil.extend(['<em.*?>|</em>'])
+        if req == 's':
+            stencil.extend(['<strike.*?>|</strike>|' + 
+                           '<del.*?>|</del>|<ins.*?>|</ins>'])
+
+    if stencil and askUser('Delete %s?' % ('|'.join(stencil))):
+        clearFormatting(
+            self, nids=nids, dids=dids, note=note,
+            removeTags='|'.join(stencil))
+
+    if OLDcolor:
+        #tooltip('Sorry, not implemented yet.')
+        #return
+
+        oldTag = '''\s+?color\s*?\=\s*?["']??(%s)["']??''' % \
+            (OLDcolor)
+        if NEWcolor:
+            if askUser(
+                    ('Replace color <b style="color:%s;">%s</b>' +
+                     ' with <b style="color:%s;">%s</b>?') % 
+                    (OLDcolor, OLDcolor, NEWcolor, NEWcolor)):
+                newTag = ' color="%s"' % (NEWcolor)
+                clearFormatting(
+                    self, nids=nids, dids=dids, note=note,
+                    removeTags=oldTag, replaceTags=newTag)
+        else:
+            if askUser('Delete color <b>%s</b>?' % (OLDcolor)):
+                clearFormatting(
+                    self, nids=nids, dids=dids, note=note,
+                    removeTags=oldTag)
+
+
 def setupMenu(self):
     """
     Add the items to the browser menu Edit
@@ -166,7 +229,7 @@ def setupMenu(self):
     # self.form.menuEdit.addSeparator()
     self.form.addon_notes_menu.addSeparator()
 
-    a = QAction(_('Clear Fields Formatting HTML (remain new lines)'), self)
+    a = QAction(_('Clear Fields Formatting (Remain New Lines)'), self)
     a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
     self.connect(a, SIGNAL('triggered()'),
                  lambda e=self: onClearFormat(e, nids=e.selectedNotes()))
@@ -178,11 +241,17 @@ def setupMenu(self):
                  lambda e=self: onClearFormatting(e, nids=e.selectedNotes()))
     self.form.addon_notes_menu.addAction(b)
 
-    c = QAction(_('Clear Fields Format HTML (remove new lines only)'), self)
+    c = QAction(_('Clear Fields Format (Remove New Lines only)'), self)
     c.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
     self.connect(c, SIGNAL('triggered()'),
                  lambda e=self: onClearFormatted(e, nids=e.selectedNotes()))
     self.form.addon_notes_menu.addAction(c)
+
+    d = QAction(_('Clear Fields (remove tags or change color)'), self)
+    d.setShortcut(QKeySequence(HOTKEY['retags'][0]))
+    self.connect(d, SIGNAL('triggered()'),
+                 lambda e=self: onClearFormattag(e, nids=e.selectedNotes()))
+    self.form.addon_notes_menu.addAction(d)
 
     self.form.addon_notes_menu.addSeparator()
 
@@ -213,7 +282,7 @@ aqt.deckbrowser.DeckBrowser._showOptions = showOptions
 def deckHooker(self, did, m):
     m.addSeparator()
 
-    a = m.addAction(_('Clear Fields Formatting HTML (remain new lines)'))
+    a = m.addAction(_('Clear Fields Formatting (Remain New Lines)'))
     a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did:
               onClearFormat(e, dids=[did]))
 
@@ -221,9 +290,13 @@ def deckHooker(self, did, m):
     a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did:
               onClearFormatting(e, dids=[did]))
 
-    a = m.addAction(_('Clear Fields Format HTML (remove new lines only)'))
+    a = m.addAction(_('Clear Fields Format (Remove New Lines only)'))
     a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did:
               onClearFormatted(e, dids=[did]))
+
+    a = m.addAction(_('Clear Fields (remove tags or change color)'))
+    a.connect(a, SIGNAL("triggered()"), lambda e=self, did=did:
+              onClearFormattag(e, dids=[did]))
 
     m.addSeparator()
 
@@ -258,7 +331,7 @@ aqt.editor.Editor.onAdvanced = onAdvanced
 def latexHooker(self, m):
     m.addSeparator()
 
-    a = m.addAction(_('Clear Field Formatting HTML (remain new lines)'))
+    a = m.addAction(_('Clear Field Formatting (remain new lines)'))
     # a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormat(e, note=self.note))
@@ -268,10 +341,15 @@ def latexHooker(self, m):
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormatting(e, note=self.note))
 
-    a = m.addAction(_('Clear Field Format HTML (remove new lines only)'))
+    a = m.addAction(_('Clear Field Format (remove new lines only)'))
     # a.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormatted(e, note=self.note))
+
+    a = m.addAction(_('Clear Field (remove tags or change color)'))
+    # a.setShortcut(QKeySequence(HOTKEY['retags'][0]))
+    a.connect(a, SIGNAL("triggered()"), lambda e=self:
+              onClearFormattag(e, note=self.note))
 
     m.addSeparator()
 
@@ -279,7 +357,7 @@ addHook('latexHooker', latexHooker)
 
 ##
 
-aa = QAction(_('Clear Fields Formatting HTML (remain new lines)'), mw)
+aa = QAction(_('Clear Fields Formatting (Remain New Lines)'), mw)
 aa.setShortcut(QKeySequence(HOTKEY['clear'][0]))
 mw.connect(aa, SIGNAL('triggered()'), lambda e=mw:
            onClearFormat(e, nids=[e.reviewer.card.nid]))
@@ -289,10 +367,15 @@ bb.setShortcut(QKeySequence(HOTKEY['full'][0]))
 mw.connect(bb, SIGNAL('triggered()'), lambda e=mw:
            onClearFormatting(e, nids=[e.reviewer.card.nid]))
 
-cc = QAction(_('Clear Fields Format HTML (remove new lines only)'), mw)
+cc = QAction(_('Clear Fields Format (Remove New Lines only)'), mw)
 cc.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
 mw.connect(cc, SIGNAL('triggered()'), lambda e=mw:
            onClearFormatted(e, nids=[e.reviewer.card.nid]))
+
+dd = QAction(_('Clear Fields (remove tags or change color)'), mw)
+dd.setShortcut(QKeySequence(HOTKEY['retags'][0]))
+mw.connect(dd, SIGNAL('triggered()'), lambda e=mw:
+           onClearFormattag(e, nids=[e.reviewer.card.nid]))
 
 try:
     mw.addon_notes_menu
@@ -307,6 +390,7 @@ mw.addon_notes_menu.addSeparator()
 mw.addon_notes_menu.addAction(aa)
 mw.addon_notes_menu.addAction(bb)
 mw.addon_notes_menu.addAction(cc)
+mw.addon_notes_menu.addAction(dd)
 mw.addon_notes_menu.addSeparator()
 
 
@@ -314,12 +398,14 @@ def swap_off():
     aa.setEnabled(False)
     bb.setEnabled(False)
     cc.setEnabled(False)
+    dd.setEnabled(False)
 
 
 def swap_on():
     aa.setEnabled(True)
     bb.setEnabled(True)
     cc.setEnabled(True)
+    dd.setEnabled(True)
 
 mw.deckBrowser.show = wrap(mw.deckBrowser.show, swap_off)
 mw.overview.show = wrap(mw.overview.show, swap_off)
@@ -330,6 +416,7 @@ mw.reviewer.show = wrap(mw.reviewer.show, swap_on)
 old_addons = (
     'Clear_Field_Formatting_HTML_in_Bulk.py',
     '_Clear_Field_Formatting_HTML_in_Bulk.py',
+    'RemoveLinebreak.py',
 )
 
 old_addons2delete = ''
