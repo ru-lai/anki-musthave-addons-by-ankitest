@@ -35,3 +35,5 @@ Info | Code
 
 There is no difference between GitHub and AnkiWeb,  
 both are updated at the same time.  
+
+No support. Use it AS IS on your own risk. 
