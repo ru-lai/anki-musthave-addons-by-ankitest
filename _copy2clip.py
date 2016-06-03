@@ -30,12 +30,13 @@ field_names = [
     _('Front'),
     'Front',
     ]
-    # if not found then
-    #    first field would be copied
+# if not found then
+#    first field would be copied
 
 if sys.version[0] == '2':  # Python 3 is utf8 only already.
-  if hasattr(sys, 'setdefaultencoding'):
-    sys.setdefaultencoding('utf8')
+    if hasattr(sys, 'setdefaultencoding'):
+        sys.setdefaultencoding('utf8')
+
 
 def onFastTranslate():
 
@@ -48,8 +49,8 @@ def onFastTranslate():
     for fld in field_names:
         for fldi, flde in enumerate(fldn):
             if fld == flde['name']:
-               field_index = fldi
-               break
+                field_index = fldi
+                break
         if field_index > -1:
             break
     else:
@@ -71,13 +72,13 @@ def onFastTranslate():
 
     if p.returncode:
         showCritical('_copy2clip has return code ' +
-                     'from pipe subprocess clip:<br>' + 
+                     'from pipe subprocess clip:<br>' +
                      unicode(p.returncode) + '<br>' + unicode(res))
 
 # define a new hotkey
 
-#c = QShortcut(QKeySequence("c"), mw)
-#c.connect(c, SIGNAL("activated()"), onFastTranslate)
+# c = QShortcut(QKeySequence("c"), mw)
+# c.connect(c, SIGNAL("activated()"), onFastTranslate)
 
 auction = QAction(mw)
 auction.setText('copy2clip')

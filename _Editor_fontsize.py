@@ -146,7 +146,7 @@ aqt.editor.Editor.fonts = anki.hooks.wrap(
 def particularFont(fontKey, bold=False, italic=False, underline=False):
     font = PyQt4.QtGui.QFont()
     if fontKey in FONTS:
-        if FONTS[fontKey][0] != None:
+        if FONTS[fontKey][0] is not None:
             font.setFamily(FONTS[fontKey][0])
         fontsize = int(FONTS[fontKey][1])
         if fontsize > 0:

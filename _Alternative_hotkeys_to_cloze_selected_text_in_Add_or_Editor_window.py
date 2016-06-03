@@ -12,7 +12,7 @@
 # and Ctrl+Alt+Shift+C respectively.
 #
 # You can invent your own keys combinations, specify them
-# at the beginning of the source code and restart Anki. 
+# at the beginning of the source code and restart Anki.
 #
 # No support. Use it AS IS on your own risk.
 

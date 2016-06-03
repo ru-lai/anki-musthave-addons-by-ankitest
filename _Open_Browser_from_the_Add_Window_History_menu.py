@@ -6,7 +6,7 @@
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # Adds a menu item into the "History" menu of the "Add" notes dialog
-#  that opens a Browser on the 'Added Today' view.  
+#  that opens a Browser on the 'Added Today' view.
 #
 # No support. Use it AS IS on your own risk.
 """

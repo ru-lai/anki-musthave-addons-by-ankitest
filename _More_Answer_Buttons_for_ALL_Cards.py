@@ -417,7 +417,6 @@ if old_addons2delete == '':
 
     #
 
-
     def onEscape():
         mw.reviewer.nextCard()
 

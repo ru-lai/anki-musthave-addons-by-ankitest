@@ -147,10 +147,11 @@ def laterNotNow():
         '<td align=center><span class=stattxt>%s</span>' +
         '''<button title=" %s " onclick="py.link('ease%d');" ''' +
         'style="width:100%%;%s">%s</button></td><td>&nbsp;</td>') % (
-            'позже' if lang == 'ru' else _('later'), 
-            _("Shortcut key: %s")%(_('Escape')), NOT_NOW_BASE,
-            'color:' + black + ';', ('&nbsp;не&nbsp;сейчас&nbsp;' 
-            if lang == 'ru' else _('&nbsp;not&nbsp;now&nbsp;')))
+            'позже' if lang == 'ru' else _('later'),
+            _("Shortcut key: %s") % (_('Escape')), NOT_NOW_BASE,
+            'color:' + black + ';', (
+                '&nbsp;не&nbsp;сейчас&nbsp;'
+                if lang == 'ru' else _('&nbsp;not&nbsp;now&nbsp;')))
 
 
 def myShowAnswerButton(self, _old):
@@ -168,7 +169,7 @@ def myShowAnswerButton(self, _old):
         '</tr></table>') % (
             BEAMS4, self._remaining(),
             ' title=" ' + (_('Shortcut key: %s') % _('Space')) + ' " ',
-            ' color:' + black +';', _('Show Answer'))
+            ' color:' + black + ';', _('Show Answer'))
 
     # place it in a table so it has the same top margin as the ease buttons
     # middle = '<!div align=center style='width:%s!important;'>%s</div>' %
@@ -239,9 +240,8 @@ def myAnswerButtons(self, _old):
             '''style="width:100%%;%s" onclick="py.link('ease%d');"''' +
             '>%s</button></td>') % (
                 beam, due, extra, (
-                    (' title=" ' + _('Shortcut key: %s') % 
-                    # (remap[cnt][i])) + ' "'),
-                    (i)) + ' "'),
+                    (' title=" ' + _('Shortcut key: %s') %
+                     (i)) + ' "'),  # (remap[cnt][i])) + ' "'),
                 'color:' + black, i, label)
 
     buf = laterNotNow()
@@ -268,7 +268,6 @@ if old_addons2delete == '':
 
     Reviewer._answerCard = wrap(
         Reviewer._answerCard, answer_card_intercepting, 'around')
-
 
     def onEscape():
         mw.reviewer.nextCard()

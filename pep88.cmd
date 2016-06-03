@@ -1,0 +1,1 @@
+forfiles /m *.py /C "cmd /c echo. & echo pep8 @file & pep8 @file"
