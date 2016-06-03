@@ -1,6 +1,9 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • Again Hard Good Easy wide big buttons
 # https://ankiweb.net/shared/info/1508882486
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
+# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # Show answer and Again Hard Good Easy buttons
 #  so wide as Anki window.
@@ -17,12 +20,11 @@
 #
 # 2016-05-07 added button 'Later Not now'
 #
-# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals
-import os  # , sys, datetime
 import json
+import os
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *

@@ -1,9 +1,14 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • Edit Audio Images
 # https://ankiweb.net/shared/info/1040866511
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
+# In card reviewer F10 opens all sounds and images in external editors.
+# In Add/Edit window F10 opens sounds and images only from current field.
+#
+# No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals
 import os

@@ -1,9 +1,17 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • F4 Edit
 # https://ankiweb.net/shared/info/2085904433
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
+# Implements F4 hotkey as synonym for e shortcut key in Card Reviewer.
+# Shift+F4 opens Edit - Cards... 
+# It works with the type: mode as well. 
+#  F4 acts as alternative hotkey for Ctrl+Shift+X (activates HTML Editor)
+#   in Add/Edit/Browse fields window. 
+#
+# No support. Use it AS IS on your own risk.
 from __future__ import unicode_literals
 from __future__ import division
 import os

@@ -1,4 +1,14 @@
-﻿# -*- coding: utf-8 -*-
+﻿# -*- mode: Python ; coding: utf-8 -*-
+# ~ Open Browser from the Add Window History menu
+# https://ankiweb.net/shared/info/166963014
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
+# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+#
+# Adds a menu item into the "History" menu of the "Add" notes dialog
+#  that opens a Browser on the 'Added Today' view.  
+#
+# No support. Use it AS IS on your own risk.
 """
 Adds a menu item into the "History" menu of the "Add" notes dialog that
    opens a Browser on the 'Added Today' view.

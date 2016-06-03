@@ -1,11 +1,14 @@
 # -*- mode: Python ; coding: utf-8 -*-
+# • Flip-flop
 # https://ankiweb.net/shared/info/519426347
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # -- Flip-flop card (Show FrontSide/BackSide
 #    by F7/F8 or Ctrl+PgUp/Control+PageDown or ^9/^3 or Insert/0)
-# -- 519426347 --
+#
+# No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals
 import os

@@ -5,6 +5,7 @@
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
+# No support. Use it AS IS on your own risk.
 from __future__ import division
 
 import copy

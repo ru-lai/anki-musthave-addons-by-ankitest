@@ -1,21 +1,24 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • Insensitive case type field
-# How to make Anki insensitive case when using {{type:field}}
-# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # https://ankiweb.net/shared/info/1616934891
-# _Insensitive_case_type_field.py
-
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
+# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+#
+# How to make Anki insensitive case when using {{type:field}}
+#
 # monkey patch
 # Upper case, lower case and {{type:}}
-
+#
 # You can use it together with
 # Multiple type fields on card
 # https://ankiweb.net/shared/info/689574440
-
+#
 # Inspired by
 # Select Buttons Automatically If Correct Answer, Wrong Answer or Nothing
 # https://ankiweb.net/shared/info/2074758752
-
+#
+# No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals
 import os

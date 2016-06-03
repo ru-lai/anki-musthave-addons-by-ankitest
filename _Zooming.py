@@ -1,12 +1,14 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • Zooming
 # https://ankiweb.net/shared/info/1071179937
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # The image is enlarged up to a maximum of 95% of the height or width
 #  of the card's window.
 #
+# No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals
 import os

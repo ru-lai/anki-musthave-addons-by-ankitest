@@ -1,9 +1,9 @@
-﻿# -*- coding: utf-8 -*-
-# by Anki user ankitest
-# License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
-
+﻿# -*- mode: Python ; coding: utf-8 -*-
 # • day learning cards always before new
 # https://ankiweb.net/shared/info/1331545236
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
+# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 
 # Now it is the part of Must Have add-on:
 # https://ankiweb.net/shared/info/67643234
@@ -34,6 +34,8 @@
 # Normally these cards go last, but I want them to go first.
 # ####################################################################
 
+#
+# No support. Use it AS IS on your own risk.
 import anki.sched
 
 

@@ -2,12 +2,12 @@
 # • Collapse Them All
 # https://ankiweb.net/shared/info/1846969611
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
-#
-# Expand/Collapse Browser Tree
-#
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
+# Expand/Collapse Browser Tree
+#
+# No support. Use it AS IS on your own risk.
 from __future__ import unicode_literals
 
 from anki.hooks import addHook

@@ -1,9 +1,11 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • View HTML source with JavaScript and CSS styles
 # https://ankiweb.net/shared/info/1128123950
-# License: GNU GPL, version 3 or later;
-# http://www.gnu.org/copyleft/gpl.html
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+#
+# No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals
 import os

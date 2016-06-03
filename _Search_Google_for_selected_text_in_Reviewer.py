@@ -1,9 +1,13 @@
-# -*- coding: utf-8 -*-
+# -*- mode: Python ; coding: utf-8 -*-
 # ~ Search Google for selected text in Reviewer
 # https://ankiweb.net/shared/info/1514982403
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+#
 # 14.05.2016 -- not only Google now!
+#
+# No support. Use it AS IS on your own risk.
 """
 Adds Search For Selected Text to the Reviewer Window's context/popup menu
 

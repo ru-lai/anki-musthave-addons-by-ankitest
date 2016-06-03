@@ -1,9 +1,19 @@
-﻿# -*- coding: utf-8 -*-
+﻿# -*- mode: Python ; coding: utf-8 -*-
 # ~ More Answer Buttons for ALL Cards
 # https://ankiweb.net/shared/info/755044381
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
+# Adds 1-4 (4 by default) extra answer buttons with regular intervals.
+#  No answer on that card will be given, just setup additional interval.
+#
+# You can assign you own intervals, labels.
+#  Hotkeys are 6, 7, 8, 9.
+# You can use intervals as button labels
+#  View - Answer buttons without labels or Ctrl+Alt+Shift+L
+#
+# No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals
 import os

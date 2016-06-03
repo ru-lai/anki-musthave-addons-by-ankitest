@@ -2,6 +2,8 @@
 # • Editor fontsize
 # https://ankiweb.net/shared/info/1931469441
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
+# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # Increase Text Size for Card Types Editor and so on.
 #
@@ -14,9 +16,7 @@
 #
 # Expand/Collapse Whole Browser Tree
 #
-# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
+# No support. Use it AS IS on your own risk.
 from __future__ import unicode_literals
 from __future__ import division
 import os

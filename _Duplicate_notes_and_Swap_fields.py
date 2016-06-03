@@ -40,16 +40,16 @@ if sys.version[0] == '2':  # Python 3 is utf8 only already.
     if hasattr(sys, 'setdefaultencoding'):
         sys.setdefaultencoding('utf8')
 
-CASE_SENSITIVE = True  # False #
+CASE_SENSITIVE = True  # False  #
 
 SWAP_TAG = False
-# SWAP_TAG = datetime.datetime.now().strftime('swapped::swap-%Y-%m-%d')
-# #-%H:%M:%S')
-SWAP_TAG = datetime.datetime.now().strftime('sw-%y-%m-%d')
+# SWAP_TAG = datetime.datetime.now().strftime(
+#    'swapped::swap-%Y-%m-%d')  #-%H:%M:%S')
+# SWAP_TAG = datetime.datetime.now().strftime('sw-%y-%m-%d')
 
 DUPE_TAG = False
-DUPE_TAG = datetime.datetime.now().strftime(
-    'double::dupe-%Y-%m-%d')  # -%H:%M:%S')
+# DUPE_TAG = datetime.datetime.now().strftime(
+#    'double::dupe-%Y-%m-%d')  # -%H:%M:%S')
 # DUPE_TAG = datetime.datetime.now().strftime('dp-%y-%m-%d')
 
 fldlst = [

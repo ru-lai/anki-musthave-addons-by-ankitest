@@ -1,14 +1,20 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • Later not now button
 # https://ankiweb.net/shared/info/777151722
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
-# кнопка «Позже, не сейчас»
+# No answer will be given, next card will be shown.
+#  Card stays on its place in queue,
+#   you'll see it next time you study the deck.
+#
+#    Hotkey: Escape shortcut (Esc).
 #
 # inspired by More Answer Buttons for New Cards add-on
 # https://ankiweb.net/shared/info/468253198
-################################################################
+#
+# No support. Use it AS IS on your own risk.
 from __future__ import unicode_literals
 import json
 from aqt.reviewer import Reviewer

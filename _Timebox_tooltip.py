@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
-# Timebox tooltip
-
-# anki/collection.py
+# • Timebox tooltip
+# https://ankiweb.net/shared/info/2014169675
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
+# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+#
+# The image is enlarged up to a maximum of 95% of the height or width
+#  of the card's window.
+#
+# No support. Use it AS IS on your own risk.
 """
     def timeboxReached(self):
         "Return (elapsedTime, reps) if timebox reached, or False."
@@ -19,6 +26,7 @@ from aqt import mw
 from aqt.reviewer import Reviewer
 from aqt.utils import tooltip
 
+# anki/collection.py
 # aqt/reviewer.py Monkey Patch
 
 

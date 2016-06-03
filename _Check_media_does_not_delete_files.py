@@ -1,6 +1,7 @@
-# -*- coding: utf-8 -*-
+# -*- mode: Python ; coding: utf-8 -*-
 # ~ Check media does not delete files
 # https://ankiweb.net/shared/info/1051530260
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
@@ -8,6 +9,8 @@
 #  just move them to an outside folder.
 # If answer NO then
 #  usual removal into the trash will be done.
+#
+# No support. Use it AS IS on your own risk.
 """
 Copyright: Steve AW <steveawa@gmail.com>
 License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
