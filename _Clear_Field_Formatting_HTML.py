@@ -38,6 +38,10 @@ from aqt import mw
 import anki.lang
 lang = anki.lang.getLang()
 
+# Empty list means:
+# "Apply changes to all fields in the note"
+FIELDS_ONLY = ()  # (_('Front'), 'Front')  #
+
 HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
     'clear':    ['Ctrl+F12', '', '', ''' ''', """ """],
     'full':     ['Ctrl+Shift+F12', '', '', ''' ''', """ """],
@@ -96,7 +100,7 @@ def stripFormatting(txt, removeTags, newlineTags, replaceTags):
 
 
 def clearFormatting(self, nids=None, dids=None, note=None,
-                      removeTags='', newlineTags='', replaceTags=''):
+                    removeTags='', newlineTags='', replaceTags=''):
     """
     Clears the formatting for every selected note.
     Also creates a restore point, allowing a single undo operation.
@@ -119,14 +123,24 @@ def clearFormatting(self, nids=None, dids=None, note=None,
     if nids:
         for nid in nids:  # self.selectedNotes():
             note = mw.col.getNote(nid)
-            note.fields = map(
-                lambda x: stripFormatting(
-                    x, removeTags, newlineTags, replaceTags),
-                note.fields)
-            note.flush()
+            if FIELDS_ONLY:
+                flds = note.model()['flds']
+                for FIELD_ONLY in FIELDS_ONLY:
+                    for fldi, fld in enumerate(flds):
+                        if fld['name'].lower() == FIELD_ONLY.lower():
+                            note.fields[fldi] = stripFormatting(
+                                note.fields[fldi],
+                                removeTags, newlineTags, replaceTags)
+                            note.flush()
+            else:
+                note.fields = map(
+                    lambda x: stripFormatting(
+                        x, removeTags, newlineTags, replaceTags),
+                    note.fields)
+                note.flush()
     elif note:
         note.fields[self.currentField] = stripFormatting(
-            note.fields[self.currentField], 
+            note.fields[self.currentField],
             removeTags, newlineTags, replaceTags)
         note.flush()
 
@@ -158,7 +172,7 @@ def onClearFormatted(self, nids=None, dids=None, note=None):
     clearFormatting(
         self, nids=nids, dids=dids, note=note,
         newlineTags='</div><div.*?>|</div>|<div.*?>|<br.*?>')
-        # to keep attr=... first replace DIV with SPAN
+    # to keep attr=... first replace DIV with SPAN
 
 
 def onClearFormattag(self, nids=None, dids=None, note=None):
@@ -171,7 +185,7 @@ def onClearFormattag(self, nids=None, dids=None, note=None):
         '</b><br>   or replace   <i>OLDcolor NEWcolor</i>' +
         '</b><br>   or delete    <i>OLDcolor</i>')
     stencil = []
-    if not demand[1]: # cancelled by user
+    if not demand[1]:  # cancelled by user
         return
 
     requests = demand[0].strip().lower().split()
@@ -188,7 +202,7 @@ def onClearFormattag(self, nids=None, dids=None, note=None):
         if req == 'i':
             stencil.extend(['<em.*?>|</em>'])
         if req == 's':
-            stencil.extend(['<strike.*?>|</strike>|' + 
+            stencil.extend(['<strike.*?>|</strike>|' +
                            '<del.*?>|</del>|<ins.*?>|</ins>'])
 
     if stencil and askUser('Delete %s?' % ('|'.join(stencil))):
@@ -197,15 +211,15 @@ def onClearFormattag(self, nids=None, dids=None, note=None):
             removeTags='|'.join(stencil))
 
     if OLDcolor:
-        #tooltip('Sorry, not implemented yet.')
-        #return
+        # tooltip('Sorry, not implemented yet.')
+        # return
 
         oldTag = '''\s+?color\s*?\=\s*?["']??(%s)["']??''' % \
             (OLDcolor)
         if NEWcolor:
             if askUser(
                     ('Replace color <b style="color:%s;">%s</b>' +
-                     ' with <b style="color:%s;">%s</b>?') % 
+                     ' with <b style="color:%s;">%s</b>?') %
                     (OLDcolor, OLDcolor, NEWcolor, NEWcolor)):
                 newTag = ' color="%s"' % (NEWcolor)
                 clearFormatting(
