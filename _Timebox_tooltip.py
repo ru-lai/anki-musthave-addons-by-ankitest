@@ -5,8 +5,8 @@
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
-# The image is enlarged up to a maximum of 95% of the height or width
-#  of the card's window.
+# It puts the stats when you finish a timebox in a tooltip message
+#  that goes away after a few seconds. 
 #
 # No support. Use it AS IS on your own risk.
 """

@@ -1,11 +1,23 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # • Duplicate notes and Swap fields
 # https://ankiweb.net/shared/info/1040866511
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
-#  Made by request:
-#   Inspired by Duplicate Selected Notes
 #
+# To modify a single card so the front and back are inverted
+#  use F12 in Card Reviewer.
+#
+# You can easily add your own field name pairs in existing list.
+#  Pairs higher in the list take precedence over lower
+#   if some of them exist in the same note simultaneously.
+#
+# Inspired by Duplicate Selected Notes
+#  https://ankiweb.net/shared/info/2126361512
+# and Create Copy of Selected Cards
+#  https://ankiweb.net/shared/info/787914845
+#
+# No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals
 import os

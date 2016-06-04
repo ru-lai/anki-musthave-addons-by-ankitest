@@ -13,6 +13,11 @@
 # You can use intervals as button labels
 #  View - Answer buttons without labels or Ctrl+Alt+Shift+L
 #
+# On Cards - Later, Not Now menu click (Escape hotkey):
+# No answer will be given, next card will be shown.
+# Card stays on its place in queue,
+# you'll see it next time you study the deck.
+#
 # No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals

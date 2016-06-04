@@ -5,13 +5,14 @@
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
-# 14.05.2016 -- not only Google now!
+# 14.05.2016: Google, Yandex, Bing.
+#
+# Colored buttons are from ~ More Answer Buttons for ALL Cards add-on.
+# https://ankiweb.net/shared/info/755044381
 #
 # No support. Use it AS IS on your own risk.
 """
 Adds Search For Selected Text to the Reviewer Window's context/popup menu
-
-https://ankiweb.net/shared/info/1514982403
 
 Copyright: Steve AW <steveawa@gmail.com>
 License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html

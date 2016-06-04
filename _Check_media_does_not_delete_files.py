@@ -6,9 +6,11 @@
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # Check media... don't delete files into the basket,
-#  just move them to an outside folder.
+#  just move them into backup folder.
 # If answer NO then
-#  usual removal into the trash will be done.
+#  usual removal into the trash will be done
+#   (answer next question Delete unused media? YES)
+# It works much more faster than standard removing.
 #
 # No support. Use it AS IS on your own risk.
 """

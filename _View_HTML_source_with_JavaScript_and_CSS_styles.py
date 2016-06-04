@@ -5,6 +5,15 @@
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
+# Menu Cards - View Source code Body Alt+F3
+#  shows HTML source with JavaScript and CSS styles
+#   but without jQuery Menu Cards
+#
+# Menu Cards - View Source code Ctrl+F3
+#  shows full HTML source
+#
+# Works for decks panel, deck overview and any card.
+#
 # No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals

@@ -5,8 +5,16 @@
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
+# Zooms, unzooms, lets you set a 1:1 (100%)
+#  or initial (user defined) zoom level. It's pretty cool.
+# Work with images as well as text.
+#
 # The image is enlarged up to a maximum of 95% of the height or width
 #  of the card's window.
+#
+# Zoom in or out with Ctrl++/Ctrl+-
+# or with Ctrl+mouse wheel
+# or with the View/Zoom submenu.
 #
 # No support. Use it AS IS on your own risk.
 from __future__ import division

@@ -7,6 +7,12 @@
 #
 # Expand/Collapse Browser Tree
 #
+# Creates two options in Go menu to expand and collapse all items
+# (Favourites searches, Decks and Tags) in Browse window.
+#
+#    Just press the Ctrl+Shift+Minus to collapse
+#    and Ctrl+Shift+Plus keys to expand and view sub-decks.
+#
 # No support. Use it AS IS on your own risk.
 from __future__ import unicode_literals
 

@@ -7,7 +7,10 @@
 #
 # 2 wide buttons only with smiles instead of words and a bigger font on them.
 # It means NO YES in any case.
+# Hotkey 1 always means NO, hotkeys 2, 3, 4 means YES anyway.
 #
+# Suitable for children and newbie.
+# 
 # No support. Use it AS IS on your own risk.
 from __future__ import division
 from __future__ import unicode_literals
