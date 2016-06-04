@@ -10,6 +10,7 @@ All these add-ons also shared on AnkiWeb.net:
 
 Info | Code
 ------------- | -------------:
+[~ Bulk Copy Field](https://ankiweb.net/shared/info/2021298056) | 2021298056
 [~ Check media does not delete files](https://ankiweb.net/shared/info/1051530260) | 1051530260 
 [~ Clear Field Formatting HTML](https://ankiweb.net/shared/info/1114708966) | 1114708966
 [~ More Answer Buttons for ALL Cards](https://ankiweb.net/shared/info/755044381) | 755044381 
