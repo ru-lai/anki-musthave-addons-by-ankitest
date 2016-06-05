@@ -14,7 +14,6 @@ import copy
 import time
 from anki.collection import _Collection
 from anki.utils import fmtTimeSpan
-from anki.hooks import wrap
 
 
 def timefn(tm):
@@ -25,9 +24,12 @@ def timefn(tm):
         str += fmtTimeSpan(tm % 60, point=2 if not str else -1, short=True)
     return str
 
+##
 
-# oldRenderQA = _Collection._renderQA
-def _renderQA(self, data, _old, qfmt=None, afmt=None):
+_old_renderQA = _Collection._renderQA
+
+
+def _renderQA(self, data, qfmt=None, afmt=None):
     origFieldMap = self.models.fieldMap
     model = self.models.get(data[2])
     if data[0] is None:
@@ -109,13 +111,16 @@ def _renderQA(self, data, _old, qfmt=None, afmt=None):
     else:
         additionalFields += [''] * 22
     data[6] += '\x1f'.join(additionalFields)
-    # result = oldRenderQA(self,data,qfmt,afmt)
-    result = _old(self, data, qfmt, afmt)
+
+    result = _old_renderQA(self, data, qfmt=qfmt, afmt=afmt)
+
     data = origdata
     self.models.fieldMap = origFieldMap
     return result
 
-# def previewCards(self, note, _old, type=0):
+##
+
+_Collection._renderQA = _renderQA
 
 
 def previewCards(self, note, type=0):
@@ -137,9 +142,4 @@ def previewCards(self, note, type=0):
         cards.append(card)
     return cards
 
-# _Collection._renderQA = _renderQA
-_Collection._renderQA = wrap(_Collection._renderQA, _renderQA, 'around')
-
 _Collection.previewCards = previewCards
-# _Collection.previewCards = wrap(
-#   _Collection.previewCards, previewCards, 'around')
