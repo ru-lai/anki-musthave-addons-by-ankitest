@@ -455,17 +455,39 @@ def browserInit(self, mw):
     else:
         self.form.tree.setTextSizeMultiplier(current_zoom)
 
-
 # aqt.browser.Browser.__init__ = wrap(
 #   aqt.browser.Browser.__init__, browserInit )
 
-if os.path.exists(os.path.join(mw.pm.addonFolder(), 'Zoom.py')):
-    showCritical(
-        'Найдено старое дополнение <b>Zoom</b> <br><br>' +
-        ' Оно несовместимо с новым дополнением <i>_Zooming</i><br>' +
-        ' &nbsp; Для нормальной работы:<br>' +
-        ' &nbsp;  &nbsp; - удалите старое дополнение<br>' +
-        '  &nbsp; &nbsp; &nbsp; - перезапустите Anki.' if lang == 'ru'
-        else 'The old version of <b>Zoom</b> add-on <br><br>' +
-        ' is incompatible with new edition of <i>_Zooming</i>. <br>' +
-        ' Please, remove old file and restart Anki.')
+##
+
+old_addons = (
+    'Zoom.py',
+)
+
+old_addons2delete = ''
+for old_addon in old_addons:
+    if len(old_addon) > 0:
+        old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+        if os.path.exists(old_filename):
+            old_addons2delete += old_addon[:-3] + ' \n'
+
+if old_addons2delete != '':
+    if lang == 'ru':
+        showText(
+            'В каталоге\n\n ' + mw.pm.addonFolder() +
+            '\n\nнайдены дополнения, которые уже включены в дополнение\n ' +
+            os.path.basename(__file__) + '\n' +
+            'и поэтому будут конфликтовать с ним.\n\n' +
+            old_addons2delete +
+            '\nПереименуйте (добавьте расширение .off) ' +
+            '\n или удалите эти дополнения ' +
+            '\n   и перезапустите Anki.')
+    else:
+        showText(
+            'There are some add-ons in the folder \n\n ' +
+            mw.pm.addonFolder() + '\n\n' +
+            old_addons2delete +
+            '\n\nThey are already part of this addon,\n ' +
+            os.path.basename(__file__) +
+            '\n\nPlease, rename them (add .off extension to file)' +
+            ' or delete\n and restart Anki.')

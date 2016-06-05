@@ -628,8 +628,8 @@ if old_addons2delete != '':
     if lang == 'ru':
         showText(
             'В каталоге\n\n ' + mw.pm.addonFolder() +
-            '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
-            '~ autocopy2clipboard\n' +
+            '\n\nнайдены дополнения, которые уже включены в дополнение\n ' +
+            os.path.basename(__file__) + '\n' +
             'и поэтому будут конфликтовать с ним.\n\n' +
             old_addons2delete +
             '\nПереименуйте (добавьте расширение .off) ' +
@@ -640,7 +640,7 @@ if old_addons2delete != '':
             'There are some add-ons in the folder \n\n ' +
             mw.pm.addonFolder() + '\n\n' +
             old_addons2delete +
-            '\n\nThey are already part of\n' +
-            ' `~ autocopy2clipboad` addon,\n' +
-            '\nPlease, rename them (add .off extension) or delete\n' +
-            ' and restart Anki.')
+            '\n\nThey are already part of this addon,\n ' +
+            os.path.basename(__file__) +
+            '\n\nPlease, rename them (add .off extension to file)' +
+            ' or delete\n and restart Anki.')

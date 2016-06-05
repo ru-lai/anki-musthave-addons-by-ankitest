@@ -475,16 +475,19 @@ if old_addons2delete != '':
     if lang == 'ru':
         showText(
             'В каталоге\n\n ' + mw.pm.addonFolder() +
-            '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
-            ' ~ Clear Fields Formatting HTML \n' +
+            '\n\nнайдены дополнения, которые уже включены в дополнение\n ' +
+            os.path.basename(__file__) + '\n' +
             'и поэтому будут конфликтовать с ним.\n\n' +
             old_addons2delete +
-            '\nУдалите эти дополнения и перезапустите Anki.')
+            '\nПереименуйте (добавьте расширение .off) ' +
+            '\n или удалите эти дополнения ' +
+            '\n   и перезапустите Anki.')
     else:
         showText(
-            '<big>There are some add-ons in the folder <br>\n<br>\n' +
-            ' &nbsp; ' + mw.pm.addonFolder() +
-            '<pre>' + old_addons2delete + '</pre>' +
-            'They are already part of<br>\n' +
-            ' <b> &nbsp; ~ Clear Fields Formatting HTML</b> addon.<br>\n' +
-            'Please, delete them and restart Anki.</big>', type='html')
+            'There are some add-ons in the folder \n\n ' +
+            mw.pm.addonFolder() + '\n\n' +
+            old_addons2delete +
+            '\n\nThey are already part of this addon,\n ' +
+            os.path.basename(__file__) +
+            '\n\nPlease, rename them (add .off extension to file)' +
+            ' or delete\n and restart Anki.')

@@ -40,7 +40,7 @@ srcField = 'Front'
 dstField = 'Back'
 
 # if data exists in dstField, should we overwrite it?
-OVERWRITE_DST_FIELD = False  # True  #
+overwrite_dstField = True
 
 # ----------------------------
 
@@ -68,7 +68,7 @@ def bulkCopy(nids):
             # print "--> Field %s not found!" % (dstField)
             # no dst field
             continue
-        if note[dst] and not OVERWRITE_DST_FIELD:
+        if note[dst] and not overwrite_dstField:
             # already contains data, skip
             # print "--> %s not empty. Skipping!" % (srcField)
             continue
@@ -76,7 +76,7 @@ def bulkCopy(nids):
         # if not srcTxt.strip():
         #    continue
         try:
-            print "--> Everything should have worked."
+            # print "--> Everything should have worked."
             note[dst] = note[src]
             # note[dst] = srcTxt
         except Exception, e:
@@ -85,11 +85,12 @@ def bulkCopy(nids):
     mw.progress.finish()
     mw.reset()
 
+##
 
 def onBulkCopy(self):
     suffix = ''
     sfx = ''
-    if OVERWRITE_DST_FIELD:
+    if overwrite_dstField:
         suffix = '<br>NB! Existing values would be overwritten!'
         sfx = '<br>Existing values were overwritten!'
     if askUser(
@@ -106,12 +107,44 @@ def onBulkCopy(self):
 
 
 def setupMenu(self):
-    a = QAction("~ Bulk Copy Field...", self)
-    self.connect(a, SIGNAL("triggered()"), lambda e=self: onBulkCopy(e))
-    # self.form.menuEdit.addSeparator()
-    self.form.menuEdit.addAction(a)
+    BCF = QAction("~ &Bulk Copy Field...", self)
+    self.connect(BCF, SIGNAL("triggered()"), 
+                 lambda e=self: onBulkCopy(e))
+
+    def on_overwrite_dstField():
+        global overwrite_dstField
+        overwrite_dstField = YMCA.isChecked()
+
+    YMCA = QAction("&Overwrite destination field", self)
+    YMCA.setCheckable(True)
+    YMCA.setChecked(overwrite_dstField)
+
+    self.connect(YMCA, SIGNAL("triggered()"), on_overwrite_dstField)
+
+    self.form.menuEdit.addSeparator()
+    self.form.menuEdit.addAction(BCF)
+    self.form.menuEdit.addAction(YMCA)
+    self.form.menuEdit.addSeparator()
 
 addHook("browser.setupMenus", setupMenu)
+
+##
+
+def save_flags():
+    mw.pm.profile['BCF_overwrite_dstField'] = overwrite_dstField
+
+
+def load_flags():
+    global overwrite_dstField
+
+    try:
+        key_value = mw.pm.profile['BCF_overwrite_dstField']
+        overwrite_dstField = key_value
+    except KeyError:
+        pass
+
+addHook('unloadProfile', save_flags)
+addHook('profileLoaded', load_flags)
 
 ##
 
@@ -145,5 +178,5 @@ if old_addons2delete != '':
             old_addons2delete +
             '\n\nThey are already part of this addon,\n ' +
             os.path.basename(__file__) +
-            '\n\nPlease, rename them (add .off extension to filename)' +
+            '\n\nPlease, rename them (add .off extension to file)' +
             ' or delete\n and restart Anki.')

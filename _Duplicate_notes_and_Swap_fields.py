@@ -517,16 +517,19 @@ if old_addons2delete != '':
     if lang == 'ru':
         showText(
             'В каталоге\n\n ' + mw.pm.addonFolder() +
-            '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
-            '`• Duplicate notes and Swap fields`,\n' +
+            '\n\nнайдены дополнения, которые уже включены в дополнение\n ' +
+            os.path.basename(__file__) + '\n' +
             'и поэтому будут конфликтовать с ним.\n\n' +
             old_addons2delete +
-            '\nУдалите эти дополнения и перезапустите Anki.')
+            '\nПереименуйте (добавьте расширение .off) ' +
+            '\n или удалите эти дополнения ' +
+            '\n   и перезапустите Anki.')
     else:
         showText(
             'There are some add-ons in the folder \n\n ' +
-            mw.pm.addonFolder() +
-            '\n\nThey are already part of\n' +
-            ' `• Duplicate notes and Swap fields` addon,\n\n' +
+            mw.pm.addonFolder() + '\n\n' +
             old_addons2delete +
-            '\nPlease, delete them and restart Anki.')
+            '\n\nThey are already part of this addon,\n ' +
+            os.path.basename(__file__) +
+            '\n\nPlease, rename them (add .off extension to file)' +
+            ' or delete\n and restart Anki.')
