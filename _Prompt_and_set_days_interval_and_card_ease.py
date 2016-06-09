@@ -32,7 +32,7 @@ HOTKEY = {      # in mw Main Window (Reviewer)
 }
 
 if __name__ == '__main__':
-    print("This is _Swap add-on for the Anki program " +
+    print("This is _Prompt_and_set_days add-on for the Anki program " +
           "and it can't be run directly.")
     print('Please download Anki 2.0 from http://ankisrs.net/')
     sys.exit()

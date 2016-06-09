@@ -514,49 +514,170 @@ def _systemTagTree(self, root):
     tags = (
         (_('Whole Collection'), 'ankibw', ''),
         (_('Current Deck'), 'deck16', 'deck:current'),
-        (_('Added Today'), 'view-pim-calendar.png', 'added:1'),
-        (_('Studied Today'), 'view-pim-calendar.png', 'rated:1'),
-        (_('Again Today'), 'view-pim-calendar.png', 'rated:1:1'),
-        ('Добавленные вчера' if lang=='ru' else _('Added Yesterday'), 
-         'view-pim-calendar.png', ''),
-        ('Просмотрено вчера' if lang=='ru' else _('Studied Yesterday'), 
+
+        (_('Added Today'), 'view-calendar-tasks.png', 'added:1'),
+        (_('Studied Today'), 'view-calendar-tasks.png', 'rated:1'),
+        (_('Again Today'), 'view-calendar-tasks.png', 'rated:1:1'),
+
+        ('Добавленные вчера' if lang == 'ru' else _('Added Yesterday'),
+         'view-pim-calendar.png', 'added:2 -added:1'),
+        ('Просмотрено вчера' if lang == 'ru' else _('Studied Yesterday'),
          'view-pim-calendar.png', 'rated:2 -rated:1'),
-        ('Не вспомненные вчера' if lang=='ru' else _('Again Yesterday'), 
+        ('Не вспомненные вчера' if lang == 'ru' else _('Again Yesterday'),
          'view-pim-calendar.png', 'rated:2:1 -rated:1:1'),
+
         (_('New'), 'plus16.png', 'is:new'),
         (_('Learning'), 'stock_new_template_red.png', 'is:learn'),
+        (_('Relearn'), 'stock_new_template_red.png', 'is:learn is:review'),
         (_('Review'), 'clock16.png', 'is:review'),
-        (_('Due'), 'clock16.png', 'is:due'),
-        (_('Marked'), 'star16.png', 'tag:marked'),
-        ('Отложенные' if lang=='ru' else _('Buried'), 
+        (_('Due'), 'clock-icon.png', 'is:due'),
+        (_('Marked'), 'rating.png', 'tag:marked'),  # star16.png
+        ('Отложенные' if lang == 'ru' else _('Buried'),
          'media-playback-pause.png', 'is:buried'),
         (_('Suspended'), 'media-playback-pause.png', 'is:suspended'),
-        (_('Leech'), 'emblem-important.png', 'tag:leech'))
+        (_('Leech'), 'emblem-important.png', 'tag:leech'),
+        )
 
     def onCollapse():
         mw.col.conf['_collapseRootage'] = limb.isExpanded()
+
     limb = self.CallbackItem(
         root, 'Коренные' if lang == 'ru' else _('Rootage'),
         lambda: onClick(limb), oncollapse=onCollapse)
+
     if '_collapseRootage' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseRootage'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(':/icons/ankibw'))
+
+    limb.setIcon(0, QIcon(':/icons/anki'))
     limb.setFont(0, particularFont('Browser sysTree', italic=True))
+
     for name, icon, cmd in tags:
         item = self.CallbackItem(
             limb, name, lambda c=cmd: self.setFilter(c))
         item.setIcon(0, QIcon(':/icons/' + icon))
         item.setFont(0, particularFont('Browser sysTree'))
+
+    # almost never used, group these under 'Status'
+    tags = (
+        (_('Today (1) Again '),
+         'view-calendar-tasks.png', 'rated:1:1 '),
+        (_('Today (2) Hard '), 'view-calendar-tasks.png', 'rated:1:2 '),
+        (_('Today (3) Good '), 'view-calendar-tasks.png', 'rated:1:3 '),
+        (_('Today (4) Easy '),
+         'view-calendar-tasks.png', 'rated:1:4 '),
+
+        (_('Rescheduled Today'), 'clock-icon.png',
+         datetime.datetime.now().strftime('tag:re*%y-%m-%d*')),
+        (_('Rescheduled Yesterday'), 'clock16.png',
+         (datetime.datetime.now() - datetime.timedelta(days=1)
+          ).strftime('tag:re*%y-%m-%d*')),
+
+        (_('Yesterday (1) Again '),
+         'view-pim-calendar.png', 'rated:2:1 -rated:1:1'),
+        (_('Yesterday (2) Hard '),
+         'view-pim-calendar.png', 'rated:2:2 -rated:1:2 '),
+        (_('Yesterday (3) Good '),
+         'view-pim-calendar.png', 'rated:2:3 -rated:1:3 '),
+        (_('Yesterday (4) Easy '),
+         'view-pim-calendar.png', 'rated:2:4 -rated:1:4 '),
+
+        (_('Last week Added '), 'spreadsheet.png', 'added:7 '),
+        (_('Last week Studied '), 'spreadsheet.png', 'rated:7 '),
+
+        (_('Last week (1) Again '),
+         'go-first.png', 'rated:7:1 '),
+        (_('Last week (2) Hard '), 'go-previous.png', 'rated:7:2 '),
+        (_('Last week (3) Good '), 'go-next.png', 'rated:7:3 '),
+        (_('Last week (4) Easy '),
+         'go-last.png', 'rated:7:4 '),
+
+        )
+
+    def onCollaps():
+        mw.col.conf['_collapsPast'] = past.isExpanded()
+
+    past = self.CallbackItem(
+        root, 'Оценки ответов' if lang == 'ru' else _('Studied cards'),
+        lambda: onClick(past), oncollapse=onCollaps)
+
+    if '_collapsPast' in mw.col.conf:
+        past.setExpanded(mw.col.conf['_collapsPast'])
+    else:
+        past.setExpanded(False)
+
+    past.setIcon(0, QIcon(":/icons/view-pim-calendar.png"))
+    past.setFont(0, particularFont('Browser sysTree', italic=True))
+
+    for name, icon, cmd in tags:
+        item = self.CallbackItem(
+            past, name, lambda c=cmd: self.setFilter(c))
+        item.setIcon(0, QIcon(":/icons/" + icon))
+        item.setFont(0, particularFont('Browser sysTree'))
+
+    # almost never used, group these under 'Status'
+    tags = (
+        (_('Notes with no tags'), 'deletetag.png', 'tag:none '),
+
+        (_('Filtered decks only'), 'deck16.png', 'deck:filtered '),
+        (_('Normal decks only'), 'deck16.png', '-deck:filtered '),
+
+        (_('Card 1'), 'stock_group.png', 'card:"Card 1" '),
+        (_('First card'), 'stock_group.png', 'card:1 '),
+
+        (_('review cards, not including lapsed cards '),
+         'stock_new_template_red.png', '-is:learn is:review '),
+        (_('cards that are in learning for the first time '),
+         'stock_new_template_red.png', 'is:learn -is:review '),
+
+        (_('Young'), 'green.png', 'prop:ivl<21 '),
+        (_('Mature'), 'green.png', 'prop:ivl>20 '),
+
+        (_('cards due tomorrow '), 'clock16.png', 'prop:due=1 '),
+        (_('cards due yesterday that haven’t been answered yet '),
+         'clock-icon.png', 'prop:due=-1 '),
+        (_('cards due that haven’t been answered yet '),
+         'clock16.png', 'prop:due<0 '),
+
+        (_('cards due today'), 'help-hint.png', 'prop:due>-1 prop:due<1 '),
+        (_('cards due now'), 'help-hint.png', 'prop:due=0 '),
+
+        (_('Just Due'), 'clock-icon.png', 'is:due prop:due>-7 '),
+        (_('Over Due'), 'clock16.png', 'is:due prop:due<=-7 '),
+
+        (_('cards harder than default '),
+         'kbugbuster.png', 'prop:ease<2.5 '),
+        (_('cards easier than default '),
+         'games-solve.png', 'prop:ease>2.5 '),
+        (_('cards that have moved into relearning more than 3 times '),
+         'kpersonalizer.png', 'prop:lapses>3 '),
+
+        )
+
+    status = self.CallbackItem(
+        root, 'Подсказки по поиску' if lang == 'ru' else _('Search help'),
+        lambda: onClick(status))
+
+    status.setExpanded(False)
+
+    status.setIcon(0, QIcon(":/icons/help.png"))
+    status.setFont(0, particularFont('Browser sysTree', italic=True))
+
+    for name, icon, cmd in tags:
+        item = self.CallbackItem(
+            status, name, lambda c=cmd: self.setFilter(c))
+        item.setIcon(0, QIcon(":/icons/" + icon))
+        item.setFont(0, particularFont('Browser sysTree'))
+
     return root
 
 
 def _favTree(self, root):
     saved = self.col.conf.get('savedFilters', [])
-    if not saved:
-        # Don't add favourites to tree if none saved
-        return
+    # if not saved:
+    #    # Don't add favourites to tree if none saved
+    #    return
 
     def onCollapse():
         mw.col.conf['_collapseFavorites'] = limb.isExpanded()
@@ -566,10 +687,21 @@ def _favTree(self, root):
         limb.setExpanded(mw.col.conf['_collapseFavorites'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(':/icons/emblem-favorite-dark.png'))
+    limb.setIcon(0, QIcon(':/icons/emblem-favorite.png'))
     limb.setFont(0, particularFont('Browser favTree', italic=True))
-    for name, filt in sorted(saved.items()):
-        item = self.CallbackItem(limb, name, lambda s=filt: self.setFilter(s))
+
+    if saved:
+        for name, filt in sorted(saved.items()):
+            item = self.CallbackItem(
+                limb, name, lambda s=filt: self.setFilter(s))
+            item.setIcon(0, QIcon(':/icons/emblem-favorite-dark.png'))
+            item.setFont(0, particularFont('Browser favTree', italic=True))
+    else:
+        name = 'Сохранять здесь' if lang == 'ru' else \
+            _('Save your searches here')
+        filt = ''
+        item = self.CallbackItem(
+            limb, name, lambda s=filt: self.setFilter(s))
         item.setIcon(0, QIcon(':/icons/emblem-favorite-dark.png'))
         item.setFont(0, particularFont('Browser favTree', italic=True))
 
@@ -583,7 +715,7 @@ def _decksTree(self, root):
         limb.setExpanded(mw.col.conf['_collapseDecks'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(':/icons/deck16.png'))
+    limb.setIcon(0, QIcon(':/icons/stock_group.png'))
     limb.setFont(0, particularFont('Browser deckTree', italic=True))
 
     def fillGroups(root, grps, head=''):
@@ -611,7 +743,7 @@ def _modelTree(self, root):
         limb.setExpanded(mw.col.conf['_collapseNoteTypes'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(':/icons/product_design.png'))
+    limb.setIcon(0, QIcon(':/icons/package_games_card.png'))
     limb.setFont(0, particularFont('Browser noteTree', italic=True))
     for m in sorted(self.col.models.all(), key=itemgetter('name')):
         mitem = self.CallbackItem(
@@ -633,14 +765,19 @@ SEPARATOR = '::'
 def _userTagTree(self, root):
     def onCollapse():
         mw.col.conf['_collapseTags'] = limb.isExpanded()
-    limb = self.CallbackItem(root, _('Tags'),
-                             lambda: onClick(limb), oncollapse=onCollapse)
+
+    limb = self.CallbackItem(
+        root, _('Tags'),
+        lambda: onClick(limb), oncollapse=onCollapse)
+
     if '_collapseTags' in mw.col.conf:
         limb.setExpanded(mw.col.conf['_collapseTags'])
     else:
         limb.setExpanded(True)
-    limb.setIcon(0, QIcon(':/icons/anki-tag.png'))
+
+    limb.setIcon(0, QIcon(':/icons/addtag.png'))
     limb.setFont(0, particularFont('Browser tagTree', italic=True))
+
     tags_tree = {}
     for t in sorted(self.col.tags.all()):
         if t.lower() == 'marked' or t.lower() == 'leech':
@@ -658,16 +795,11 @@ def _userTagTree(self, root):
                     else:
                         parent_tag = SEPARATOR.join(components[0:idx])
                         parent = tags_tree[parent_tag]
-                    if emax == idx:
-                        item = self.CallbackItem(
-                            parent, c,
-                            lambda ptg=partial_tag: self.setFilter(
-                                'tag', ptg))
-                    else:
-                        item = self.CallbackItem(
-                            parent, c,
-                            lambda ptg=partial_tag: self.setFilter(
-                                'tag', ptg + '::*'))
+
+                    item = self.CallbackItem(
+                        parent, c,
+                        lambda ptg=partial_tag: self.setFilter(
+                            '(tag:"' + ptg + '::*" or tag:"' + ptg + '")'))
 
                     item.setIcon(0, QIcon(':/icons/anki-tag.png'))
                     item.setFont(0, particularFont('Browser tagTree'))
