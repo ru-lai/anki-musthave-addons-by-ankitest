@@ -32,7 +32,7 @@ HOTKEY = {      # in mw Main Window (Reviewer)
 }
 
 if __name__ == '__main__':
-    print("This is _Prompt_and_set_days add-on for the Anki program " +
+    print("This is _Swap add-on for the Anki program " +
           "and it can't be run directly.")
     print('Please download Anki 2.0 from http://ankisrs.net/')
     sys.exit()
@@ -95,13 +95,15 @@ def promptNewInterval(cids):
     suffix = ''
     total = 0
     dayz = float(0)
-    days = unicode(mw.reviewer.card.ivl + 1)
+    try:
+        days = unicode(mw.reviewer.card.ivl + 1)
+    except AttributeError:
+        days = u'1'
     dayString = getText(
-        (
-            'Дней до следующего просмотра карточки ' +
-            '(текущий интервал + 1 = %s ):' if lang == 'ru' else
-            'Number of days until next review ' +
-            '(current interval + 1 = %s ):') % (days), default=days)
+        ('Дней до следующего просмотра карточки ' +
+         '(текущий интервал + 1 = %s ):' if lang == 'ru' else
+         'Number of days until next review ' +
+         '(current interval + 1 = %s ):') % (days), default=days)
 
     stringY = False
     stringM = False
@@ -210,7 +212,10 @@ def promptNewInterval(cids):
                 mw.reset()
                 return
             infotip = ''
-            cardEase = mw.reviewer.card.factor  # 2500
+            try:
+                cardEase = mw.reviewer.card.factor  # 2500
+            except AttributeError:
+                cardEase = 2500
         else:
             infotip = ('Лёгкость карточки <b>%s</b>%%<br><br>'
                        if lang == 'ru' else

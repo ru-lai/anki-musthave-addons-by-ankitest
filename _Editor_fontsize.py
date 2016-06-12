@@ -36,13 +36,18 @@ import aqt.clayout
 import aqt.deckconf
 import aqt.editor
 import aqt.fields
+import aqt.models
 import aqt.utils
+
 import anki.hooks
 
 from BeautifulSoup import BeautifulSoup
+
+from anki.consts import *
+
 from aqt.webview import AnkiWebView
 from aqt.editor import Editor  # the editor when you click 'Add' in Anki
-from anki.consts import *
+from aqt.utils import saveGeom, restoreGeom 
 
 #####################
 # Get language class
@@ -857,7 +862,6 @@ anki.hooks.addHook('browser.setupMenus', setupMenu)
 # Fields List dialog window
 ##########################################################################
 
-
 def FieldDialog__init__(self, mw, note, ord=0, parent=None):
     QDialog.__init__(self, parent or mw)  # , Qt.Window)
     self.mw = aqt.mw
@@ -880,9 +884,49 @@ def FieldDialog__init__(self, mw, note, ord=0, parent=None):
     self.form.fieldList.setCurrentRow(0)
     self.form.fieldList.setFont(particularFont('Fields List'))
 
+    aqt.utils.restoreGeom(self, 'fields', adjustSize=True)
     self.exec_()
 
 aqt.fields.FieldDialog.__init__ = FieldDialog__init__
+
+
+def reject(self):
+    self.saveField()
+    if self.oldSortField != self.model['sortf']:
+        self.mw.progress.start()
+        self.mw.col.updateFieldCache(self.mm.nids(self.model))
+        self.mw.progress.finish()
+    self.mm.save(self.model)
+    self.mw.reset()
+    aqt.utils.saveGeom(self, 'fields')
+    QDialog.reject(self)
+
+
+def accept(self):
+    aqt.utils.saveGeom(self, 'fields')
+    self.reject()
+
+aqt.fields.FieldDialog.reject = reject
+aqt.fields.FieldDialog.accept = accept
+
+# Models
+##########################################################################
+def updateModelsList(self):
+    row = self.form.modelsList.currentRow()
+    if row == -1:
+        row = 0
+    self.models = self.col.models.all()
+    self.models.sort(key=itemgetter("name"))
+    self.form.modelsList.clear()
+    for m in self.models:
+        mUse = self.mm.useCount(m)
+        mUse = ngettext("%d note", "%d notes", mUse) % mUse
+        item = QListWidgetItem("%s [%s]" % (m['name'], mUse))
+        self.form.modelsList.addItem(item)
+    self.form.modelsList.setCurrentRow(row) 
+    self.form.modelsList.setFont(particularFont('Fields List'))
+
+aqt.models.Models.updateModelsList = updateModelsList
 
 # Preview Answer / Preview Next by click Enter
 #  (by default goPrev byLeftArrow goNext byRight Arrow)
