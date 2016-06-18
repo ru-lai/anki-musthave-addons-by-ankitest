@@ -66,7 +66,7 @@ lang = anki.lang.getLang()
 
 # Empty list means:
 # "Apply changes to all fields in the note"
-FIELDS_ONLY = ()  # (_('Front'), 'Front')  #
+FIELDS_ONLY = []  # [_('Front'), 'Front']  #
 
 HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
     'clear':    ['Ctrl+F12', '', '', ''' ''', """ """],
@@ -136,8 +136,7 @@ def clearFormatting(self, nids=None, dids=None, note=None,
     self : Browser
         the anki self from which the function is called
     """
-    mw.checkpoint('Clear Fields Formatting HTML')
-    mw.progress.start()
+    global FIELDS_ONLY
 
     if dids:
         nids = []
@@ -147,13 +146,29 @@ def clearFormatting(self, nids=None, dids=None, note=None,
             nids.extend(self.mw.col.findNotes(query))
 
     if nids:
+        demand = getText(
+            'Список очищаемых полей через запятую\n' +
+            '(для обработки всех полей — оставьте пустым)'
+            if lang == 'ru' else
+            'Comma delimited list of fields\n' +
+            '(leave blank to process all fields)',
+            default=', '.join(FIELDS_ONLY))
+        if not demand[1]:
+            tooltip('  <i>Clear Field Formatting HTML</i>   cancelled by user',
+                    period=2500)
+            return
+        FIELDS_ONLY = map(unicode.strip, demand[0].strip().split(','))
+
+        mw.checkpoint('Clear Fields Formatting HTML')
+        mw.progress.start()
+
         for nid in nids:  # self.selectedNotes():
             note = mw.col.getNote(nid)
             if FIELDS_ONLY:
                 flds = note.model()['flds']
                 for FIELD_ONLY in FIELDS_ONLY:
                     for fldi, fld in enumerate(flds):
-                        if fld['name'].lower() == FIELD_ONLY.lower():
+                        if fld['name'].lower() == FIELD_ONLY.lower().strip():
                             note.fields[fldi] = stripFormatting(
                                 note.fields[fldi],
                                 removeTags, newlineTags, replaceTags)
@@ -164,13 +179,13 @@ def clearFormatting(self, nids=None, dids=None, note=None,
                         x, removeTags, newlineTags, replaceTags),
                     note.fields)
                 note.flush()
+        mw.progress.finish()
     elif note:
         note.fields[self.currentField] = stripFormatting(
             note.fields[self.currentField],
             removeTags, newlineTags, replaceTags)
         note.flush()
 
-    mw.progress.finish()
     if mw.state == 'review':
         rst = mw.reviewer.state
     else:
@@ -455,6 +470,25 @@ def swap_on():
 mw.deckBrowser.show = wrap(mw.deckBrowser.show, swap_off)
 mw.overview.show = wrap(mw.overview.show, swap_off)
 mw.reviewer.show = wrap(mw.reviewer.show, swap_on)
+
+##
+
+
+def save_FIELDS_ONLY():
+    mw.pm.profile['cff_FIELDS_ONLY'] = FIELDS_ONLY
+
+
+def load_FIELDS_ONLY():
+    global FIELDS_ONLY
+
+    try:
+        key_value = mw.pm.profile['cff_FIELDS_ONLY']
+        FIELDS_ONLY = key_value
+    except KeyError:
+        pass
+
+addHook('unloadProfile', save_FIELDS_ONLY)
+addHook('profileLoaded', load_FIELDS_ONLY)
 
 ##
 
