@@ -55,7 +55,7 @@ from PyQt4.QtGui import *
 
 import aqt.deckbrowser
 import aqt.editor
-from aqt.utils import showText, tooltip, askUser, getText
+from aqt.utils import showText, tooltip, askUser, getText, showInfo
 
 from anki.hooks import addHook, wrap, runHook
 from aqt import mw
@@ -67,6 +67,7 @@ lang = anki.lang.getLang()
 # Empty list means:
 # "Apply changes to all fields in the note"
 FIELDS_ONLY = []  # [_('Front'), 'Front']  #
+FIELDS_ACCEPTED = False
 
 HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
     'clear':    ['Ctrl+F12', '', '', ''' ''', """ """],
@@ -107,6 +108,7 @@ def stripFormatting(txt, removeTags, newlineTags, replaceTags):
     string
         the modified string as described above
     """
+
     result = ''
     if not txt:
         return ''
@@ -125,7 +127,7 @@ def stripFormatting(txt, removeTags, newlineTags, replaceTags):
     return result
 
 
-def clearFormatting(self, nids=None, dids=None, note=None,
+def clearFormatting(self, nids=None, dids=None, note=None, chk=True,
                     removeTags='', newlineTags='', replaceTags=''):
     """
     Clears the formatting for every selected note.
@@ -136,7 +138,8 @@ def clearFormatting(self, nids=None, dids=None, note=None,
     self : Browser
         the anki self from which the function is called
     """
-    global FIELDS_ONLY
+    global FIELDS_ONLY, FIELDS_ACCEPTED
+    delAllTags = (removeTags == '' and newlineTags == '' and replaceTags == '')
 
     if dids:
         nids = []
@@ -145,7 +148,7 @@ def clearFormatting(self, nids=None, dids=None, note=None,
             query = 'deck:"%s"' % (deck)
             nids.extend(self.mw.col.findNotes(query))
 
-    if nids:
+    if nids and not delAllTags and not FIELDS_ACCEPTED:
         demand = getText(
             'Список очищаемых полей через запятую\n' +
             '(для обработки всех полей — оставьте пустым)'
@@ -158,13 +161,20 @@ def clearFormatting(self, nids=None, dids=None, note=None,
                     period=2500)
             return
         FIELDS_ONLY = map(unicode.strip, demand[0].strip().split(','))
+        if FIELDS_ONLY == ['']:
+            FIELDS_ONLY = []
+        FIELDS_ACCEPTED = True
 
-        mw.checkpoint('Clear Fields Formatting HTML')
-        mw.progress.start()
+    if nids:
+        if chk:
+            mw.checkpoint('Clear Fields Formatting HTML')
+            mw.progress.start()
 
         for nid in nids:  # self.selectedNotes():
             note = mw.col.getNote(nid)
-            if FIELDS_ONLY:
+            if delAllTags:
+                note.tags = []
+            elif FIELDS_ONLY:
                 flds = note.model()['flds']
                 for FIELD_ONLY in FIELDS_ONLY:
                     for fldi, fld in enumerate(flds):
@@ -172,18 +182,21 @@ def clearFormatting(self, nids=None, dids=None, note=None,
                             note.fields[fldi] = stripFormatting(
                                 note.fields[fldi],
                                 removeTags, newlineTags, replaceTags)
-                            note.flush()
             else:
                 note.fields = map(
                     lambda x: stripFormatting(
                         x, removeTags, newlineTags, replaceTags),
                     note.fields)
-                note.flush()
-        mw.progress.finish()
+            note.flush()
+        if chk:
+            mw.progress.finish()
     elif note:
-        note.fields[self.currentField] = stripFormatting(
-            note.fields[self.currentField],
-            removeTags, newlineTags, replaceTags)
+        if delAllTags:
+            note.tags = []
+        else:
+            note.fields[self.currentField] = stripFormatting(
+                note.fields[self.currentField],
+                removeTags, newlineTags, replaceTags)
         note.flush()
 
     if mw.state == 'review':
@@ -218,22 +231,39 @@ def onClearFormatted(self, nids=None, dids=None, note=None):
 
 
 def onClearFormattag(self, nids=None, dids=None, note=None):
+    global FIELDS_ACCEPTED
+    FIELDS_ACCEPTED = False
+
     OLDcolor = ''
     NEWcolor = ''
+    removeAllTags = False
 
-    valid = ['a', 'b', 'i', 'u', 'p', 's', 'sub', 'sup', 'font']
+    valid = (
+        'a', 'b', 'i', 'u', 'p', 's', 'sub', 'sup', 'font', 'img', 'sound')
     demand = getText(
         'Remove some of HTML tags <b>' + ' '.join(valid) +
         '</b><br>   or replace   <i>OLDcolor NEWcolor</i>' +
-        '</b><br>   or delete    <i>OLDcolor</i>')
+        '</b><br>   or delete    <i>OLDcolor</i>' +
+        '<br>   or enter <b>tags</b> keyword  ' +
+        ' to remove   All   Note <i>Tags</i>')
     stencil = []
     if not demand[1]:  # cancelled by user
         return
 
+    mw.checkpoint('Clear Fields Formatting HTML')
+    mw.progress.start()
+
     requests = demand[0].strip().lower().split()
     for req in requests:
         if req in valid:
-            stencil.extend(['<%s.*?>|</%s>' % (req, req)])
+            if req in ('sound'):
+                stencil.extend(['\[sound\:.*?\]'])
+            elif req in ('img'):
+                stencil.extend(['<%s.*?>' % (req)])
+            else:
+                stencil.extend(['<%s.*?>|</%s>' % (req, req)])
+        elif req == 'tags':
+            removeAllTags = True
         else:
             if not OLDcolor:
                 OLDcolor = req
@@ -247,10 +277,11 @@ def onClearFormattag(self, nids=None, dids=None, note=None):
             stencil.extend(['<strike.*?>|</strike>|' +
                            '<del.*?>|</del>|<ins.*?>|</ins>'])
 
-    if stencil and askUser('Delete %s?' % ('|'.join(stencil))):
+    join_stencil = '|'.join(stencil)
+    if stencil and askUser('Delete %s?' % (join_stencil)):
         clearFormatting(
-            self, nids=nids, dids=dids, note=note,
-            removeTags='|'.join(stencil))
+            self, nids=nids, dids=dids, note=note, chk=False,
+            removeTags=join_stencil)
 
     if OLDcolor:
         # tooltip('Sorry, not implemented yet.')
@@ -265,13 +296,21 @@ def onClearFormattag(self, nids=None, dids=None, note=None):
                     (OLDcolor, OLDcolor, NEWcolor, NEWcolor)):
                 newTag = ' color="%s"' % (NEWcolor)
                 clearFormatting(
-                    self, nids=nids, dids=dids, note=note,
+                    self, nids=nids, dids=dids, note=note, chk=False,
                     removeTags=oldTag, replaceTags=newTag)
         else:
-            if askUser('Delete color <b>%s</b>?' % (OLDcolor)):
+            if askUser(
+                    'Delete color <b style="color:%s;">%s</b>?' %
+                    (OLDcolor, OLDcolor)):
                 clearFormatting(
-                    self, nids=nids, dids=dids, note=note,
+                    self, nids=nids, dids=dids, note=note, chk=False,
                     removeTags=oldTag)
+
+    if removeAllTags and askUser('Delete all Tags?'):
+        clearFormatting(
+            self, nids=nids, dids=dids, note=note, chk=False)
+
+    mw.progress.finish()
 
 
 def setupMenu(self):
