@@ -66,6 +66,34 @@ update cards set type=2,queue=2,ivl=:ivl,due=:due,odue=0,
 usn=:usn,mod=:mod,factor=:fact where id=:id""", d)
     self.col.log(ids)
 
+def _refactorCards(self, ids, indi=2500):
+    'Put cards in review queue with a new interval in days (min, max).'
+    d = []
+    mod = intTime()
+    for id in ids:
+        d.append(dict(id=id, mod=mod,
+                      usn=self.col.usn(), fact=indi))
+    self.remFromDyn(ids)
+    self.col.db.executemany("""
+update cards set type=2,queue=2,odue=0,
+usn=:usn,mod=:mod,factor=:fact where id=:id""", d)
+    self.col.log(ids)
+
+def _nofactorCards(self, ids, imin, imax):
+    'Put cards in review queue with a new interval in days (min, max).'
+    d = []
+    t = self.today
+    mod = intTime()
+    for id in ids:
+        r = random.randint(imin, imax)
+        d.append(dict(id=id, due=r + t, ivl=max(1, r), mod=mod,
+                      usn=self.col.usn()))
+    self.remFromDyn(ids)
+    self.col.db.executemany("""
+update cards set type=2,queue=2,ivl=:ivl,due=:due,odue=0,
+usn=:usn,mod=:mod where id=:id""", d)
+    self.col.log(ids)
+
 # inspired by
 # Date:     January 27, 2016
 # Author:   Benjamin Gray
@@ -166,7 +194,7 @@ def promptNewInterval(cids):
                     if dayStringW:
                         days = abs(days) * 7
                 except ValueError:
-                    days = mw.reviewer.card.ivl + 1
+                    days = 1  # mw.reviewer.card.ivl + 1
                     try:
                         dayz = abs(float(nextDate))
                         if 0 < dayz and dayz < 1:
@@ -212,10 +240,10 @@ def promptNewInterval(cids):
                 mw.reset()
                 return
             infotip = ''
-            try:
-                cardEase = mw.reviewer.card.factor  # 2500
-            except AttributeError:
-                cardEase = 2500
+            # try:
+            #     cardEase = mw.reviewer.card.factor  # 2500
+            # except AttributeError:
+            #     cardEase = 2500
         else:
             infotip = ('Лёгкость карточки <b>%s</b>%%<br><br>'
                        if lang == 'ru' else
@@ -225,11 +253,22 @@ def promptNewInterval(cids):
         if total:
             # mw.col.sched.reschedCards(
             #   [mw.reviewer.card.id], total-1 if total>1 else 1, total+1 )
-            if total < 10:
-                _reschedCards(mw.col.sched, cids, total, total, indi=cardEase)
+            if cardEase is not None:
+                if total < 10:
+                    _reschedCards(
+                        mw.col.sched, cids, total, total, indi=cardEase)
+                else:
+                    _reschedCards(
+                        mw.col.sched, cids, total -
+                        1 if total > 1 else 1, total + 1, indi=cardEase)
             else:
-                _reschedCards(mw.col.sched, cids, total -
-                              1 if total > 1 else 1, total + 1, indi=cardEase)
+                if total < 10:
+                    _nofactorCards(
+                        mw.col.sched, cids, total, total)
+                else:
+                    _nofactorCards(
+                        mw.col.sched, cids, total -
+                        1 if total > 1 else 1, total + 1)
 
             days_mod = (total % 10) if ((total % 100) < 11 or (
                 total % 100) > 14) else (total % 100)
@@ -262,8 +301,9 @@ def promptNewInterval(cids):
                 if lang == 'ru' else
                 'Card ease <b>%s</b>%%<br><br>') %
                 int(cardEase / 10), period=1000)
-            mw.reviewer.card.factor = cardEase
-            mw.reviewer.card.flush()
+            _refactorCards(mw.col.sched, cids, indi=cardEase)
+            # mw.reviewer.card.factor = cardEase
+            # mw.reviewer.card.flush()
 
         mw.reset()
 
