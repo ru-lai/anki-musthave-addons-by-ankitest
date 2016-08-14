@@ -1,9 +1,11 @@
-﻿# -*- mode: Python ; coding: utf-8 -*-
-# • day learning cards always with new
+﻿# -*- coding: utf-8 -*-
+# by Anki user ankitest
+# License: GNU AGPL, version 3 or later; http://www.gnu.org/licenses/agpl.html
+# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+
+# • day learning cards always before new
 # https://ankiweb.net/shared/info/1331545236
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
-# License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
 
 # Now it is the part of Must Have add-on:
 # https://ankiweb.net/shared/info/67643234
@@ -34,40 +36,29 @@
 # Normally these cards go last, but I want them to go first.
 # ####################################################################
 
-# after https://anki.tenderapp.com/discussions/ankidesktop
-# /18936-function-not-working-showing-new-cards-first
-
-# if Show new cards before reviews option is selected then
-# New cards are going before old ones, learning and reviews.
-
 #
 # No support. Use it AS IS on your own risk.
+
 import anki.sched
 
 
 def _getCardReordered(self):
     'Return the next due card id, or None.'
 
+    # learning card due?
+    c = self._getLrnCard()
+    if c:
+        return c
+
     # new first, or time for one?
     if self._timeForNewCard():
-
-        c = self._getNewCard()
-        if c:
-            return c
-
-        # learning card due?
-        c = self._getLrnCard()
-        if c:
-            return c
 
         # day learning card due?
         c = self._getLrnDayCard()
         if c:
             return c
 
-    else:
-        # learning card due?
-        c = self._getLrnCard()
+        c = self._getNewCard()
         if c:
             return c
 
