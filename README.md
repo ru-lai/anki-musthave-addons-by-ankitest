@@ -24,6 +24,7 @@ Info | Code
 [' Later not now button](https://ankiweb.net/shared/info/777151722) | 777151722 
 [' More Answer Buttons for ALL Cards](https://ankiweb.net/shared/info/755044381) | 755044381 
 [' Prompt and set days interval and card ease](https://ankiweb.net/shared/info/2031109761) | 2031109761 
+[rated:30:1](https://ankiweb.net/shared/info/1992953867) | 1992953867 
 [' Swap](https://ankiweb.net/shared/info/1040866511) | 1040866511 
 [' Timebox tooltip](https://ankiweb.net/shared/info/2014169675) | 2014169675 
 [' View HTML source with JavaScript and CSS styles](https://ankiweb.net/shared/info/1128123950) | 1128123950 
