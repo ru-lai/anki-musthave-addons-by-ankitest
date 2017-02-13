@@ -18,13 +18,14 @@ Info | Code
 [' Day learning cards always before new](https://ankiweb.net/shared/info/1331545236) | 1331545236 
 [' Edit Audio Images](https://ankiweb.net/shared/info/1075177705) | 1075177705 
 [' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441 
+[' Empty Cards Check Media Database Hotkeys](https://ankiweb.net/shared/info/445912450) | 445912450 
 [' F4 Edit](https://ankiweb.net/shared/info/2085904433) | 2085904433 
 [' Flip-flop](https://ankiweb.net/shared/info/519426347) | 519426347 
 [' Insensitive case type field](https://ankiweb.net/shared/info/1616934891) | 1616934891 
 [' Later not now button](https://ankiweb.net/shared/info/777151722) | 777151722 
 [' More Answer Buttons for ALL Cards](https://ankiweb.net/shared/info/755044381) | 755044381 
 [' Prompt and set days interval and card ease](https://ankiweb.net/shared/info/2031109761) | 2031109761 
-[rated:30:1](https://ankiweb.net/shared/info/1992953867) | 1992953867 
+[' rated:30:1](https://ankiweb.net/shared/info/1992953867) | 1992953867 
 [' Swap](https://ankiweb.net/shared/info/1040866511) | 1040866511 
 [' Timebox tooltip](https://ankiweb.net/shared/info/2014169675) | 2014169675 
 [' View HTML source with JavaScript and CSS styles](https://ankiweb.net/shared/info/1128123950) | 1128123950 
