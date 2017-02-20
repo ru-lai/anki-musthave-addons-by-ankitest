@@ -217,27 +217,21 @@ def _answerButtons(self):
 onclick="py.link('ease%d');">\
 %s</button></td>''' % (i, due, extra, _('Shortcut key: %s') % i, i, label)
 
-    buf = '''<center><table cellpading=0 cellspacing=0><tbody><tr><style>
+    buf = '''<style>
 body { overflow: hidden; }
-.but:nth-child(4),.but:nth-child(4) button{color:/*red*/#c33;}'''
+.but,.but button{color:#c33;}'''
     if 2 == default:
         buf += '''
-.but2:nth-child(4),.but2:nth-child(4) button,
-.but2:nth-child(5),.but2:nth-child(5) button{color:/*green*/#090;}
-.but3:nth-child(4),.but3:nth-child(4) button,
-.but3:nth-child(5),.but3:nth-child(5) button,
-.but3:nth-child(6),.but3:nth-child(6) button{color:/*blue*/#66f;}'''
+.but2,.but2 button{color:#090;}
+.but3,.but3 button{color:#66f;}'''
     else:
         buf += '''
-.but2:nth-child(5),.but2:nth-child(5) button{color:darkgoldenrod;}
-.but3:nth-child(5),.but3:nth-child(5) button,
-.but3:nth-child(6),.but3:nth-child(6) button{color:/*green*/#090;}
-.but4:nth-child(5),.but4:nth-child(5) button,
-.but4:nth-child(6),.but4:nth-child(6) button,
-.but4:nth-child(7),.but4:nth-child(7) button{color:/*blue*/#66f;}'''
+.but2,.but2 button{color:darkgoldenrod;}
+.but3,.but3 button{color:#090;}
+.but4,.but4 button{color:#66f;}'''
     buf += '''
-.but button { font-weight: bold; }
-</style>'''
+.but,.but button { font-weight: bold; }
+</style><center><table cellpading=0 cellspacing=0><tbody><tr>'''
     if USE_INTERVALS_AS_LABELS:
         buf += '''
 <td align=center><span class=nobold>&nbsp;</span><br><button
