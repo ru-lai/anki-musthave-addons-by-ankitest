@@ -1,5 +1,5 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • Promt and set days interval
+# ' Promt and set days interval
 # https://ankiweb.net/shared/info/2031109761
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
@@ -62,8 +62,8 @@ def _reschedCards(self, ids, imin, imax, indi=2500):
                       usn=self.col.usn(), fact=indi))
     self.remFromDyn(ids)
     self.col.db.executemany("""
-update cards set type=2,queue=2,ivl=:ivl,due=:due,odue=0,
-usn=:usn,mod=:mod,factor=:fact where id=:id""", d)
+update cards set queue=2,ivl=:ivl,due=:due,odue=0,
+usn=:usn,mod=:mod,factor=:fact where id=:id and type=2""", d)
     self.col.log(ids)
 
 def _refactorCards(self, ids, indi=2500):
@@ -90,8 +90,8 @@ def _nofactorCards(self, ids, imin, imax):
                       usn=self.col.usn()))
     self.remFromDyn(ids)
     self.col.db.executemany("""
-update cards set type=2,queue=2,ivl=:ivl,due=:due,odue=0,
-usn=:usn,mod=:mod where id=:id""", d)
+update cards set queue=2,ivl=:ivl,due=:due,odue=0,
+usn=:usn,mod=:mod where id=:id and type=2""", d)
     self.col.log(ids)
 
 # inspired by
