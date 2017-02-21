@@ -43,7 +43,7 @@ if sys.version[0] == '2':  # Python 3 is utf8 only already.
     if hasattr(sys, 'setdefaultencoding'):
         sys.setdefaultencoding('utf8')
 
-MUSTHAVE_COLOR_ICONS = 'reschedule_icons'
+MUSTHAVE_COLOR_ICONS = 'handbook'
 try:
     MUSTHAVE_COLOR_ICONS = os.path.join(
         mw.pm.addonFolder(), MUSTHAVE_COLOR_ICONS)
@@ -75,8 +75,8 @@ def _refactorCards(self, ids, indi=2500):
                       usn=self.col.usn(), fact=indi))
     self.remFromDyn(ids)
     self.col.db.executemany("""
-update cards set type=2,queue=2,odue=0,
-usn=:usn,mod=:mod,factor=:fact where id=:id""", d)
+update cards set queue=2,odue=0,
+usn=:usn,mod=:mod,factor=:fact where id=:id and type=2""", d)
     self.col.log(ids)
 
 def _nofactorCards(self, ids, imin, imax):
@@ -300,7 +300,7 @@ def promptNewInterval(cids):
                 'Лёгкость карточки <b>%s</b>%%<br><br>'
                 if lang == 'ru' else
                 'Card ease <b>%s</b>%%<br><br>') %
-                int(cardEase / 10), period=1000)
+                int(cardEase / 10), period=2000)
             _refactorCards(mw.col.sched, cids, indi=cardEase)
             # mw.reviewer.card.factor = cardEase
             # mw.reviewer.card.flush()
