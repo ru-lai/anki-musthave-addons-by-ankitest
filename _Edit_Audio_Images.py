@@ -11,7 +11,7 @@
 # 
 # In Add/Edit window F10 opens sounds and images only from current field.
 #
-# You can uncomment lines # EDIT_IMG or # EDIT_SND
+# You can uncomment lines # Windows_IMG or # Windows_SND
 # to setup you own Windows command line 
 # to start external program with images/audio
 #
@@ -51,17 +51,28 @@ if sys.version[0] == '2':  # Python 3 is utf8 only already.
     if hasattr(sys, 'setdefaultencoding'):
         sys.setdefaultencoding('utf8')
 
+##  
+
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
-    'edit': ['F10'],
+    'edit': ['F10'], # F12 
     'image': ['Ctrl+F10'],
     'audio': ['Shift+F10'],
 }
 
-EDIT_IMG = None
-# EDIT_IMG = u'''start "" /B "%s" '''
+win_open_edit = 'open' # 'edit' # 
 
-EDIT_SND = None
-# EDIT_SND = u'''start "" /B "%s" '''
+Windows_IMG = None
+# Windows_IMG = u'''start "" /B "%s" '''
+
+Windows_SND = None
+# Windows_SND = u'''start "" /B "%s" '''
+
+macOS_IMG = "open"
+
+macOS_SND = "open -a " + "\'Audacity\'"
+
+#macOS_SND = ("open -a " + "/Applications/Adobe\ Audition\ CC\ " +
+#             "2017/Adobe\ Audition\ CC\ 2017.app")
 
 ##
 
@@ -85,11 +96,11 @@ def JustDoItBy(note, curFld, audioPic):
                 found = os.path.join(mw.col.media.dir(),
                                      next_picture)  # .group(1))
                 if os.path.exists(found):
-                  if EDIT_SND:
-                    os.system(EDIT_SND%(found))
+                  if Windows_IMG:
+                    os.system(Windows_IMG%(found))
                   else:
                     try:
-                        os.startfile(found, 'edit')
+                        os.startfile(found, win_open_edit)
                     except WindowsError:
                         try:
                             os.startfile(found)
@@ -100,7 +111,7 @@ def JustDoItBy(note, curFld, audioPic):
                 fullPath = os.path.join(pathToCollection, found)
                 #need to escape spaces
                 fullPath = re.sub(" ", "\ ", fullPath)
-                os.system("open " + fullPath)
+                os.system(macOS_IMG + " " + fullPath)
 
     if audioPic == 0 or audioPic == 2:
       for fld in flds:
@@ -112,11 +123,11 @@ def JustDoItBy(note, curFld, audioPic):
                 found = os.path.join(mw.col.media.dir(),
                                      next_sound)  # .group(1))
                 if os.path.exists(found):
-                  if EDIT_IMG:
-                    os.system(EDIT_IMG%(found))
+                  if Windows_SND:
+                    os.system(Windows_SND%(found))
                   else:
                     try:
-                        os.startfile(found, 'edit')
+                        os.startfile(found, win_open_edit)
 # >> WindowsError: [Error 1155]
 # No application is associated with the specified file for this operation:
                     except WindowsError:
@@ -128,7 +139,7 @@ def JustDoItBy(note, curFld, audioPic):
               if isMac:
                 fullPath = os.path.join(pathToCollection, next_sound)
                 fullPath = re.sub(" ", "\ ", fullPath)
-                os.system("open -a " + "\'Audacity\'" + " " + fullPath)
+                os.system(macOS_SND + " " + fullPath)
 
 ##
 
