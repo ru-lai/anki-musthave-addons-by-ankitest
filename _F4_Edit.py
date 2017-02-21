@@ -1,9 +1,9 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • F4 Edit
+# ' F4 Edit
 # https://ankiweb.net/shared/info/2085904433
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # Implements F4 hotkey as synonym for e shortcut key in Card Reviewer.
 # Shift+F4 opens Edit - Cards...
@@ -50,7 +50,7 @@ if sys.version[0] == '2':  # Python 3 is utf8 only already.
         sys.setdefaultencoding('utf8')
 
 try:
-    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'f4edit_icons')
+    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'handbook')
 except:
     MUSTHAVE_COLOR_ICONS = ''
 

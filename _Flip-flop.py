@@ -1,9 +1,9 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • Flip-flop
+# ' Flip-flop
 # https://ankiweb.net/shared/info/519426347
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # -- Flip-flop card (Show FrontSide/BackSide
 #    by F7/F8 or Ctrl+PgUp/Control+PageDown or ^9/^3 or Insert/0)
@@ -44,7 +44,10 @@ FLIP_FLOP = True
 ANKI_MENU_ICONS = True
 # ANKI_MENU_ICONS = False
 
-MUSTHAVE_COLOR_ICONS = 'flipflop_icons'
+try:
+    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'handbook')
+except:
+    MUSTHAVE_COLOR_ICONS = ''
 
 ZERO_KEY_TO_SHOW_ANSWER = True
 # ZERO_KEY_TO_SHOW_ANSWER = False
@@ -63,12 +66,6 @@ def go_answer():
         if mw.reviewer.state == 'question':
             anki.sound.stopMplayer()
             mw.reviewer._showAnswer()
-
-try:
-    MUSTHAVE_COLOR_ICONS = os.path.join(
-        mw.pm.addonFolder(), MUSTHAVE_COLOR_ICONS)
-except:
-    MUSTHAVE_COLOR_ICONS = ''
 
 PageUp_icon = QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'PageUp.png'))
 PageDown_icon = QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'PageDown.png'))

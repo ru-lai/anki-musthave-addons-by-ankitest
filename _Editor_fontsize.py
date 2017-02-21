@@ -1,9 +1,9 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • Editor fontsize
+# ' Editor fontsize
 # https://ankiweb.net/shared/info/1931469441
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # Increase Text Size for Card Types Editor and so on.
 #
@@ -129,7 +129,7 @@ if sys.version[0] == '2':  # Python 3 is utf8 only already.
         sys.setdefaultencoding('utf8')
 
 try:
-    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'f4edit_icons')
+    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'handbook')
 except:
     MUSTHAVE_COLOR_ICONS = ''
 

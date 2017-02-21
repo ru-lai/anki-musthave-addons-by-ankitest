@@ -3,7 +3,7 @@
 # https://ankiweb.net/shared/info/1040866511
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # In card reviewer F10 opens all images and sounds in external editors.
 # Ctrl+F10 only pictures 

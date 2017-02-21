@@ -1,9 +1,9 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • Zooming
+# ' Zooming
 # https://ankiweb.net/shared/info/1071179937
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # Zooms, unzooms, lets you set a 1:1 (100%)
 #  or initial (user defined) zoom level. It's pretty cool.
@@ -82,7 +82,7 @@ if FONT or FONTSIZE:
     changeFont()
 
 try:
-    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'zooming_icons')
+    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'handbook')
 except:
     MUSTHAVE_COLOR_ICONS = ''
 

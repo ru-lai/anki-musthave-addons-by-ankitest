@@ -1,9 +1,9 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • Duplicate notes and Swap fields
+# ' Duplicate notes and Swap fields
 # https://ankiweb.net/shared/info/1040866511
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # To modify a single card so the front and back are inverted
 #  use F12 in Card Reviewer.
@@ -77,7 +77,7 @@ fldlst = [
 ]
 
 try:
-    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'swap_icons')
+    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'handbook')
 except:
     MUSTHAVE_COLOR_ICONS = ''
 

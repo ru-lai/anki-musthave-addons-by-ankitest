@@ -1,9 +1,9 @@
 ﻿# -*- mode: Python ; coding: utf-8 -*-
-# ~ More Answer Buttons for ALL Cards
+# ' More Answer Buttons for ALL Cards
 # https://ankiweb.net/shared/info/755044381
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # Adds 1-4 (4 by default) extra answer buttons with regular intervals.
 #  No answer on that card will be given, just setup additional interval.

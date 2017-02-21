@@ -3,7 +3,7 @@
 # https://ankiweb.net/shared/info/2031109761
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # new interval equals current interval
 #  plus + Number of days until next review (because no answer will be given).
@@ -43,10 +43,8 @@ if sys.version[0] == '2':  # Python 3 is utf8 only already.
     if hasattr(sys, 'setdefaultencoding'):
         sys.setdefaultencoding('utf8')
 
-MUSTHAVE_COLOR_ICONS = 'handbook'
 try:
-    MUSTHAVE_COLOR_ICONS = os.path.join(
-        mw.pm.addonFolder(), MUSTHAVE_COLOR_ICONS)
+    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'handbook')
 except:
     MUSTHAVE_COLOR_ICONS = ''
 
