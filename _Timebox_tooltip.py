@@ -23,7 +23,7 @@ from aqt.utils import tooltip
 # Based on Decks Total https://ankiweb.net/shared/info/1421528223
 # https://github.com/b50/anki-deck-stats
 # Author of original addon: Calumks <calumks@gmail.com>
-import os
+import os, time
 
 # Get DeckBrowser class
 from aqt.deckbrowser import DeckBrowser
@@ -33,6 +33,20 @@ from anki.hooks import wrap
 
 # Get fmtTimeSpan required for renderStats method
 from anki.utils import fmtTimeSpan
+
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+
+# Get language class
+# Выбранный пользователем язык программной оболочки
+import anki.lang
+lang = anki.lang.getLang()
+
+##
+
+timeboxHotkeys = "Ctrl+Shift+T"
+
+##
 
 def renderOstrich(self):
 
@@ -69,16 +83,66 @@ def renderOstrich(self):
     return buf
 
 
-def maNextCard(self):
-    elapsed = self.mw.col.timeboxReached()
-    if elapsed:
+def timeboxReached(self):
+    "Return (elapsedTime, reps)"
+    if not self.conf['timeLim']:
+        # timeboxing disabled
+        return False
+    elapsed = time.time() - self._startTime
+    return (self.conf['timeLim'], self.sched.reps - self._startReps)
+
+
+def maProc(self, elapsed):
         part1 = ngettext('%d card studied in',
                          '%d cards studied in', elapsed[1]) % elapsed[1]
         mins = int(round(elapsed[0] / 60))
         part2 = ngettext('%s minute.', '%s minutes.', mins) % mins
-        tooltip('<big>%s %s <br><br> %s</big>' % (
-            part1, part2, 
-            renderOstrich(self)), period=8000)
+        tooltip(
+            '<big><b style=font-size:larger;color:blue;font-weight:bold;>' \
+            + '%s <span style=color:red>%s</span></b> <br><br> %s</big>' % (
+                part1, part2, renderOstrich(self)), period=8000)
+
+
+def myInfoCards(self):
+    elapsed = timeboxReached(self.mw.col)
+    if elapsed:
+        maProc(self, elapsed)
+   
+            
+def maNextCard(self):
+    elapsed = self.mw.col.timeboxReached()
+    if elapsed:
+        maProc(self, elapsed)
         self.mw.col.startTimebox()
 
 Reviewer.nextCard = wrap(Reviewer.nextCard, maNextCard, 'before')
+
+if True:
+    info_action = QAction(mw)
+    info_action.setText("&" + _("Timebox time limit"))
+    info_action.setShortcut(timeboxHotkeys)
+    info_action.setEnabled(False)
+
+    try:
+        mw.addon_view_menu
+    except AttributeError:
+        mw.addon_view_menu = QMenu(
+            _(u"&Вид") if lang == 'ru' else "&" + _(u"View"), mw)
+        mw.form.menubar.insertMenu(
+            mw.form.menuTools.menuAction(), mw.addon_view_menu)
+
+    mw.connect(info_action, SIGNAL("triggered()"), 
+               lambda: myInfoCards(mw.reviewer))
+
+    mw.addon_view_menu.addAction(info_action)
+
+    def info_off():
+        info_action.setEnabled(False)
+
+
+    def info_on():
+        info_action.setEnabled(True)
+
+    mw.deckBrowser.show = wrap(mw.deckBrowser.show, info_off)
+    mw.overview.show = wrap(mw.overview.show, info_off)
+    mw.reviewer.show = wrap(mw.reviewer.show, info_on)
