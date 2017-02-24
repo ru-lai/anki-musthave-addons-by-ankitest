@@ -141,8 +141,9 @@ def newRemaining(self):
 
 def laterNotNow():
     return (
-        '<style>td{vertical-align:bottom;}' +
-        'td button{font-size:x-large;color:#999;}</style>' +
+        '<style>td{vertical-align:bottom;}.stattxt{color:#888;}' +
+        'html, body { width: 100%%; height: 100%%; margin: 0px; padding: 0px; }' +
+        'td button{font-size:x-large;color:#888;}</style>' +
         '<table cellpadding=0 cellspacing=0 width=100%%><tr>' +
         '<td align=center><span class=stattxt>%s</span>' +
         '''<button title=" %s " onclick="py.link('ease%d');" ''' +
