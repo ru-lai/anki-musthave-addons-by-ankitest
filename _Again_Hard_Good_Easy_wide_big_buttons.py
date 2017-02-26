@@ -1,9 +1,9 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • Again Hard Good Easy wide big buttons
+# ' Again Hard Good Easy wide big buttons
 # https://ankiweb.net/shared/info/1508882486
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # Show answer and Again Hard Good Easy buttons
 #  so wide as Anki window.
@@ -29,10 +29,8 @@ import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from anki.hooks import wrap  # , addHook, runHook
-from aqt import mw
-from aqt.reviewer import Reviewer
-from aqt.utils import showText, showCritical
+import anki
+import aqt
 
 # Get language class
 import anki.lang
@@ -71,17 +69,37 @@ BEAMS3 = '74%'
 BEAMS2 = '48%'
 BEAMS1 = '24%'
 
-black = '#999'
-orange = '#c90'
-red = '#c33'
-green = '#3c3'
-blue = '#69f'
+black = 'none' # Night_Mode compatibility
+orange = '#c90' # darkgoldenrod
+red = '#c33' # #c33
+green = '#3c3' # #090
+blue = '#69f' # #66f
+
+BUTTON_COLOR = [black, red, orange, green, blue]
 
 BUTTON_LABEL = ['<span style="color:' + red + ';">o_0</span>',
                 '<b style="color:' + orange + ';">:-(</b>',
                 '<b style="color:' + green + ';">:-|</b>',
                 '<b style="color:' + blue + ';">:-)</b>']
 
+USE_INTERVALS_AS_LABELS = False  # True #
+##
+
+try:
+    import Night_Mode
+
+    Night_Mode.nm_css_bottom = Night_Mode.nm_css_buttons \
+        + Night_Mode.nm_css_color_replacer + """
+body {
+	background:-webkit-gradient(linear, left top, left bottom, from(#333), to(#222));
+	border-top-color: #000;
+} 
+.stattxt {
+	color: #ccc;
+}
+"""
+except ImportError:
+    pass
 ##
 
 old_addons = (
@@ -97,26 +115,26 @@ old_addons = (
 old_addons2delete = ''
 for old_addon in old_addons:
     if len(old_addon) > 0:
-        old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+        old_filename = os.path.join(aqt.mw.pm.addonFolder(), old_addon)
         if os.path.exists(old_filename):
             old_addons2delete += old_addon[:-3] + ' \n'
 
 if old_addons2delete != '':
     if lang == 'ru':
-        showText(
-            'В каталоге\n\n ' + mw.pm.addonFolder() +
+        aqt.utils.showText(
+            'В каталоге\n\n ' + aqt.mw.pm.addonFolder() +
             '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
-            ' • Again Hard Good Easy wide big buttons \n' +
+            " ' Again Hard Good Easy wide big buttons \n" +
             'и поэтому будут конфликтовать с ним.\n\n' +
             old_addons2delete +
             '\nУдалите эти дополнения и перезапустите Anki.')
     else:
-        showText(
+        aqt.utils.showText(
             '<big>There are some add-ons in the folder <br>\n<br>\n' +
-            ' &nbsp; ' + mw.pm.addonFolder() +
+            ' &nbsp; ' + aqt.mw.pm.addonFolder() +
             '<pre>' + old_addons2delete + '</pre>' +
             'They are already part of<br>\n' +
-            ' <b> &nbsp; • Again Hard Good Easy wide big buttons</b>' +
+            " <b> &nbsp; ' Again Hard Good Easy wide big buttons</b>" +
             ' addon.<br>\n' +
             'Please, delete them and restart Anki.</big>', type="html")
 
@@ -138,14 +156,15 @@ def newRemaining(self):
         counts = list(self.mw.col.sched.counts(self.card))
     return (idx == 0 and counts[0] < 1)
 
-
 def laterNotNow():
     return (
-        '<style>td{vertical-align:bottom;}.stattxt{color:#888;}' +
+        '<style>td{vertical-align:bottom;}' +
         'html, body { width: 100%%; height: 100%%; margin: 0px; padding: 0px; }' +
-        'td button{font-size:x-large;color:#888;}</style>' +
+        'td button{font-size:x-large;}' +
+        'body { overflow: hidden; }' + 
+        '</style>' +
         '<table cellpadding=0 cellspacing=0 width=100%%><tr>' +
-        '<td align=center><span class=stattxt>%s</span>' +
+        '<td align=center><span class="stattxt">%s</span>' +
         '''<button title=" %s " onclick="py.link('ease%d');" ''' +
         'style="width:100%%;%s">%s</button></td><td>&nbsp;</td>') % (
             'позже' if lang == 'ru' else _('later'),
@@ -163,8 +182,8 @@ def myShowAnswerButton(self, _old):
         self.bottom.web.setFocus()
 
     middle = laterNotNow() + (
-        '<td align=center style="width:%s;">' +
-        '<span class=stattxt>%s</span><button %s id=ansbut ' +
+        '<td align=center style="width:%s;"' +
+        '><span class="stattxt">%s</span><br><button %s id=ansbut ' +
         '''style="width:100%%;%s" onclick="py.link('ans');" ''' +
         '>%s</button></td>' +
         '</tr></table>') % (
@@ -184,15 +203,15 @@ def myShowAnswerButton(self, _old):
     return True
 
 if old_addons2delete == '':
-    Reviewer._showAnswerButton = wrap(
-        Reviewer._showAnswerButton, myShowAnswerButton, 'around')
+    aqt.reviewer.Reviewer._showAnswerButton = anki.hooks.wrap(
+        aqt.reviewer.Reviewer._showAnswerButton, myShowAnswerButton, 'around')
 
 # Anki uses a single digit to track which button has been clicked.
 NOT_NOW_BASE = 5
 
 
 def AKR_answerCard(self, ease, _old):
-    count = mw.col.sched.answerButtons(mw.reviewer.card)  # Get button count
+    count = aqt.mw.col.sched.answerButtons(aqt.mw.reviewer.card)  # Get button count
     try:
         ease = remap[count][ease]
     except (KeyError, IndexError):
@@ -200,11 +219,27 @@ def AKR_answerCard(self, ease, _old):
     _old(self, ease)
 
 if old_addons2delete == '':
-    Reviewer._answerCard = wrap(Reviewer._answerCard, AKR_answerCard, 'around')
+    aqt.reviewer.Reviewer._answerCard = anki.hooks.wrap(
+        aqt.reviewer.Reviewer._answerCard, AKR_answerCard, 'around')
 # 'before' does not working as intended cause ease is changing inside AKR
 
-# Replace _answerButtonList method
+# to remove <span class=nobold>
 
+def _bottomTimes(self, i):
+    if not self.mw.col.conf['estTimes']:
+       return '&nbsp;'
+    txt = self.mw.col.sched.nextIvlStr(self.card, i, True) or '&nbsp;'
+    return txt.replace("<", "&lt;")
+
+# always show interval despite user's preferences
+
+def _bottomTime(self, i):
+    # if not self.mw.col.conf['estTimes']:
+    #    return '&nbsp;'
+    txt = self.mw.col.sched.nextIvlStr(self.card, i, True) or '&nbsp;'
+    return txt.replace("<", "&lt;")
+
+# Replace _answerButtonList method
 
 def answerButtonList(self):
     l = ((1, '' + BUTTON_LABEL[0] + '', BEAMS1),)
@@ -235,15 +270,33 @@ def myAnswerButtons(self, _old):
         else:
             extra = ''
         due = self._buttonTime(i)
-        return (
-            '<td align=center style="width:%s;">' +
-            '<span class=stattxt>%s</span><button %s %s ' +
-            '''style="width:100%%;%s" onclick="py.link('ease%d');"''' +
-            '>%s</button></td>') % (
-                beam, due, extra, (
-                    (' title=" ' + _('Shortcut key: %s') %
-                     (i)) + ' "'),  # (remap[cnt][i])) + ' "'),
-                'color:' + black, i, label)
+
+        if USE_INTERVALS_AS_LABELS:
+            due = _bottomTime(self, i)
+            j = i
+            cnt = self.mw.col.sched.answerButtons(self.card)
+            if cnt == 2:
+                if i == 2:
+                    j = 3
+            elif cnt == 3:
+                if i == 2:
+                    j = 3
+                if i == 3:
+                    j = 4
+            return '''
+<td align=center class="but but%s" style="width:%s;"
+><span class="stattxt">&nbsp;</span><br
+><button %s title="%s" style="width:100%%;%s" onclick="py.link('ease%d');"
+><b>%s</b></button></td>''' % (i, beam, extra, _('Shortcut key: %s') % i, 
+                       "color:"+BUTTON_COLOR[j]+";", i, due)
+        else:
+            due = _bottomTimes(self, i) # self._buttonTime(i)
+            return '''
+<td align=center class="but but%s" style="width:%s;"
+><span class="stattxt">%s</span><br
+><button %s title="%s" style="width:100%%;%s" onclick="py.link('ease%d');"
+>%s</button></td>''' % (i, beam, due, extra, _('Shortcut key: %s') % i, 
+                       "", i, label)
 
     buf = laterNotNow()
 
@@ -263,38 +316,87 @@ def answer_card_intercepting(self, actual_ease, _old):
     else:
         return _old(self, ease)
 
+##
+
+def more_proc():
+    global USE_INTERVALS_AS_LABELS
+    if more_action.isChecked():
+        USE_INTERVALS_AS_LABELS = True
+    else:
+        USE_INTERVALS_AS_LABELS = False
+    rst = aqt.mw.reviewer.state == 'answer'
+    aqt.mw.reset()
+    if rst:
+        aqt.mw.reviewer._showAnswerHack()
+
+
+def save_wide_buttons():
+    aqt.mw.pm.profile['wide_big_buttons'] = (
+        more_action.isChecked() )
+
+
+def load_wide_buttons():
+    global USE_INTERVALS_AS_LABELS, more_action
+    try:
+        USE_INTERVALS_AS_LABELS = aqt.mw.pm.profile['wide_big_buttons']
+    except KeyError:
+        USE_INTERVALS_AS_LABELS = False
+    more_action.setChecked(USE_INTERVALS_AS_LABELS)
+
+##
+
 if old_addons2delete == '':
-    Reviewer._answerButtons = wrap(
-        Reviewer._answerButtons, myAnswerButtons, 'around')
-
-    Reviewer._answerCard = wrap(
-        Reviewer._answerCard, answer_card_intercepting, 'around')
-
-    def onEscape():
-        mw.reviewer.nextCard()
+    anki.hooks.addHook("unloadProfile", save_wide_buttons)
+    anki.hooks.addHook("profileLoaded", load_wide_buttons)
 
     try:
-        mw.addon_cards_menu
+        aqt.mw.addon_view_menu
     except AttributeError:
-        mw.addon_cards_menu = QMenu(
-            _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
-        mw.form.menubar.insertMenu(
-            mw.form.menuTools.menuAction(), mw.addon_cards_menu)
+        aqt.mw.addon_view_menu = QMenu(
+            _('&Вид') if lang == 'ru' else _('&View'), aqt.mw)
+        aqt.mw.form.menubar.insertMenu(
+            aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_view_menu)
 
-    escape_action = QAction(mw)
+    more_action = QAction('&Кнопки оценок - без меток' if lang ==
+                          'ru' else _('&Answer buttons without labels'), aqt.mw)
+    more_action.setShortcut(QKeySequence('Ctrl+Alt+Shift+L'))
+    more_action.setCheckable(True)
+    more_action.setChecked(USE_INTERVALS_AS_LABELS)
+    aqt.mw.connect(more_action, SIGNAL('triggered()'), more_proc)
+    aqt.mw.addon_view_menu.addAction(more_action)
+
+    aqt.reviewer.Reviewer._answerButtons = anki.hooks.wrap(
+        aqt.reviewer.Reviewer._answerButtons, myAnswerButtons, 'around')
+
+    aqt.reviewer.Reviewer._answerCard = anki.hooks.wrap(
+        aqt.reviewer.Reviewer._answerCard, answer_card_intercepting, 'around')
+
+    def onEscape():
+        aqt.mw.reviewer.nextCard()
+
+    try:
+        aqt.mw.addon_cards_menu
+    except AttributeError:
+        aqt.mw.addon_cards_menu = QMenu(
+            _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), aqt.mw)
+        aqt.mw.form.menubar.insertMenu(
+            aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_cards_menu)
+
+    escape_action = QAction(aqt.mw)
     escape_action.setText(u'Позж&е, не сейчас' if lang ==
                           'ru' else _(u'&Later, not now'))
     escape_action.setShortcut(QKeySequence('Escape'))
     escape_action.setEnabled(False)
-    mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
+    aqt.mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 
-    # mw.addon_cards_menu.addSeparator()
-    mw.addon_cards_menu.addAction(escape_action)
-    # mw.addon_cards_menu.addSeparator()
+    # aqt.mw.addon_cards_menu.addSeparator()
+    aqt.mw.addon_cards_menu.addAction(escape_action)
+    # aqt.mw.addon_cards_menu.addSeparator()
 
-    mw.deckBrowser.show = wrap(
-        mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
-    mw.overview.show = wrap(
-        mw.overview.show, lambda: escape_action.setEnabled(False))
-    mw.reviewer.show = wrap(
-        mw.reviewer.show, lambda: escape_action.setEnabled(True))
+    aqt.mw.deckBrowser.show = anki.hooks.wrap(
+        aqt.mw.deckBrowser.show, lambda: escape_action.setEnabled(False))
+    aqt.mw.overview.show = anki.hooks.wrap(
+        aqt.mw.overview.show, lambda: escape_action.setEnabled(False))
+    aqt.mw.reviewer.show = anki.hooks.wrap(
+        aqt.mw.reviewer.show, lambda: escape_action.setEnabled(True))
+
