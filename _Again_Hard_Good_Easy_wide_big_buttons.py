@@ -289,7 +289,7 @@ def myAnswerButtons(self, _old):
 ><span class="stattxt">&nbsp;</span><br
 ><button %s title="%s" style="width:100%%;%s" onclick="py.link('ease%d');"
 ><b>%s</b></button></td>''' % (i, beam, extra, _('Shortcut key: %s') % j, 
-                       "color:"+BUTTON_COLOR[j]+";", i, due)
+                       "color:"+BUTTON_COLOR[j]+";", j, due)
         else:
             due = _bottomTimes(self, i) # self._buttonTime(i)
             return '''
@@ -297,7 +297,7 @@ def myAnswerButtons(self, _old):
 ><span class="stattxt">%s</span><br
 ><button %s title="%s" style="width:100%%;%s" onclick="py.link('ease%d');"
 >%s</button></td>''' % (i, beam, due, extra, _('Shortcut key: %s') % j, 
-                       "", i, label)
+                       "", j, label)
 
     buf = laterNotNow()
 
