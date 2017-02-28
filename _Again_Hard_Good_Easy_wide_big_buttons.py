@@ -271,23 +271,24 @@ def myAnswerButtons(self, _old):
             extra = ''
         due = self._buttonTime(i)
 
+        j = i
+        cnt = self.mw.col.sched.answerButtons(self.card)
+        if cnt == 2:
+            if i == 2:
+                j = 3
+        elif cnt == 3:
+            if i == 2:
+                j = 3
+            if i == 3:
+                j = 4
+
         if USE_INTERVALS_AS_LABELS:
             due = _bottomTime(self, i)
-            j = i
-            cnt = self.mw.col.sched.answerButtons(self.card)
-            if cnt == 2:
-                if i == 2:
-                    j = 3
-            elif cnt == 3:
-                if i == 2:
-                    j = 3
-                if i == 3:
-                    j = 4
             return '''
 <td align=center class="but but%s" style="width:%s;"
 ><span class="stattxt">&nbsp;</span><br
 ><button %s title="%s" style="width:100%%;%s" onclick="py.link('ease%d');"
-><b>%s</b></button></td>''' % (i, beam, extra, _('Shortcut key: %s') % i, 
+><b>%s</b></button></td>''' % (i, beam, extra, _('Shortcut key: %s') % j, 
                        "color:"+BUTTON_COLOR[j]+";", i, due)
         else:
             due = _bottomTimes(self, i) # self._buttonTime(i)
@@ -295,7 +296,7 @@ def myAnswerButtons(self, _old):
 <td align=center class="but but%s" style="width:%s;"
 ><span class="stattxt">%s</span><br
 ><button %s title="%s" style="width:100%%;%s" onclick="py.link('ease%d');"
->%s</button></td>''' % (i, beam, due, extra, _('Shortcut key: %s') % i, 
+>%s</button></td>''' % (i, beam, due, extra, _('Shortcut key: %s') % j, 
                        "", i, label)
 
     buf = laterNotNow()
