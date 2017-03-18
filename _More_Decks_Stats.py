@@ -40,8 +40,8 @@ PARM = {
     'MORE_OVERVIEW_STATS': 3,
     'HIDE_BIG_NUMBER': 999,
     'HIDE_BIG_NUMBERS': False,
-    'queueLimit': 50, # important
-    'reportLimit': 9999, # not less than in deck options
+    'queueLimit': 50,  # important
+    'reportLimit': 9999,  # not less than in deck options
     '': ''
     }
 
@@ -410,15 +410,16 @@ def deck_browser_render_deck_tree(self, nodes, depth=0):
 <th class=count style='width:4em;'>%s</th>\
 <th class=count style='width:4em;'>%s</th>\
 <th class=count style='color:gray;width:4em;'>&nbsp;+&nbsp;%s</th>\
-<th class=count style='color:gray;width:4em;padding-right:1em;'
+<th class=count style='color:gray;width:4em;padding-right:1em;'\
 >&nbsp;=&nbsp;%s</th>\
-\n""" % (anki.lang.getLang(), _("Total"),
-            nonzeroColour(aqt.mw.col.cardCount(), "default", False),
-            nonzeroColour(new + lrn + due, "gray", False),
-            nonzeroColour(new, "#33f", False),
-            nonzeroColour(lrn, "#c33", False),
-            nonzeroColour(due, "#090", False),
-            nonzeroColour(lrn + due, "#999", False))
+\n""" % (
+                anki.lang.getLang(), _("Total"),
+                nonzeroColour(aqt.mw.col.cardCount(), "default", False),
+                nonzeroColour(new + lrn + due, "gray", False),
+                nonzeroColour(new, "#33f", False),
+                nonzeroColour(lrn, "#c33", False),
+                nonzeroColour(due, "#090", False),
+                nonzeroColour(lrn + due, "#999", False))
 
         # options
         if not PARM['GEAR_AT_END_OF_LINE'] and \
@@ -596,9 +597,10 @@ def initDeckBro():
 
 initDeckBro()
 
+
 def maInit(self, col):
     self.queueLimit = PARM['queueLimit']
-    self.reportLimit = PARM['reportLimit'] # not 1000!!!
+    self.reportLimit = PARM['reportLimit']  # not 1000!!!
 
 # aqt.mw.col.sched.reportLimit = 5555 # not ready yet
 

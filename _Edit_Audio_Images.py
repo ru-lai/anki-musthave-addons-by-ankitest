@@ -6,13 +6,13 @@
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # In card reviewer F10 opens all images and sounds in external editors.
-# Ctrl+F10 only pictures 
+# Ctrl+F10 only pictures
 # Shift+F10 only audios
-# 
+#
 # In Add/Edit window F10 opens sounds and images only from current field.
 #
 # You can uncomment lines # Windows_IMG or # Windows_SND
-# to setup you own Windows command line 
+# to setup you own Windows command line
 # to start external program with images/audio
 #
 # Runs on Windows and macOS.
@@ -51,15 +51,15 @@ if sys.version[0] == '2':  # Python 3 is utf8 only already.
     if hasattr(sys, 'setdefaultencoding'):
         sys.setdefaultencoding('utf8')
 
-##  
+##
 
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
-    'edit': ['F10'], # F12 
-    'image': ['Ctrl+F10'],
-    'audio': ['Shift+F10'],
+    'edit':  'F10',
+    'image': 'Ctrl+F10',
+    'audio': 'Shift+F10',
 }
 
-win_open_edit = 'open' # 'edit' # 
+win_open_edit = 'open'  # 'edit'  #
 
 Windows_IMG = None
 # Windows_IMG = u'''start "" /B "%s" '''
@@ -71,10 +71,8 @@ macOS_IMG = "open"
 
 macOS_SND = "open -a " + "\'Audacity\'"
 
-#macOS_SND = ("open -a " + "/Applications/Adobe\ Audition\ CC\ " +
+# macOS_SND = ("open -a " + "/Applications/Adobe\ Audition\ CC\ " +
 #             "2017/Adobe\ Audition\ CC\ 2017.app")
-
-##
 
 
 def JustDoItBy(note, curFld, audioPic):
@@ -83,65 +81,59 @@ def JustDoItBy(note, curFld, audioPic):
         flds = note.fields
     else:
         flds = [note.fields[curFld]]
-    pathToCollection = mw.col.media.dir() +"/"
+    pathToCollection = mw.col.media.dir() + "/"
 
     if audioPic == 0 or audioPic == 1:
-      for fld in flds:
-        # next_picture =
-        #   re.search(r'''\<img src=["|'](.*?)["|']''',fld) # '''
-        next_pictures = re.findall(r'\<img src="(.*?)"', fld)
-        for next_picture in next_pictures:
-            if next_picture:
-              if isWin:
-                found = os.path.join(mw.col.media.dir(),
-                                     next_picture)  # .group(1))
-                if os.path.exists(found):
-                  if Windows_IMG:
-                    os.system(Windows_IMG%(found))
-                  else:
-                    try:
-                        os.startfile(found, win_open_edit)
-                    except WindowsError:
-                        try:
-                            os.startfile(found)
-                        except:
-                            pass
-                    #break
-              if isMac:
-                fullPath = os.path.join(pathToCollection, found)
-                #need to escape spaces
-                fullPath = re.sub(" ", "\ ", fullPath)
-                os.system(macOS_IMG + " " + fullPath)
+        for fld in flds:
+            # next_picture =
+            #   re.search(r'''\<img src=["|'](.*?)["|']''',fld) # '''
+            next_pictures = re.findall(r'\<img src="(.*?)"', fld)
+            for next_picture in next_pictures:
+                if next_picture and isWin:
+                    found = os.path.join(mw.col.media.dir(),
+                                         next_picture)  # .group(1))
+                    if os.path.exists(found):
+                        if Windows_IMG:
+                            os.system(Windows_IMG % (found))
+                        else:
+                            try:
+                                os.startfile(found, win_open_edit)
+                            except WindowsError:
+                                try:
+                                    os.startfile(found)
+                                except:
+                                    pass
+                if next_picture and isMac:
+                    fullPath = os.path.join(pathToCollection, found)
+                    # need to escape spaces
+                    fullPath = re.sub(" ", "\ ", fullPath)
+                    os.system(macOS_IMG + " " + fullPath)
 
     if audioPic == 0 or audioPic == 2:
-      for fld in flds:
-        # next_sound = re.search(r'\[sound:(.*?)\]',fld)
-        next_sounds = re.findall(r'\[sound:(.*?)\]', fld)
-        for next_sound in next_sounds:
-            if next_sound:
-              if isWin:
-                found = os.path.join(mw.col.media.dir(),
-                                     next_sound)  # .group(1))
-                if os.path.exists(found):
-                  if Windows_SND:
-                    os.system(Windows_SND%(found))
-                  else:
-                    try:
-                        os.startfile(found, win_open_edit)
+        for fld in flds:
+            # next_sound = re.search(r'\[sound:(.*?)\]',fld)
+            next_sounds = re.findall(r'\[sound:(.*?)\]', fld)
+            for next_sound in next_sounds:
+                if next_sound and isWin:
+                    found = os.path.join(mw.col.media.dir(),
+                                         next_sound)  # .group(1))
+                    if os.path.exists(found):
+                        if Windows_SND:
+                            os.system(Windows_SND % (found))
+                        else:
+                            try:
+                                os.startfile(found, win_open_edit)
 # >> WindowsError: [Error 1155]
 # No application is associated with the specified file for this operation:
-                    except WindowsError:
-                        try:
-                            os.startfile(found)
-                        except:
-                            pass
-                    #break
-              if isMac:
-                fullPath = os.path.join(pathToCollection, next_sound)
-                fullPath = re.sub(" ", "\ ", fullPath)
-                os.system(macOS_SND + " " + fullPath)
-
-##
+                            except WindowsError:
+                                try:
+                                    os.startfile(found)
+                                except:
+                                    pass
+                if next_sound and isMac:
+                    fullPath = os.path.join(pathToCollection, next_sound)
+                    fullPath = re.sub(" ", "\ ", fullPath)
+                    os.system(macOS_SND + " " + fullPath)
 
 
 def JustDoItByYourself():
@@ -150,8 +142,8 @@ def JustDoItByYourself():
     JustDoItBy(NB, -1, 0)
     # mw.reset()  # refresh gui
     # if rst == 'answer':
-    #    mw.reviewer._showAnswerHack()  # ._showAnswer() #
-    mw.requireReset()
+    #     mw.reviewer._showAnswerHack()  # ._showAnswer() #
+    # mw.requireReset()
 
 
 def JustDoItByPictures():
@@ -160,8 +152,9 @@ def JustDoItByPictures():
     JustDoItBy(NB, -1, 1)
     # mw.reset()  # refresh gui
     # if rst == 'answer':
-    #    mw.reviewer._showAnswerHack()  # ._showAnswer() #
-    mw.requireReset()
+    #     mw.reviewer._showAnswerHack()  # ._showAnswer() #
+    # mw.requireReset()
+
 
 def JustDoItBySounds():
     rst = mw.reviewer.state
@@ -169,8 +162,8 @@ def JustDoItBySounds():
     JustDoItBy(NB, -1, 2)
     # mw.reset()  # refresh gui
     # if rst == 'answer':
-    #    mw.reviewer._showAnswerHack()  # ._showAnswer() #
-    mw.requireReset()
+    #     mw.reviewer._showAnswerHack()  # ._showAnswer() #
+    # mw.requireReset()
 
 
 def TryItByYourself(edit):
@@ -187,7 +180,7 @@ edit_action = QAction((
     '&Правка Аудио и Картинок из полей'
     if lang == 'ru' else
     _('&Edit Audio Images from fields')), mw)
-edit_action.setShortcut(QKeySequence(HOTKEY['edit'][0]))
+edit_action.setShortcut(QKeySequence(HOTKEY['edit']))
 edit_action.setEnabled(False)
 mw.connect(edit_action, SIGNAL('triggered()'), JustDoItByYourself)
 
@@ -196,7 +189,7 @@ images_action = QAction((
     'Правка &Картинок из полей'
     if lang == 'ru' else
     _('Edit &Images from fields')), mw)
-images_action.setShortcut(QKeySequence(HOTKEY['image'][0]))
+images_action.setShortcut(QKeySequence(HOTKEY['image']))
 images_action.setEnabled(False)
 mw.connect(images_action, SIGNAL('triggered()'), JustDoItByPictures)
 
@@ -205,7 +198,7 @@ sounds_action = QAction((
     'Правка &Аудио из полей'
     if lang == 'ru' else
     _('Edit &Audio from fields')), mw)
-sounds_action.setShortcut(QKeySequence(HOTKEY['audio'][0]))
+sounds_action.setShortcut(QKeySequence(HOTKEY['audio']))
 sounds_action.setEnabled(False)
 mw.connect(sounds_action, SIGNAL('triggered()'), JustDoItBySounds)
 
@@ -233,15 +226,14 @@ mw.deckBrowser.show = wrap(mw.deckBrowser.show, edit_ai_off)
 mw.overview.show = wrap(mw.overview.show, edit_ai_off)
 mw.reviewer.show = wrap(mw.reviewer.show, edit_ai_on)
 
-##
 
 def edit_ai_buttons(editor):
     """Add the buttons to the editor."""
     editor._addButton(
         'image', lambda edito=editor: TryItByYourself(edito),
-        HOTKEY['edit'][0],
+        HOTKEY['edit'],
         tip='Edit Audio Images from fields in external editor (' +
-        HOTKEY['edit'][0] + ')')
+        HOTKEY['edit'] + ')')
 
 # register callback function that gets executed
 #  after setupEditorButtons has run.

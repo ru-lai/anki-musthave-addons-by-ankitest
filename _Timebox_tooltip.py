@@ -6,7 +6,7 @@
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 #
 # It puts the stats when you finish a timebox in a tooltip message
-#  that goes away after a few seconds. 
+#  that goes away after a few seconds.
 #
 # No support. Use it AS IS on your own risk.
 from __future__ import division
@@ -18,12 +18,13 @@ from aqt.reviewer import Reviewer
 from aqt.utils import tooltip
 
 # anki/collection.py: .timeboxReached() .startTimebox()
-# aqt/reviewer.py: .nextCard 
+# aqt/reviewer.py: .nextCard
 
 # Based on Decks Total https://ankiweb.net/shared/info/1421528223
 # https://github.com/b50/anki-deck-stats
 # Author of original addon: Calumks <calumks@gmail.com>
-import os, time
+import os
+import time
 
 # Get DeckBrowser class
 from aqt.deckbrowser import DeckBrowser
@@ -46,7 +47,6 @@ lang = anki.lang.getLang()
 
 timeboxHotkeys = "Ctrl+Shift+T"
 
-##
 
 def renderOstrich(self):
 
@@ -71,15 +71,15 @@ def renderOstrich(self):
 
     speed = cards * 60 / max(1, thetime)
     minutes = int(total / max(1, speed))
-    
+
     msgp1 = ngettext("%d card", "%d cards", cards) % cards
-    
+
     buf = "" + _("Average") \
         + ": " + _("%.01f cards/minute") % (speed) + " &nbsp; " \
         + _("More") + "&nbsp;" + ngettext(
              "%s minute.", "%s minutes.", minutes) % (
-                "<b>"+str(minutes)+"</b>") 
-    
+                "<b>"+str(minutes)+"</b>")
+
     return buf
 
 
@@ -98,8 +98,8 @@ def maProc(self, elapsed):
         mins = int(round(elapsed[0] / 60))
         part2 = ngettext('%s minute.', '%s minutes.', mins) % mins
         tooltip(
-            '<big><b style=font-size:larger;color:blue;font-weight:bold;>' \
-            + '%s <span style=color:red>%s</span></b> <br><br> %s</big>' % (
+            '<big><b style=font-size:larger;color:blue;font-weight:bold;>' +
+            '%s <span style=color:red>%s</span></b> <br><br> %s</big>' % (
                 part1, part2, renderOstrich(self)), period=8000)
 
 
@@ -107,8 +107,8 @@ def myInfoCards(self):
     elapsed = timeboxReached(self.mw.col)
     if elapsed:
         maProc(self, elapsed)
-   
-            
+
+
 def maNextCard(self):
     elapsed = self.mw.col.timeboxReached()
     if elapsed:
@@ -131,14 +131,13 @@ if True:
         mw.form.menubar.insertMenu(
             mw.form.menuTools.menuAction(), mw.addon_view_menu)
 
-    mw.connect(info_action, SIGNAL("triggered()"), 
+    mw.connect(info_action, SIGNAL("triggered()"),
                lambda: myInfoCards(mw.reviewer))
 
     mw.addon_view_menu.addAction(info_action)
 
     def info_off():
         info_action.setEnabled(False)
-
 
     def info_on():
         info_action.setEnabled(True)

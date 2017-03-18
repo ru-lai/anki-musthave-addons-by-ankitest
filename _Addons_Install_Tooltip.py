@@ -1,6 +1,6 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # ' Addons Install Tooltip
-# https://ankiweb.net/shared/info/1738282325 
+# https://ankiweb.net/shared/info/1738282325
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2017 Dmitry Mikheev, http://finpapa.ucoz.ru/index.html
 import anki
@@ -12,28 +12,29 @@ from PyQt4.QtCore import *
 # Выбранный пользователем язык программной оболочки
 lang = anki.lang.getLang()
 
-install_tooltip = True # False # 
-install_hotkeys = True # False # 
-install_again = False # True # 
-install_menu = True # False # 
+install_tooltip = True  # False  #
+install_hotkeys = True  # False  #
+install_again = False  # True  #
+install_menu = True  # False  #
 
 if lang == "ru":
-    show_install_again_text = u"Показывать Обзор и установка... &Снова" 
+    show_install_again_text = u"Показывать Обзор и установка... &Снова"
     open_ankiweb_shared_text = u'Открыть сайт AnkiWeb с &дополнениями'
 elif lang == "es":
-    show_install_again_text = u"Ver el Examen y la instalación... de &Nuevo" 
-    open_ankiweb_shared_text = u'Abrir el sitio de Anki&Web, con las complementos'
+    show_install_again_text = u"Ver el Examen y la instalación... de &Nuevo"
+    open_ankiweb_shared_text = \
+        u'Abrir el sitio de Anki&Web, con las complementos'
 else:
-    show_install_again_text = _(u"Show Browse and Install... &Again") 
+    show_install_again_text = _(u"Show Browse and Install... &Again")
     open_ankiweb_shared_text = _(u"Open Anki&Web shared add-ons site")
+
 
 # --------------------------
 # anki-master\aqt\addons.py
 #  Monkey Patching
 #   showInfo -> tooltip
-
 def _accept1(self):
-    # go_AnkiWeb_addons() 
+    # go_AnkiWeb_addons()
     # This way starts after dialog window were closed, not before.
 
     QDialog.accept(self)
@@ -48,7 +49,8 @@ def _accept1(self):
         self.mw.addonManager.install(data, fname)
         self.mw.progress.finish()
 
-    aqt.utils.tooltip(_("Download successful. Please restart Anki."), 
+    aqt.utils.tooltip(
+        _("Download successful. Please restart Anki."),
         period=3000)
 
     if install_again:
@@ -63,8 +65,8 @@ if install_hotkeys:
     aqt.mw.form.actionDownloadSharedPlugin.setShortcut(
         QKeySequence('Ctrl+Shift+Insert'))
 
-# menu 
 
+# menu
 def go_AnkiWeb_addons():
     aqt.utils.openLink("https://ankiweb.net/shared/addons/")
 
@@ -79,13 +81,13 @@ show_install_again_action = QAction(aqt.mw)
 show_install_again_action.setText(show_install_again_text)
 show_install_again_action.setCheckable(True)
 show_install_again_action.setChecked(install_again)
-aqt.mw.connect(show_install_again_action, SIGNAL("triggered()"), 
+aqt.mw.connect(show_install_again_action, SIGNAL("triggered()"),
                toggle_install_again)
 
 
 def save_install_again():
     aqt.mw.pm.profile['addons_install_again'] = (
-        show_install_again_action.isChecked() )
+        show_install_again_action.isChecked())
 
 
 def load_install_again():
@@ -100,21 +102,21 @@ if install_menu:
     anki.hooks.addHook("unloadProfile", save_install_again)
     anki.hooks.addHook("profileLoaded", load_install_again)
 
-    aqt.mw.form.menuPlugins.insertAction(aqt.mw.form.actionOpenPluginFolder, 
+    aqt.mw.form.menuPlugins.insertAction(aqt.mw.form.actionOpenPluginFolder,
                                          show_install_again_action)
 
     open_ankiweb_shared_action = QAction(aqt.mw)
     open_ankiweb_shared_action.setText(open_ankiweb_shared_text)
-    aqt.mw.connect(open_ankiweb_shared_action, SIGNAL("triggered()"), 
+    aqt.mw.connect(open_ankiweb_shared_action, SIGNAL("triggered()"),
                    go_AnkiWeb_addons)
-    aqt.mw.form.menuPlugins.insertAction(aqt.mw.form.actionOpenPluginFolder, 
-                                         open_ankiweb_shared_action) 
+    aqt.mw.form.menuPlugins.insertAction(aqt.mw.form.actionOpenPluginFolder,
+                                         open_ankiweb_shared_action)
 
 else:
     install_again = False
 
 # menuPlugins
-# designer/main.ui 
+# designer/main.ui
 
 # Browse & Install...
 # <string>Browse &amp;&amp; Install...</string>

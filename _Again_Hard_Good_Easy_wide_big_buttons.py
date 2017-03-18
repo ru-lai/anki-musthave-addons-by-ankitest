@@ -69,11 +69,11 @@ BEAMS3 = '74%'
 BEAMS2 = '48%'
 BEAMS1 = '24%'
 
-black = 'none' # Night_Mode compatibility
-orange = '#c90' # darkgoldenrod
-red = '#c33' # #c33
-green = '#3c3' # #090
-blue = '#69f' # #66f
+black = 'none'  # Night_Mode compatibility
+orange = '#c90'  # darkgoldenrod
+red = '#c33'  # #c33
+green = '#3c3'  # #090
+blue = '#69f'  # #66f
 
 BUTTON_COLOR = [black, red, orange, green, blue]
 
@@ -82,7 +82,7 @@ BUTTON_LABEL = ['<span style="color:' + red + ';">o_0</span>',
                 '<b style="color:' + green + ';">:-|</b>',
                 '<b style="color:' + blue + ';">:-)</b>']
 
-USE_INTERVALS_AS_LABELS = False  # True #
+USE_INTERVALS_AS_LABELS = False  # True  #
 ##
 
 try:
@@ -91,11 +91,12 @@ try:
     Night_Mode.nm_css_bottom = Night_Mode.nm_css_buttons \
         + Night_Mode.nm_css_color_replacer + """
 body {
-	background:-webkit-gradient(linear, left top, left bottom, from(#333), to(#222));
-	border-top-color: #000;
-} 
+ background:-webkit-gradient(linear,
+    left top, left bottom, from(#333), to(#222));
+ border-top-color: #000;
+}
 .stattxt {
-	color: #ccc;
+ color: #ccc;
 }
 """
 except ImportError:
@@ -156,12 +157,14 @@ def newRemaining(self):
         counts = list(self.mw.col.sched.counts(self.card))
     return (idx == 0 and counts[0] < 1)
 
+
 def laterNotNow():
     return (
         '<style>td{vertical-align:bottom;}' +
-        'html, body { width: 100%%; height: 100%%; margin: 0px; padding: 0px; }' +
+        'html, body { width: 100%%; height: 100%%;' +
+        ' margin: 0px; padding: 0px; }' +
         'td button{font-size:x-large;}' +
-        'body { overflow: hidden; }' + 
+        'body { overflow: hidden; }' +
         '</style>' +
         '<table cellpadding=0 cellspacing=0 width=100%%><tr>' +
         '<td align=center><span class="stattxt">%s</span>' +
@@ -211,7 +214,7 @@ NOT_NOW_BASE = 5
 
 
 def AKR_answerCard(self, ease, _old):
-    count = aqt.mw.col.sched.answerButtons(aqt.mw.reviewer.card)  # Get button count
+    count = aqt.mw.col.sched.answerButtons(aqt.mw.reviewer.card)
     try:
         ease = remap[count][ease]
     except (KeyError, IndexError):
@@ -223,24 +226,24 @@ if old_addons2delete == '':
         aqt.reviewer.Reviewer._answerCard, AKR_answerCard, 'around')
 # 'before' does not working as intended cause ease is changing inside AKR
 
-# to remove <span class=nobold>
 
+# to remove <span class=nobold>
 def _bottomTimes(self, i):
     if not self.mw.col.conf['estTimes']:
-       return '&nbsp;'
+        return '&nbsp;'
     txt = self.mw.col.sched.nextIvlStr(self.card, i, True) or '&nbsp;'
     return txt.replace("<", "&lt;")
 
-# always show interval despite user's preferences
 
+# always show interval despite user's preferences
 def _bottomTime(self, i):
     # if not self.mw.col.conf['estTimes']:
     #    return '&nbsp;'
     txt = self.mw.col.sched.nextIvlStr(self.card, i, True) or '&nbsp;'
     return txt.replace("<", "&lt;")
 
-# Replace _answerButtonList method
 
+# Replace _answerButtonList method
 def answerButtonList(self):
     l = ((1, '' + BUTTON_LABEL[0] + '', BEAMS1),)
     cnt = self.mw.col.sched.answerButtons(self.card)
@@ -288,16 +291,16 @@ def myAnswerButtons(self, _old):
 <td align=center class="but but%s" style="width:%s;"
 ><span class="stattxt">&nbsp;</span><br
 ><button %s title="%s" style="width:100%%;%s" onclick="py.link('ease%d');"
-><b>%s</b></button></td>''' % (i, beam, extra, _('Shortcut key: %s') % j, 
-                       "color:"+BUTTON_COLOR[j]+";", j, due)
+><b>%s</b></button></td>''' % (i, beam, extra, _('Shortcut key: %s') % j,
+                               "color:"+BUTTON_COLOR[j]+";", j, due)
         else:
-            due = _bottomTimes(self, i) # self._buttonTime(i)
+            due = _bottomTimes(self, i)  # self._buttonTime(i)
             return '''
 <td align=center class="but but%s" style="width:%s;"
 ><span class="stattxt">%s</span><br
 ><button %s title="%s" style="width:100%%;%s" onclick="py.link('ease%d');"
->%s</button></td>''' % (i, beam, due, extra, _('Shortcut key: %s') % j, 
-                       "", j, label)
+>%s</button></td>''' % (i, beam, due, extra, _('Shortcut key: %s') % j,
+                        "", j, label)
 
     buf = laterNotNow()
 
@@ -317,7 +320,6 @@ def answer_card_intercepting(self, actual_ease, _old):
     else:
         return _old(self, ease)
 
-##
 
 def more_proc():
     global USE_INTERVALS_AS_LABELS
@@ -333,7 +335,7 @@ def more_proc():
 
 def save_wide_buttons():
     aqt.mw.pm.profile['wide_big_buttons'] = (
-        more_action.isChecked() )
+        more_action.isChecked())
 
 
 def load_wide_buttons():
@@ -358,8 +360,9 @@ if old_addons2delete == '':
         aqt.mw.form.menubar.insertMenu(
             aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_view_menu)
 
-    more_action = QAction('&Кнопки оценок - без меток' if lang ==
-                          'ru' else _('&Answer buttons without labels'), aqt.mw)
+    more_action = QAction(
+        '&Кнопки оценок - без меток' if lang == 'ru'
+        else _('&Answer buttons without labels'), aqt.mw)
     more_action.setShortcut(QKeySequence('Ctrl+Alt+Shift+L'))
     more_action.setCheckable(True)
     more_action.setChecked(USE_INTERVALS_AS_LABELS)
@@ -400,4 +403,3 @@ if old_addons2delete == '':
         aqt.mw.overview.show, lambda: escape_action.setEnabled(False))
     aqt.mw.reviewer.show = anki.hooks.wrap(
         aqt.mw.reviewer.show, lambda: escape_action.setEnabled(True))
-
