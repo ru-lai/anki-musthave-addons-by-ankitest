@@ -27,10 +27,10 @@ CtrlAltSpace = 'Ctrl+Alt+Space'
 
 def onAltCloze(self, delta):
     # check that the model is set up for cloze deletion
-    if not re.search('{{(.*:)*cloze:',self.note.model()['tmpls'][0]['qfmt']):
+    if not re.search('{{(.*:)*cloze:', self.note.model()['tmpls'][0]['qfmt']):
         if self.addMode:
-            tooltip(_("Warning, cloze deletions will not work until "
-            "you switch the type at the top to Cloze."))
+            tooltip(_("Warning, cloze deletions will not work until " +
+                      "you switch the type at the top to Cloze."))
         else:
             showInfo(_("""\
 To make a cloze deletion on an existing note, you need to change it \
@@ -43,7 +43,7 @@ to a cloze type first, via Edit>Change Note Type."""))
         if m:
             highest = max(highest, sorted([int(x) for x in m])[-1])
     # reuse last?
-    #if not self.mw.app.keyboardModifiers() & Qt.AltModifier:
+    # if not self.mw.app.keyboardModifiers() & Qt.AltModifier:
     highest += delta
     # must start at 1
     highest = max(1, highest)

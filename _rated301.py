@@ -1,5 +1,5 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# rated:30:1 
+# rated:30:1
 # https://anki.tenderapp.com/discussions/add-ons/9032-rated301
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2017 Dmitry Mikheev, http://finpapa.ucoz.ru/index.html
@@ -31,14 +31,19 @@ TYPE_NEW = 0
 TYPE_DUE = 1
 TYPE_ALL = 2
 
+
 def _onRadioChange(self, idx):
-    f = self.form; sp = f.spin
-    smin = 1; smax = DYN_MAX_SIZE; sval = 1
+    f = self.form
+    sp = f.spin
+    smin = 1
+    smax = DYN_MAX_SIZE
+    sval = 1
     post = _("cards")
     tit = ""
     spShow = True
     typeShow = False
     ok = _("OK")
+
     def plus(num):
         if num == 1000:
             num = "1000+"
@@ -69,7 +74,7 @@ def _onRadioChange(self, idx):
     elif idx == RADIO_CRAM:
         pre = _("Select")
         post = _("cards from the deck")
-        #tit = _("After pressing OK, you can choose which tags to include.")
+        # tit = _("After pressing OK, you can choose which tags to include.")
         ok = _("Choose Tags")
         sval = 100
         typeShow = True
@@ -86,6 +91,7 @@ def _onRadioChange(self, idx):
     self.radioIdx = idx
 
 aqt.customstudy.CustomStudy.onRadioChange = _onRadioChange
+
 
 def _findRated(self, (val, args)):
     # days(:optional_ease)

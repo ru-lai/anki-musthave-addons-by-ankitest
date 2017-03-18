@@ -64,6 +64,7 @@ update cards set queue=2,ivl=:ivl,due=:due,odue=0,
 usn=:usn,mod=:mod,factor=:fact where id=:id and type=2""", d)
     self.col.log(ids)
 
+
 def _refactorCards(self, ids, indi=2500):
     'Put cards in review queue with a new interval in days (min, max).'
     d = []
@@ -76,6 +77,7 @@ def _refactorCards(self, ids, indi=2500):
 update cards set queue=2,odue=0,
 usn=:usn,mod=:mod,factor=:fact where id=:id and type=2""", d)
     self.col.log(ids)
+
 
 def _nofactorCards(self, ids, imin, imax):
     'Put cards in review queue with a new interval in days (min, max).'

@@ -47,7 +47,7 @@ from anki.consts import *
 
 from aqt.webview import AnkiWebView
 from aqt.editor import Editor  # the editor when you click 'Add' in Anki
-from aqt.utils import saveGeom, restoreGeom 
+from aqt.utils import saveGeom, restoreGeom
 
 #####################
 # Get language class
@@ -859,9 +859,8 @@ def ExpandThemAll(self, action, atAll):
 
 anki.hooks.addHook('browser.setupMenus', setupMenu)
 
-# Fields List dialog window
-##########################################################################
 
+# Fields List dialog window
 def FieldDialog__init__(self, mw, note, ord=0, parent=None):
     QDialog.__init__(self, parent or mw)  # , Qt.Window)
     self.mw = aqt.mw
@@ -909,8 +908,8 @@ def accept(self):
 aqt.fields.FieldDialog.reject = reject
 aqt.fields.FieldDialog.accept = accept
 
+
 # Models
-##########################################################################
 def updateModelsList(self):
     row = self.form.modelsList.currentRow()
     if row == -1:
@@ -923,16 +922,14 @@ def updateModelsList(self):
         mUse = ngettext("%d note", "%d notes", mUse) % mUse
         item = QListWidgetItem("%s [%s]" % (m['name'], mUse))
         self.form.modelsList.addItem(item)
-    self.form.modelsList.setCurrentRow(row) 
+    self.form.modelsList.setCurrentRow(row)
     self.form.modelsList.setFont(particularFont('Fields List'))
 
 aqt.models.Models.updateModelsList = updateModelsList
 
+
 # Preview Answer / Preview Next by click Enter
 #  (by default goPrev byLeftArrow goNext byRight Arrow)
-#######################################################
-
-
 def _openPreview(self):
     c = self.connect
     self._previewState = 'question'

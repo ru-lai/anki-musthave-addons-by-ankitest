@@ -21,6 +21,7 @@ from anki.hooks import wrap
 # Get fmtTimeSpan required for renderStats method
 from anki.utils import fmtTimeSpan
 
+
 # Replace _renderStats method
 def renderStats(self, _old):
 
@@ -45,9 +46,9 @@ def renderStats(self, _old):
 
     speed = cards * 60 / max(1, thetime)
     minutes = int(total / max(1, speed))
-    
+
     msgp1 = ngettext("%d card", "%d cards", cards) % cards
-    
+
     buf = "<div style='display:table;padding-top:1.5em;'>" \
         + "<div style='display:table-cell;'> " \
         + _old(self) + "<hr>" \
@@ -71,8 +72,8 @@ def renderStats(self, _old):
         + _("More") + "&nbsp;" + ngettext(
              "%s minute.", "%s minutes.", minutes) % (minutes) \
         + "</div></div>"
-    
+
     return buf
 
-DeckBrowser._renderStats = wrap(DeckBrowser._renderStats, 
+DeckBrowser._renderStats = wrap(DeckBrowser._renderStats,
                                 renderStats, 'around')
