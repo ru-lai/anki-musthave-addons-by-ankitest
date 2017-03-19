@@ -30,8 +30,9 @@ import anki.lang
 lang = anki.lang.getLang()
 
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
-    'F3_HTML_source': ['Ctrl+F3', '', '', ''' ''', """ """],
-    'F3_Body_source': ['Alt+F3', '', '', ''' ''', """ """],
+    'F3_HTML_source': 'Ctrl+F3',
+    'F3_Body_source': 'Alt+F3',
+    '': ''
 }
 
 try:

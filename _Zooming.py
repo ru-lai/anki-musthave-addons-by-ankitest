@@ -87,11 +87,12 @@ except:
     MUSTHAVE_COLOR_ICONS = ''
 
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
-    'zoom_info':    ['Alt+0', '', '', ''' ''', """ """],
-    'zoom_in':      ['Ctrl++', '', '', ''' ''', """ """],
-    'zoom_out':     ['Ctrl+-', '', '', ''' ''', """ """],
-    'zoom_reset':   ['Ctrl+0', '', '', ''' ''', """ """],
-    'zoom_init':    ['Ctrl+Alt+0', '', '', ''' ''', """ """],
+    'zoom_info':    'Alt+0',
+    'zoom_in':      'Ctrl++',
+    'zoom_out':     'Ctrl+-',
+    'zoom_reset':   'Ctrl+0',
+    'zoom_init':    'Ctrl+Alt+0',
+    '': ''
 }
 
 ##################################################################
@@ -292,12 +293,12 @@ def zoom_setup_menu():
     zoom_info_action = QAction(
         'Масштаб &показать' if lang == 'ru' else _('Zoom In&fo'), mw)
     # Ctrl+Shift+0 doesn't work on NumPad
-    zoom_info_action.setShortcut(QKeySequence(HOTKEY['zoom_info'][0]))
+    zoom_info_action.setShortcut(QKeySequence(HOTKEY['zoom_info']))
     mw.connect(zoom_info_action, SIGNAL('triggered()'), zoom_info)
 
     zoom_images_action = QAction(
         'Масштаб &картинок менять' if lang == 'ru' else _('&Zoom Images'), mw)
-    # zoom_images_action.setShortcut(QKeySequence(HOTKEY['zoom_images'][0]))
+    # zoom_images_action.setShortcut(QKeySequence(HOTKEY['zoom_images']))
     zoom_images_action.setCheckable(True)
     zoom_images_action.setChecked(ZOOM_IMAGES)
     mw.connect(zoom_images_action, SIGNAL('triggered()'),
@@ -305,14 +306,14 @@ def zoom_setup_menu():
 
     zoom_in_action = QAction(
         'Масштаб у&величить' if lang == 'ru' else _('Zoom &In'), mw)
-    zoom_in_action.setShortcut(QKeySequence(HOTKEY['zoom_in'][0]))
+    zoom_in_action.setShortcut(QKeySequence(HOTKEY['zoom_in']))
     zoom_in_action.setIcon(
         QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'zoom_in.png')))
     mw.connect(zoom_in_action, SIGNAL('triggered()'), zoom_in)
 
     zoom_out_action = QAction(
         'Масштаб у&меньшить' if lang == 'ru' else _('Zoom &Out'), mw)
-    zoom_out_action.setShortcut(QKeySequence(HOTKEY['zoom_out'][0]))
+    zoom_out_action.setShortcut(QKeySequence(HOTKEY['zoom_out']))
     zoom_out_action.setIcon(
         QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'zoom_out.png')))
     mw.connect(zoom_out_action, SIGNAL('triggered()'), zoom_out)
@@ -326,13 +327,13 @@ def zoom_setup_menu():
         str(overview_standard_zoom) + ' =' +
         str(reviewer_standard_zoom) + ' )', mw)
     # Shift+0 does not work on NumPad
-    reset_zoom_action.setShortcut(QKeySequence(HOTKEY['zoom_reset'][0]))
+    reset_zoom_action.setShortcut(QKeySequence(HOTKEY['zoom_reset']))
     mw.connect(reset_zoom_action, SIGNAL('triggered()'), zoom_reset)
 
     reset_zoom_init_action = QAction(
         'Мас&штаб 1:1 100% ( =1.0 =1.0 =1.0 )' if lang == 'ru'
         else _('Reset &1:1 100% ( =1.0 =1.0 =1.0 )'), mw)
-    reset_zoom_init_action.setShortcut(QKeySequence(HOTKEY['zoom_init'][0]))
+    reset_zoom_init_action.setShortcut(QKeySequence(HOTKEY['zoom_init']))
     mw.connect(reset_zoom_init_action, SIGNAL('triggered()'), zoom_init)
 
     if hasattr(mw, 'addon_view_menu'):

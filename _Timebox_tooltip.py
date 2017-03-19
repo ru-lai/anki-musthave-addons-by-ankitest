@@ -45,7 +45,9 @@ lang = anki.lang.getLang()
 
 ##
 
-timeboxHotkeys = "Ctrl+Shift+T"
+HOTKEY = {
+    'timebox': "Ctrl+Shift+T"
+    }
 
 
 def renderOstrich(self):
@@ -120,7 +122,7 @@ Reviewer.nextCard = wrap(Reviewer.nextCard, maNextCard, 'before')
 if True:
     info_action = QAction(mw)
     info_action.setText("&" + _("Timebox time limit"))
-    info_action.setShortcut(timeboxHotkeys)
+    info_action.setShortcut(HOTKEY['timebox'])
     info_action.setEnabled(False)
 
     try:

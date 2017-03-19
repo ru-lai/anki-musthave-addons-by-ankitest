@@ -82,8 +82,8 @@ except:
     MUSTHAVE_COLOR_ICONS = ''
 
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
-    'swap': ['F12', '', '', ''' ''', """ """],
-    'dupe': ['Shift+F12', '', '', ''' ''', """ """],
+    'swap': 'F12',
+    'dupe': 'Shift+F12',
 }
 
 ##
@@ -280,7 +280,7 @@ swap_action = QAction((
     'О&бмен полей %s и %s' if lang == 'ru'
     else _('S&wap %s and %s fields')) % (fld1st, fld2nd), mw)
 
-swap_action.setShortcut(QKeySequence(HOTKEY['swap'][0]))
+swap_action.setShortcut(QKeySequence(HOTKEY['swap']))
 swap_action.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'swap.png')))
 mw.connect(swap_action, SIGNAL('triggered()'), JustDoItYourself)
 
@@ -305,9 +305,9 @@ def setup_buttons(editor):
     '''Add the buttons to the editor.'''
     editor._addButton(
         'swap_fields', lambda edito=editor: TryItYourself(edito),
-        HOTKEY['swap'][0], text='Sw',
+        HOTKEY['swap'], text='Sw',
         tip=('Обмен полей' if lang == 'ru' else _('Swap fields')) +
-        ' (' + HOTKEY['swap'][0] + ')')
+        ' (' + HOTKEY['swap'] + ')')
 
 # register callback function that gets executed
 # after setupEditorButtons has run.
@@ -479,7 +479,7 @@ def setupMenu(self):
 
     swp_action = QAction('Обмен полей' if lang ==
                          'ru' else _('Swap fields'), self)
-    swp_action.setShortcut(QKeySequence(HOTKEY['swap'][0]))
+    swp_action.setShortcut(QKeySequence(HOTKEY['swap']))
     self.connect(swp_action, SIGNAL('triggered()'),
                  lambda s=self: swapSelectedNotes(self))
     menu.addAction(swp_action)
@@ -487,7 +487,7 @@ def setupMenu(self):
     dup_action = menu.addAction(
         'Дублировать записи и обменять поля' if lang == 'ru'
         else _('Duplicate notes and Swap fields'))
-    dup_action.setShortcut(QKeySequence(HOTKEY['dupe'][0]))
+    dup_action.setShortcut(QKeySequence(HOTKEY['dupe']))
     self.connect(dup_action, SIGNAL('triggered()'),
                  lambda s=self: createDuplicate(s))
 

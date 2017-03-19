@@ -31,7 +31,7 @@ HOTKEY = {
     "Ctrl+T, T": 'Alt+F11',  # Ctrl+F11 don't work
     "Ctrl+T, E": 'F11',
     "Ctrl+T, M": 'Shift+F11',
-    '': ''
+    'old': 'new'
 }
 
 

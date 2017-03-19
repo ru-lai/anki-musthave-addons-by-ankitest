@@ -70,10 +70,10 @@ FIELDS_ONLY = []  # [_('Front'), 'Front']  #
 FIELDS_ACCEPTED = False
 
 HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
-    'clear':    ['Ctrl+F12', '', '', ''' ''', """ """],
-    'full':     ['Ctrl+Shift+F12', '', '', ''' ''', """ """],
-    'brdiv':    ['Alt+Shift+F12', '', '', ''' ''', """ """],
-    'retags':   ['Ctrl+Alt+Shift+F12', '', '', ''' ''', """ """],
+    'clear':    'Ctrl+F12',
+    'full':     'Ctrl+Shift+F12',
+    'brdiv':    'Alt+Shift+F12',
+    'retags':   'Ctrl+Alt+Shift+F12',
 }
 
 ##
@@ -329,25 +329,25 @@ def setupMenu(self):
     self.form.addon_notes_menu.addSeparator()
 
     a = QAction(_('Clear Fields Formatting (Remain New Lines)'), self)
-    a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
+    a.setShortcut(QKeySequence(HOTKEY['clear']))
     self.connect(a, SIGNAL('triggered()'),
                  lambda e=self: onClearFormat(e, nids=e.selectedNotes()))
     self.form.addon_notes_menu.addAction(a)
 
     b = QAction(_('Clear Fields Formatting HTML (at all)'), self)
-    b.setShortcut(QKeySequence(HOTKEY['full'][0]))
+    b.setShortcut(QKeySequence(HOTKEY['full']))
     self.connect(b, SIGNAL('triggered()'),
                  lambda e=self: onClearFormatting(e, nids=e.selectedNotes()))
     self.form.addon_notes_menu.addAction(b)
 
     c = QAction(_('Clear Fields Format (Remove New Lines only)'), self)
-    c.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
+    c.setShortcut(QKeySequence(HOTKEY['brdiv']))
     self.connect(c, SIGNAL('triggered()'),
                  lambda e=self: onClearFormatted(e, nids=e.selectedNotes()))
     self.form.addon_notes_menu.addAction(c)
 
     d = QAction(_('Clear Fields (remove tags or change color)'), self)
-    d.setShortcut(QKeySequence(HOTKEY['retags'][0]))
+    d.setShortcut(QKeySequence(HOTKEY['retags']))
     self.connect(d, SIGNAL('triggered()'),
                  lambda e=self: onClearFormattag(e, nids=e.selectedNotes()))
     self.form.addon_notes_menu.addAction(d)
@@ -431,22 +431,22 @@ def latexHooker(self, m):
     m.addSeparator()
 
     a = m.addAction(_('Clear Field Formatting (remain new lines)'))
-    # a.setShortcut(QKeySequence(HOTKEY['clear'][0]))
+    # a.setShortcut(QKeySequence(HOTKEY['clear']))
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormat(e, note=self.note))
 
     a = m.addAction(_('Clear Field Formatting HTML (at all)'))
-    # a.setShortcut(QKeySequence(HOTKEY['full'][0]))
+    # a.setShortcut(QKeySequence(HOTKEY['full']))
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormatting(e, note=self.note))
 
     a = m.addAction(_('Clear Field Format (remove new lines only)'))
-    # a.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
+    # a.setShortcut(QKeySequence(HOTKEY['brdiv']))
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormatted(e, note=self.note))
 
     a = m.addAction(_('Clear Field (remove tags or change color)'))
-    # a.setShortcut(QKeySequence(HOTKEY['retags'][0]))
+    # a.setShortcut(QKeySequence(HOTKEY['retags']))
     a.connect(a, SIGNAL("triggered()"), lambda e=self:
               onClearFormattag(e, note=self.note))
 
@@ -457,22 +457,22 @@ addHook('latexHooker', latexHooker)
 ##
 
 aa = QAction(_('Clear Fields Formatting (Remain New Lines)'), mw)
-aa.setShortcut(QKeySequence(HOTKEY['clear'][0]))
+aa.setShortcut(QKeySequence(HOTKEY['clear']))
 mw.connect(aa, SIGNAL('triggered()'), lambda e=mw:
            onClearFormat(e, nids=[e.reviewer.card.nid]))
 
 bb = QAction(_('Clear Fields Formatting HTML (at all)'), mw)
-bb.setShortcut(QKeySequence(HOTKEY['full'][0]))
+bb.setShortcut(QKeySequence(HOTKEY['full']))
 mw.connect(bb, SIGNAL('triggered()'), lambda e=mw:
            onClearFormatting(e, nids=[e.reviewer.card.nid]))
 
 cc = QAction(_('Clear Fields Format (Remove New Lines only)'), mw)
-cc.setShortcut(QKeySequence(HOTKEY['brdiv'][0]))
+cc.setShortcut(QKeySequence(HOTKEY['brdiv']))
 mw.connect(cc, SIGNAL('triggered()'), lambda e=mw:
            onClearFormatted(e, nids=[e.reviewer.card.nid]))
 
 dd = QAction(_('Clear Fields (remove tags or change color)'), mw)
-dd.setShortcut(QKeySequence(HOTKEY['retags'][0]))
+dd.setShortcut(QKeySequence(HOTKEY['retags']))
 mw.connect(dd, SIGNAL('triggered()'), lambda e=mw:
            onClearFormattag(e, nids=[e.reviewer.card.nid]))
 
