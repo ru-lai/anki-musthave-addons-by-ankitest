@@ -44,6 +44,15 @@ FLIP_FLOP = True
 ANKI_MENU_ICONS = True
 # ANKI_MENU_ICONS = False
 
+HOTKEY = {
+    '^PgUp': "Ctrl+PgUp",
+    '^PgDn': QKeySequence(Qt.CTRL + Qt.Key_PageDown),
+    '^9': QKeySequence('Ctrl+9'),
+    '^3': Qt.CTRL + Qt.Key_3,  # 'Ctrl+3'
+    'F7': Qt.Key_F7,
+    'F8': 'F8',
+}
+
 try:
     MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'handbook')
 except:
@@ -78,7 +87,7 @@ if FLIP_FLOP:
     show_question_auction.setText(
         u'&Лицевая Сторона карточки' if lang == 'ru'
         else _(u"Card's &FrontSide"))
-    show_question_auction.setShortcut(QKeySequence('Ctrl+PgUp'))
+    show_question_auction.setShortcut(QKeySequence(HOTKEY['^PgUp']))
     if ANKI_MENU_ICONS:
         show_question_auction.setIcon(PageUp_icon)
     mw.connect(show_question_auction, SIGNAL('triggered()'), go_question)
@@ -87,7 +96,7 @@ if FLIP_FLOP:
     show_answer_auction.setText(
         u'&Оборотная Сторона карточки' if lang == 'ru'
         else _(u"Card's &BackSide"))
-    show_answer_auction.setShortcut(QKeySequence(Qt.CTRL + Qt.Key_PageDown))
+    show_answer_auction.setShortcut(HOTKEY['^PgDn'])
     if ANKI_MENU_ICONS:
         show_answer_auction.setIcon(PageDown_icon)
     mw.connect(show_answer_auction, SIGNAL('triggered()'), go_answer)
@@ -115,8 +124,7 @@ if FLIP_FLOP and mw_addon_view_menu_exists:
     show_question_aktion.setText(
         u'Показать &Лицевую Сторону' if lang == 'ru'
         else _(u'Show &FrontSide'))
-    # show_question_aktion.setShortcut(QKeySequence('Ctrl+9'))
-    show_question_aktion.setShortcut('Ctrl+9')
+    show_question_aktion.setShortcut(HOTKEY['^9'])
     if ANKI_MENU_ICONS:
         show_question_aktion.setIcon(PageUp_icon)
     mw.connect(show_question_aktion, SIGNAL('triggered()'), go_question)
@@ -125,7 +133,7 @@ if FLIP_FLOP and mw_addon_view_menu_exists:
     show_answer_aktion.setText(
         u'Показать &Оборотную Сторону' if lang == 'ru'
         else _(u'Show &BackSide'))
-    show_answer_aktion.setShortcut(Qt.CTRL + Qt.Key_3)
+    show_answer_aktion.setShortcut(HOTKEY['^3'])
     if ANKI_MENU_ICONS:
         show_answer_aktion.setIcon(PageDown_icon)
     mw.connect(show_answer_aktion, SIGNAL('triggered()'), go_answer)
@@ -152,7 +160,7 @@ if FLIP_FLOP and mw_addon_go_menu_exists:
     show_question_action.setText(
         u'Перейти на &Лицевую Сторону' if lang == 'ru'
         else _(u'Goto &FrontSide'))
-    show_question_action.setShortcut(Qt.Key_F7)
+    show_question_action.setShortcut(HOTKEY['F7'])
     if ANKI_MENU_ICONS:
         show_question_action.setIcon(PageUp_icon)
     mw.connect(
@@ -162,7 +170,7 @@ if FLIP_FLOP and mw_addon_go_menu_exists:
     show_answer_action.setText(
         u'Перейти на &Оборотную Сторону' if lang == 'ru'
         else _(u'Goto &BackSide'))
-    show_answer_action.setShortcut('F8')
+    show_answer_action.setShortcut(HOTKEY['F8'])
     if ANKI_MENU_ICONS:
         show_answer_action.setIcon(PageDown_icon)
     mw.connect(show_answer_action, SIGNAL('triggered()'), go_answer)

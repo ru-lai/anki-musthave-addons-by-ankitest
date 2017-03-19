@@ -31,6 +31,10 @@ lang = anki.lang.getLang()
 # Anki uses a single digit to track which button has been clicked.
 NOT_NOW_BASE = 5
 
+HOTKEY = {
+    'Esc': 'Escape',
+}
+
 
 def _answerButtons(self):
     times = []
@@ -51,7 +55,7 @@ def _answerButtons(self):
 <td align=center><span class=nobold>%s</span><br><button
 title="Short key: %s" onclick="py.link('ease%d');">\
 %s</button></td><td>&nbsp;</td>''' % (
-        'позже' if lang == 'ru' else _('later'), 'Escape', NOT_NOW_BASE,
+        'позже' if lang == 'ru' else _('later'), HOTKEY['Esc'], NOT_NOW_BASE,
         'не сейчас' if lang == 'ru' else _('not now'))
 
     for ease, label in self._answerButtonList():
@@ -88,7 +92,7 @@ except AttributeError:
 escape_action = QAction(mw)
 escape_action.setText(u'Позж&е, не сейчас' if lang ==
                       'ru' else _(u'&Later, not now'))
-escape_action.setShortcut(QKeySequence('Escape'))
+escape_action.setShortcut(QKeySequence(HOTKEY['Esc']))
 escape_action.setEnabled(False)
 mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 
@@ -128,7 +132,7 @@ def myShowAnswerButton(self, _old):
 <td align=center class=stat2><span class=stattxt>%s</span><br><button
 title="Short key: %s" onclick="py.link('ease%d');">\
 %s</button></td><td>&nbsp;</td>''' % (
-        'позже' if lang == 'ru' else _('later'), 'Escape', NOT_NOW_BASE,
+        'позже' if lang == 'ru' else _('later'), HOTKEY['Esc'], NOT_NOW_BASE,
         'не сейчас' if lang == 'ru' else _('not now'))
 
     middle = '''<table cellpadding=0><tr>%s<td class=stat2 align=center>

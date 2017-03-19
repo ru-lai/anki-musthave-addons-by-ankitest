@@ -55,12 +55,11 @@ from aqt.utils import saveGeom, restoreGeom
 import anki.lang
 lang = anki.lang.getLang()
 
-CtrlShiftPlus = 'Ctrl+Shift++'  # Expand   Them All
-CtrlShiftMinus = 'Ctrl+Shift+-'  # Collapse Them All
-CtrlAltShiftMinus = 'Ctrl+Alt+Shift+-'  # Collapse Them at All
-
 # You can set up your own hotkeys here:
 HOTKEY = {      # in Reviewer
+    'CtrlShiftPlus': 'Ctrl+Shift++',  # Expand   Them All
+    'CtrlShiftMinus': 'Ctrl+Shift+-',  # Collapse Them All
+    'CtrlAltShiftMinus': 'Ctrl+Alt+Shift+-',  # Collapse Them at All
     'Edit_HTML': 'F4',         # Ctrl+Shift+X
     'Edit_Fields': 'F4',         # e
     'Edit_Cards': 'Shift+F4',   #
@@ -829,19 +828,19 @@ def setupMenu(self):
 
     a = menu.addAction('Развернуть всё дерево' if lang ==
                        'ru' else _('Expand Them All'))
-    a.setShortcut(QKeySequence(CtrlShiftPlus))
+    a.setShortcut(QKeySequence(HOTKEY['CtrlShiftPlus']))
     self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, True, False))
 
     a = menu.addAction('Свернуть все ветки' if lang ==
                        'ru' else _('Collapse Them All'))
-    a.setShortcut(QKeySequence(CtrlShiftMinus))
+    a.setShortcut(QKeySequence(HOTKEY['CtrlShiftMinus']))
     self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, False, False))
 
     a = menu.addAction('Свернуть вообще всё' if lang ==
                        'ru' else _('Collapse Them at All'))
-    a.setShortcut(QKeySequence(CtrlAltShiftMinus))
+    a.setShortcut(QKeySequence(HOTKEY['CtrlAltShiftMinus']))
     self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, False, True))
 
