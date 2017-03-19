@@ -34,7 +34,8 @@ lang = anki.lang.getLang()
 HOTKEY = {      # in Reviewer
     'Edit_HTML': 'F4',         # Ctrl+Shift+X
     'Edit_Fields': 'F4',         # e
-    'Edit_Cards': 'Shift+F4'    #
+    'Edit_Cards': 'Shift+F4',
+    '': ''
 }
 
 if __name__ == '__main__':
@@ -119,16 +120,12 @@ mw.deckBrowser.show = wrap(mw.deckBrowser.show, swap_off)
 mw.overview.show = wrap(mw.overview.show, swap_off)
 mw.reviewer.show = wrap(mw.reviewer.show, swap_on)
 
+
 # F4 as well as Ctrl+Shift+X in Fields Editor
 #   (Add Card, Edit Card, Browse)
-######################################################################
-
-
 def myHTMLeditF4(self):
     f4 = QShortcut(
         QKeySequence(HOTKEY['Edit_HTML']), self.parentWindow)
     f4.connect(f4, SIGNAL('activated()'), self.onHtmlEdit)
 
 Editor.setupButtons = wrap(Editor.setupButtons, myHTMLeditF4)
-
-##

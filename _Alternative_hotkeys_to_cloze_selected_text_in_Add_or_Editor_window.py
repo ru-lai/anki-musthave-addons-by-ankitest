@@ -21,8 +21,18 @@ from anki.hooks import wrap
 import aqt.editor
 from aqt.editor import *
 
-CtrlSpace = 'Ctrl+Space'
-CtrlAltSpace = 'Ctrl+Alt+Space'
+# You can set up your own hotkeys here:
+HOTKEY = {
+    'Ctrl+Space': 'Ctrl+Space',
+    'Ctrl+Alt+Space': 'Ctrl+Alt+Space',
+    'without_Alt': 'F1',
+    'Ctrl+Shift+C': 'F2',
+    'Ctrl+Alt+Shift+C': 'Alt+F2',  # old style
+    "Ctrl+T, T": 'Alt+F11',  # Ctrl+F11 don't work
+    "Ctrl+T, E": 'F11',
+    "Ctrl+T, M": 'Shift+F11',
+    '': ''
+}
 
 
 def onAltCloze(self, delta):
@@ -52,24 +62,31 @@ to a cloze type first, via Edit>Change Note Type."""))
 
 def setupButtonz(self):
     s = QShortcut(
-        QKeySequence(CtrlSpace), self.parentWindow)
+        QKeySequence(HOTKEY['Ctrl+Space']), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
     s = QShortcut(
-        QKeySequence(CtrlAltSpace), self.parentWindow)
+        QKeySequence(HOTKEY['Ctrl+Alt+Space']), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
     s = QShortcut(
-        QKeySequence('F1'), self.parentWindow)
+        QKeySequence(HOTKEY['without_Alt']), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), lambda: onAltCloze(self, 0))
 
     s = QShortcut(
-        QKeySequence('F2'), self.parentWindow)
+        QKeySequence(HOTKEY['Ctrl+Shift+C']), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
     s = QShortcut(
-        QKeySequence('Alt+F2'), self.parentWindow)
+        QKeySequence(HOTKEY['Ctrl+Alt+Shift+C']), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
+
+    s = QShortcut(QKeySequence(HOTKEY["Ctrl+T, T"]), self.widget)
+    s.connect(s, SIGNAL("activated()"), self.insertLatex)
+    s = QShortcut(QKeySequence(HOTKEY["Ctrl+T, E"]), self.widget)
+    s.connect(s, SIGNAL("activated()"), self.insertLatexEqn)
+    s = QShortcut(QKeySequence(HOTKEY["Ctrl+T, M"]), self.widget)
+    s.connect(s, SIGNAL("activated()"), self.insertLatexMathEnv)
 
 aqt.editor.Editor.setupButtons = wrap(
     aqt.editor.Editor.setupButtons, setupButtonz)
