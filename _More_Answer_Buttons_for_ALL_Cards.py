@@ -101,6 +101,11 @@ ReschedMax ... same as the higher number
     in the Browser's "Edit/Rescedule" command
 """
 
+HOTKEY = {
+    'no_labels': QKeySequence('Ctrl+Alt+Shift+L'),
+    'Esc': 'Escape',
+    }
+
 # Anki uses a single digit to track which button has been clicked.
 NOT_NOW_BASE = 5
 
@@ -403,7 +408,7 @@ if old_addons2delete == '':
 
     more_action = QAction('&Кнопки оценок - без меток' if lang ==
                           'ru' else _('&Answer buttons without labels'), mw)
-    more_action.setShortcut(QKeySequence('Ctrl+Alt+Shift+L'))
+    more_action.setShortcut(HOTKEY['no_labels'])
     more_action.setCheckable(True)
     more_action.setChecked(USE_INTERVALS_AS_LABELS)
     mw.connect(more_action, SIGNAL('triggered()'), more_proc)
@@ -430,7 +435,7 @@ if old_addons2delete == '':
     escape_action = QAction(mw)
     escape_action.setText(u'Позж&е, не сейчас' if lang ==
                           'ru' else _(u'&Later, not now'))
-    escape_action.setShortcut(QKeySequence('Escape'))
+    escape_action.setShortcut(HOTKEY['Esc'])
     escape_action.setEnabled(False)
     mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 

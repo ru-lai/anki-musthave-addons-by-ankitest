@@ -17,6 +17,10 @@ install_hotkeys = True  # False  #
 install_again = False  # True  #
 install_menu = True  # False  #
 
+HOTKEY = {
+    'Install': QKeySequence('Ctrl+Shift+Insert'),
+    }
+
 if lang == "ru":
     show_install_again_text = u"Показывать Обзор и установка... &Снова"
     open_ankiweb_shared_text = u'Открыть сайт AnkiWeb с &дополнениями'
@@ -62,8 +66,7 @@ if install_tooltip:
 # hotkeys
 
 if install_hotkeys:
-    aqt.mw.form.actionDownloadSharedPlugin.setShortcut(
-        QKeySequence('Ctrl+Shift+Insert'))
+    aqt.mw.form.actionDownloadSharedPlugin.setShortcut(HOTKEY['Install'])
 
 
 # menu

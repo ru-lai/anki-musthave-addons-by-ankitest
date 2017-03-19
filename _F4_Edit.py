@@ -35,7 +35,6 @@ HOTKEY = {      # in Reviewer
     'Edit_HTML': 'F4',         # Ctrl+Shift+X
     'Edit_Fields': 'F4',         # e
     'Edit_Cards': 'Shift+F4',
-    '': ''
 }
 
 if __name__ == '__main__':

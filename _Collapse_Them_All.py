@@ -27,8 +27,10 @@ from PyQt4.QtGui import QKeySequence
 import anki.lang
 lang = anki.lang.getLang()
 
-CtrlShiftPlus = 'Ctrl+Shift++'  # Expand   Them All
-CtrlShiftMinus = 'Ctrl+Shift+-'  # Collapse Them All
+HOTKEY = {
+    'CtrlShiftPlus': 'Ctrl+Shift++',  # Expand   Them All
+    'CtrlShiftMinus': 'Ctrl+Shift+-',  # Collapse Them All
+    }
 
 
 def setupMenu(self):
@@ -37,13 +39,13 @@ def setupMenu(self):
 
     a = menu.addAction('Развернуть всё дерево' if lang ==
                        'ru' else _('Expand Them All'))
-    a.setShortcut(QKeySequence(CtrlShiftPlus))
+    a.setShortcut(HOTKEY['CtrlShiftPlus'])
     self.connect(a, SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, True))
 
     a = menu.addAction('Свернуть все ветки' if lang ==
                        'ru' else _('Collapse Them All'))
-    a.setShortcut(QKeySequence(CtrlShiftMinus))
+    a.setShortcut(HOTKEY['CtrlShiftMinus'])
     self.connect(a, SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, False))
 

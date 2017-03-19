@@ -36,6 +36,12 @@ import aqt
 import anki.lang
 lang = anki.lang.getLang()
 
+HOTKEY = {
+    'no_labels': QKeySequence('Ctrl+Alt+Shift+L'),
+    'Esc': 'Escape',
+    }
+
+
 # It is a part of '• Must Have' addon's functionality:
 #  --musthave.py
 #   https://ankiweb.net/shared/info/67643234
@@ -171,7 +177,7 @@ def laterNotNow():
         '''<button title=" %s " onclick="py.link('ease%d');" ''' +
         'style="width:100%%;%s">%s</button></td><td>&nbsp;</td>') % (
             'позже' if lang == 'ru' else _('later'),
-            _("Shortcut key: %s") % (_('Escape')), NOT_NOW_BASE,
+            _("Shortcut key: %s") % (HOTKEY['Esc']), NOT_NOW_BASE,
             'color:' + black + ';', (
                 '&nbsp;не&nbsp;сейчас&nbsp;'
                 if lang == 'ru' else _('&nbsp;not&nbsp;now&nbsp;')))
@@ -363,7 +369,7 @@ if old_addons2delete == '':
     more_action = QAction(
         '&Кнопки оценок - без меток' if lang == 'ru'
         else _('&Answer buttons without labels'), aqt.mw)
-    more_action.setShortcut(QKeySequence('Ctrl+Alt+Shift+L'))
+    more_action.setShortcut(HOTKEY['no_labels'])
     more_action.setCheckable(True)
     more_action.setChecked(USE_INTERVALS_AS_LABELS)
     aqt.mw.connect(more_action, SIGNAL('triggered()'), more_proc)
@@ -389,7 +395,7 @@ if old_addons2delete == '':
     escape_action = QAction(aqt.mw)
     escape_action.setText(u'Позж&е, не сейчас' if lang ==
                           'ru' else _(u'&Later, not now'))
-    escape_action.setShortcut(QKeySequence('Escape'))
+    escape_action.setShortcut(HOTKEY['Esc'])
     escape_action.setEnabled(False)
     aqt.mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 
