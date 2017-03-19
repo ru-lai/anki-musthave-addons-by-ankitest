@@ -92,7 +92,6 @@ HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
     'zoom_out':     'Ctrl+-',
     'zoom_reset':   'Ctrl+0',
     'zoom_init':    'Ctrl+Alt+0',
-    '': ''
 }
 
 ##################################################################

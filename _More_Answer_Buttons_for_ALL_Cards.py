@@ -103,7 +103,7 @@ ReschedMax ... same as the higher number
 
 HOTKEY = {
     'no_labels': QKeySequence('Ctrl+Alt+Shift+L'),
-    'Esc': 'Escape',
+    'later_not_now': 'Escape',
     }
 
 # Anki uses a single digit to track which button has been clicked.
@@ -435,7 +435,7 @@ if old_addons2delete == '':
     escape_action = QAction(mw)
     escape_action.setText(u'Позж&е, не сейчас' if lang ==
                           'ru' else _(u'&Later, not now'))
-    escape_action.setShortcut(HOTKEY['Esc'])
+    escape_action.setShortcut(HOTKEY['later_not_now'])
     escape_action.setEnabled(False)
     mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 

@@ -23,15 +23,18 @@ from aqt.editor import *
 
 # You can set up your own hotkeys here:
 HOTKEY = {
-    'Ctrl+Space': 'Ctrl+Space',
-    'Ctrl+Alt+Space': 'Ctrl+Alt+Space',
-    'without_Alt': 'F1',
-    'Ctrl+Shift+C': 'F2',
-    'Ctrl+Alt+Shift+C': 'Alt+F2',  # old style
-    "Ctrl+T, T": 'Alt+F11',  # Ctrl+F11 don't work
-    "Ctrl+T, E": 'F11',
-    "Ctrl+T, M": 'Shift+F11',
-    'old': 'new'
+    "next_cloze": 'Ctrl+Space',
+    "same_cloze": 'Ctrl+Alt+Space',
+
+    'same_without_Alt': 'F1',
+    "next_closure": 'F2',  # 'Ctrl+Shift+C'
+    "same_closure": 'Alt+F2',  # 'Ctrl+Alt+Shift+C'
+    # old style
+
+    # Ctrl+F11 don't work
+    "LaTeX": 'Alt+F11',  # "Ctrl+T, T"
+    "LaTeX$": 'F11',       # "Ctrl+T, E"
+    "LaTeX$$": 'Shift+F11',  # "Ctrl+T, M"
 }
 
 
@@ -62,30 +65,30 @@ to a cloze type first, via Edit>Change Note Type."""))
 
 def setupButtonz(self):
     s = QShortcut(
-        QKeySequence(HOTKEY['Ctrl+Space']), self.parentWindow)
+        QKeySequence(HOTKEY["next_cloze"]), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
     s = QShortcut(
-        QKeySequence(HOTKEY['Ctrl+Alt+Space']), self.parentWindow)
+        QKeySequence(HOTKEY["same_cloze"]), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
     s = QShortcut(
-        QKeySequence(HOTKEY['without_Alt']), self.parentWindow)
+        QKeySequence(HOTKEY['same_without_Alt']), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), lambda: onAltCloze(self, 0))
 
     s = QShortcut(
-        QKeySequence(HOTKEY['Ctrl+Shift+C']), self.parentWindow)
+        QKeySequence(HOTKEY["next_closure"]), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
     s = QShortcut(
-        QKeySequence(HOTKEY['Ctrl+Alt+Shift+C']), self.parentWindow)
+        QKeySequence(HOTKEY["same_closure"]), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
-    s = QShortcut(QKeySequence(HOTKEY["Ctrl+T, T"]), self.widget)
+    s = QShortcut(QKeySequence(HOTKEY["LaTeX"]), self.widget)
     s.connect(s, SIGNAL("activated()"), self.insertLatex)
-    s = QShortcut(QKeySequence(HOTKEY["Ctrl+T, E"]), self.widget)
+    s = QShortcut(QKeySequence(HOTKEY["LaTeX$"]), self.widget)
     s.connect(s, SIGNAL("activated()"), self.insertLatexEqn)
-    s = QShortcut(QKeySequence(HOTKEY["Ctrl+T, M"]), self.widget)
+    s = QShortcut(QKeySequence(HOTKEY["LaTeX$$"]), self.widget)
     s.connect(s, SIGNAL("activated()"), self.insertLatexMathEnv)
 
 aqt.editor.Editor.setupButtons = wrap(

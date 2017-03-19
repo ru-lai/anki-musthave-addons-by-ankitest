@@ -57,9 +57,9 @@ lang = anki.lang.getLang()
 
 # You can set up your own hotkeys here:
 HOTKEY = {      # in Reviewer
-    'CtrlShiftPlus': 'Ctrl+Shift++',  # Expand   Them All
-    'CtrlShiftMinus': 'Ctrl+Shift+-',  # Collapse Them All
-    'CtrlAltShiftMinus': 'Ctrl+Alt+Shift+-',  # Collapse Them at All
+    'ExpandThemAll': 'Ctrl+Shift++',
+    'CollapseThemAll': 'Ctrl+Shift+-',
+    'CollapseThemAtAll': 'Ctrl+Alt+Shift+-',
     'Edit_HTML': 'F4',         # Ctrl+Shift+X
     'Edit_Fields': 'F4',         # e
     'Edit_Cards': 'Shift+F4',   #
@@ -828,19 +828,19 @@ def setupMenu(self):
 
     a = menu.addAction('Развернуть всё дерево' if lang ==
                        'ru' else _('Expand Them All'))
-    a.setShortcut(QKeySequence(HOTKEY['CtrlShiftPlus']))
+    a.setShortcut(QKeySequence(HOTKEY['ExpandThemAll']))
     self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, True, False))
 
     a = menu.addAction('Свернуть все ветки' if lang ==
                        'ru' else _('Collapse Them All'))
-    a.setShortcut(QKeySequence(HOTKEY['CtrlShiftMinus']))
+    a.setShortcut(QKeySequence(HOTKEY['CollapseThemAll']))
     self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, False, False))
 
     a = menu.addAction('Свернуть вообще всё' if lang ==
                        'ru' else _('Collapse Them at All'))
-    a.setShortcut(QKeySequence(HOTKEY['CtrlAltShiftMinus']))
+    a.setShortcut(QKeySequence(HOTKEY['CollapseThemAtAll']))
     self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, False, True))
 

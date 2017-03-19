@@ -38,7 +38,7 @@ lang = anki.lang.getLang()
 
 HOTKEY = {
     'no_labels': QKeySequence('Ctrl+Alt+Shift+L'),
-    'Esc': 'Escape',
+    'later_not_now': 'Escape',
     }
 
 
@@ -177,7 +177,7 @@ def laterNotNow():
         '''<button title=" %s " onclick="py.link('ease%d');" ''' +
         'style="width:100%%;%s">%s</button></td><td>&nbsp;</td>') % (
             'позже' if lang == 'ru' else _('later'),
-            _("Shortcut key: %s") % (HOTKEY['Esc']), NOT_NOW_BASE,
+            _("Shortcut key: %s") % (HOTKEY['later_not_now']), NOT_NOW_BASE,
             'color:' + black + ';', (
                 '&nbsp;не&nbsp;сейчас&nbsp;'
                 if lang == 'ru' else _('&nbsp;not&nbsp;now&nbsp;')))
@@ -395,7 +395,7 @@ if old_addons2delete == '':
     escape_action = QAction(aqt.mw)
     escape_action.setText(u'Позж&е, не сейчас' if lang ==
                           'ru' else _(u'&Later, not now'))
-    escape_action.setShortcut(HOTKEY['Esc'])
+    escape_action.setShortcut(HOTKEY['later_not_now'])
     escape_action.setEnabled(False)
     aqt.mw.connect(escape_action, SIGNAL('triggered()'), onEscape)
 

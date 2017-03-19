@@ -28,8 +28,8 @@ import anki.lang
 lang = anki.lang.getLang()
 
 HOTKEY = {
-    'CtrlShiftPlus': 'Ctrl+Shift++',  # Expand   Them All
-    'CtrlShiftMinus': 'Ctrl+Shift+-',  # Collapse Them All
+    'ExpandThemAll': 'Ctrl+Shift++',
+    'CollapseThemAll': 'Ctrl+Shift+-',
     }
 
 
@@ -39,13 +39,13 @@ def setupMenu(self):
 
     a = menu.addAction('Развернуть всё дерево' if lang ==
                        'ru' else _('Expand Them All'))
-    a.setShortcut(HOTKEY['CtrlShiftPlus'])
+    a.setShortcut(HOTKEY['ExpandThemAll'])
     self.connect(a, SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, True))
 
     a = menu.addAction('Свернуть все ветки' if lang ==
                        'ru' else _('Collapse Them All'))
-    a.setShortcut(HOTKEY['CtrlShiftMinus'])
+    a.setShortcut(HOTKEY['CollapseThemAll'])
     self.connect(a, SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, False))
 

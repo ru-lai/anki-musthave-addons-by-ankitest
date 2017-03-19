@@ -30,9 +30,8 @@ import anki.lang
 lang = anki.lang.getLang()
 
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
-    'F3_HTML_source': 'Ctrl+F3',
-    'F3_Body_source': 'Alt+F3',
-    '': ''
+    'HTML_source': 'Ctrl+F3',
+    'Body_source': 'Alt+F3',
 }
 
 try:
@@ -82,7 +81,7 @@ get_HTML_Source_action.setText(
     'Показать И&сходник HTML' if lang == 'ru'
     else '&View Source code')
 get_HTML_Source_action.setShortcut(
-    QKeySequence(HOTKEY['F3_HTML_source'][0]))
+    QKeySequence(HOTKEY['HTML_source']))
 mw.connect(get_HTML_Source_action, SIGNAL('triggered()'), _getSourceHTML)
 
 get_Body_Source_action = QAction(mw)
@@ -90,7 +89,7 @@ get_Body_Source_action.setText(
     'Показать Ис&ходник HTML Body' if lang == 'ru'
     else 'View Source code &Body')
 get_Body_Source_action.setShortcut(
-    QKeySequence(HOTKEY['F3_Body_source'][0]))
+    QKeySequence(HOTKEY['Body_source']))
 mw.connect(get_Body_Source_action, SIGNAL('triggered()'), _getSourceBody)
 
 if hasattr(mw, 'addon_cards_menu'):

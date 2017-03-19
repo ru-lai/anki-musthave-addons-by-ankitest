@@ -28,7 +28,7 @@ import anki.lang
 lang = anki.lang.getLang()
 
 HOTKEY = {      # in mw Main Window (Reviewer)
-    'F2_ctrl': 'Alt+Shift+Space',
+    'prompt_popup': 'Alt+Shift+Space',
 }
 
 if __name__ == '__main__':
@@ -321,7 +321,7 @@ if True:
         u'&Prompt and Set ... days interval'))
     set_new_int_action.setIcon(
         QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'schedule.png')))
-    set_new_int_action.setShortcut(QKeySequence(HOTKEY['F2_ctrl']))
+    set_new_int_action.setShortcut(QKeySequence(HOTKEY['prompt_popup']))
     set_new_int_action.setEnabled(False)
     mw.connect(set_new_int_action, SIGNAL('triggered()'),
                lambda: promptNewInterval(None))
@@ -379,7 +379,7 @@ def resetSelectedCardScheduling(self):
 def addMenuItem(self):
     """ Adds hook to the Edit menu in the note browser """
     newInt_action = QAction('Promt and set days interval', self)
-    newInt_action.setShortcut(QKeySequence(HOTKEY['F2_ctrl']))
+    newInt_action.setShortcut(QKeySequence(HOTKEY['prompt_popup']))
     self.resetSelectedCardScheduling = resetSelectedCardScheduling
     self.connect(newInt_action, SIGNAL('triggered()'),
                  lambda s=self: resetSelectedCardScheduling(self))
