@@ -1,4 +1,5 @@
 # anki-musthave-addons-by-ankitest
+Some small interesting functionalities of • Must Have add-on, which are published separately. 
 
 [' Must Have](https://github.com/ankitest/anki-musthave-addon-by-ankitest) is a huge compilation of numerous very useful small add-ons for [Anki 2.0](http://ankisrs.net/)
 
