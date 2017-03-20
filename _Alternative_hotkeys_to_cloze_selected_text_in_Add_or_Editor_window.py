@@ -72,16 +72,16 @@ def setupButtonz(self):
         QKeySequence(HOTKEY["same_cloze"]), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
-    s = QShortcut(
-        QKeySequence(HOTKEY['same_without_Alt']), self.parentWindow)
+    s = QShortcut(QKeySequence(
+        HOTKEY['same_without_Alt']), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), lambda: onAltCloze(self, 0))
 
-    s = QShortcut(
-        QKeySequence(HOTKEY["next_closure"]), self.parentWindow)
+    s = QShortcut(QKeySequence(
+        HOTKEY["next_closure"]), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
-    s = QShortcut(
-        QKeySequence(HOTKEY["same_closure"]), self.parentWindow)
+    s = QShortcut(QKeySequence(
+        HOTKEY["same_closure"]), self.parentWindow)
     s.connect(s, SIGNAL('activated()'), self.onCloze)
 
     s = QShortcut(QKeySequence(HOTKEY["LaTeX"]), self.widget)

@@ -55,6 +55,67 @@ from aqt.utils import saveGeom, restoreGeom
 import anki.lang
 lang = anki.lang.getLang()
 
+MSG = {
+    'en': {
+        'later': _('later'),
+        'not now': _('not now'),
+        'Cards': _('&Cards'),
+        'View': _('&View'),
+        'Go': _('&Go'),
+        'Edit': _('&Edit...'),
+        'Edit Layout': _('Edi&t Layout...'),
+        'Edit Fields': _('Edit &Fields...'),
+        'Added': _('Added Yesterday'),
+        'Studied': _('Studied Yesterday'),
+        'Again': _('Again Yesterday'),
+        'Buried': _('Buried'),
+        'Rootage': _('Rootage'),
+        'Studied cards': _('Studied cards'),
+        'Search help': _('Search help'),
+        'Save here': _('Save your searches here'),
+        'ExpandThemAll': _('Expand Them All'),
+        'CollapseThemAll': _('Collapse Them All'),
+        'CollapseThemAtAll': _('Collapse Them at All'),
+        },
+    'ru': {
+        'later': 'позже',
+        'not now': 'не сейчас',
+        'Cards': '&Карточки',
+        'View': '&Вид',
+        'Go': 'П&ереход',
+        'Edit': 'Ре&дактирование...',
+        'Edit Layout': '&Шаблоны карточек...',
+        'Edit Fields': '&Список полей...',
+        'Added': 'Добавленные вчера',
+        'Studied': 'Просмотрено вчера',
+        'Again': 'Не вспомненные вчера',
+        'Buried': 'Отложенные',
+        'Rootage': 'Коренные',
+        'Studied cards': 'Оценки ответов',
+        'Search help': 'Подсказки по поиску',
+        'Save here': 'Сохранять здесь',
+        'ExpandThemAll': 'Развернуть всё &дерево',
+        'CollapseThemAll': 'Свернуть все &ветки',
+        'CollapseThemAtAll': 'Свернуть вообще всё',
+        },
+    }
+
+try:
+    MSG[lang]
+except KeyError:
+    lang = 'en'
+
+#         ('Добавленные вчера' if lang == 'ru' else _('Added Yesterday'),
+#         ('Просмотрено вчера' if lang == 'ru' else _('Studied Yesterday'),
+#         ('Не вспомненные вчера' if lang == 'ru' else _('Again Yesterday'),
+# 'Отложенные' if lang == 'ru' else _('Buried')
+# 'Коренные' if lang == 'ru' else _('Rootage')
+# 'Оценки ответов' if lang == 'ru' else _('Studied cards')
+# 'Подсказки по поиску' if lang == 'ru' else _('Search help')
+# 'Сохранять здесь' if lang == 'ru' else _('Save your searches here')
+# 'Свернуть вообще всё' if lang ==
+#       'ru' else _('Collapse Them at All')
+
 # You can set up your own hotkeys here:
 HOTKEY = {      # in Reviewer
     'ExpandThemAll': 'Ctrl+Shift++',
@@ -239,30 +300,26 @@ def go_edit_fields():
 try:
     mw.addon_cards_menu
 except AttributeError:
-    mw.addon_cards_menu = QMenu(
-        _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw.menuBar())
+    mw.addon_cards_menu = QMenu(MSG[lang]['Cards'], mw.menuBar())
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
 F4_edit_current_action = QAction(mw)
-F4_edit_current_action.setText(
-    u'Р&едактирование...' if lang == 'ru' else _(u'&Edit...'))
+F4_edit_current_action.setText(MSG[lang]['Edit'])
 F4_edit_current_action.setIcon(
     QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_current.png')))
 F4_edit_current_action.setShortcut(QKeySequence(HOTKEY['Edit_Fields']))
 F4_edit_current_action.setEnabled(False)
 
 F4_edit_layout_action = QAction(mw)
-F4_edit_layout_action.setText(
-    u'&Карточки...' if lang == 'ru' else _(u'&Cards...'))
+F4_edit_layout_action.setText(MSG[lang]['Edit Layout'])
 F4_edit_layout_action.setIcon(
     QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_layout.png')))
 F4_edit_layout_action.setShortcut(QKeySequence(HOTKEY['Edit_Cards']))
 F4_edit_layout_action.setEnabled(False)
 
 F4_edit_fields_action = QAction(mw)
-F4_edit_fields_action.setText(
-    u'&Поля...' if lang == 'ru' else _(u'&Fields...'))
+F4_edit_fields_action.setText(MSG[lang]['Edit Fields'])
 F4_edit_fields_action.setIcon(
     QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_fields.png')))
 F4_edit_fields_action.setShortcut(QKeySequence(HOTKEY['Edit_Fieldz']))
@@ -523,11 +580,11 @@ def _systemTagTree(self, root):
         (_('Studied Today'), 'view-calendar-tasks.png', 'rated:1'),
         (_('Again Today'), 'view-calendar-tasks.png', 'rated:1:1'),
 
-        ('Добавленные вчера' if lang == 'ru' else _('Added Yesterday'),
+        (MSG[lang]['Added'],
          'view-pim-calendar.png', 'added:2 -added:1'),
-        ('Просмотрено вчера' if lang == 'ru' else _('Studied Yesterday'),
+        (MSG[lang]['Studied'],
          'view-pim-calendar.png', 'rated:2 -rated:1'),
-        ('Не вспомненные вчера' if lang == 'ru' else _('Again Yesterday'),
+        (MSG[lang]['Again'],
          'view-pim-calendar.png', 'rated:2:1 -rated:1:1'),
 
         (_('New'), 'plus16.png', 'is:new'),
@@ -536,7 +593,7 @@ def _systemTagTree(self, root):
         (_('Review'), 'clock16.png', 'is:review'),
         (_('Due'), 'clock-icon.png', 'is:due'),
         (_('Marked'), 'rating.png', 'tag:marked'),  # star16.png
-        ('Отложенные' if lang == 'ru' else _('Buried'),
+        (MSG[lang]['Buried'],
          'media-playback-pause.png', 'is:buried'),
         (_('Suspended'), 'media-playback-pause.png', 'is:suspended'),
         (_('Leech'), 'emblem-important.png', 'tag:leech'),
@@ -546,7 +603,7 @@ def _systemTagTree(self, root):
         mw.col.conf['_collapseRootage'] = limb.isExpanded()
 
     limb = self.CallbackItem(
-        root, 'Коренные' if lang == 'ru' else _('Rootage'),
+        root, MSG[lang]['Rootage'],
         lambda: onClick(limb), oncollapse=onCollapse)
 
     if '_collapseRootage' in mw.col.conf:
@@ -603,7 +660,7 @@ def _systemTagTree(self, root):
         mw.col.conf['_collapsPast'] = past.isExpanded()
 
     past = self.CallbackItem(
-        root, 'Оценки ответов' if lang == 'ru' else _('Studied cards'),
+        root, MSG[lang]['Studied cards'],
         lambda: onClick(past), oncollapse=onCollaps)
 
     if '_collapsPast' in mw.col.conf:
@@ -660,7 +717,7 @@ def _systemTagTree(self, root):
         )
 
     status = self.CallbackItem(
-        root, 'Подсказки по поиску' if lang == 'ru' else _('Search help'),
+        root, MSG[lang]['Search help'],
         lambda: onClick(status))
 
     status.setExpanded(False)
@@ -701,8 +758,7 @@ def _favTree(self, root):
             item.setIcon(0, QIcon(':/icons/emblem-favorite-dark.png'))
             item.setFont(0, particularFont('Browser favTree', italic=True))
     else:
-        name = 'Сохранять здесь' if lang == 'ru' else \
-            _('Save your searches here')
+        name = MSG[lang]['Save here']
         filt = ''
         item = self.CallbackItem(
             limb, name, lambda s=filt: self.setFilter(s))
@@ -826,20 +882,17 @@ def setupMenu(self):
     menu = self.form.menuJump  # .menuEdit
     menu.addSeparator()
 
-    a = menu.addAction('Развернуть всё дерево' if lang ==
-                       'ru' else _('Expand Them All'))
+    a = menu.addAction(MSG[lang]['ExpandThemAll'])
     a.setShortcut(QKeySequence(HOTKEY['ExpandThemAll']))
     self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, True, False))
 
-    a = menu.addAction('Свернуть все ветки' if lang ==
-                       'ru' else _('Collapse Them All'))
+    a = menu.addAction(MSG[lang]['CollapseThemAll'])
     a.setShortcut(QKeySequence(HOTKEY['CollapseThemAll']))
     self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, False, False))
 
-    a = menu.addAction('Свернуть вообще всё' if lang ==
-                       'ru' else _('Collapse Them at All'))
+    a = menu.addAction(MSG[lang]['CollapseThemAtAll'])
     a.setShortcut(QKeySequence(HOTKEY['CollapseThemAtAll']))
     self.connect(a, PyQt4.QtCore.SIGNAL('triggered()'),
                  lambda b=self: ExpandThemAll(b, False, True))

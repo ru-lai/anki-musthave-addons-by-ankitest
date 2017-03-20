@@ -40,6 +40,48 @@ from anki.consts import MODEL_STD, MODEL_CLOZE
 import anki.lang
 lang = anki.lang.getLang()
 
+MSG = {
+    'en': {
+        'later': _('later'),
+        'not now': _('not now'),
+        'Cards': _('&Cards'),
+        'View': _('&View'),
+        'Go': _('&Go'),
+        'swap_fields': _('S&wap %s and %s fields'),
+        'fields_swapped': _('<b>%s</b> and <b>%s</b> swapped.'),
+        'swapping': _('Swap fields'),
+        'duplicate': _('Duplicate notes and Swap fields'),
+        'target_deck': _('Enter the name of target deck:'),
+        },
+    'ru': {
+        'later': 'позже',
+        'not now': 'не сейчас',
+        'Cards': '&Карточки',
+        'View': '&Вид',
+        'Go': 'П&ереход',
+        'swap_fields': 'О&бмен полей %s и %s',
+        'fields_swapped':
+            'Выполнен обмен значений ' +
+            'между полями <b>%s</b> и <b>%s</b>.',
+        'swapping': 'Обмен полей',
+        'duplicate': 'Дублировать записи и обменять поля',
+        'target_deck': 'Введите имя целевой папки для дублируемых карточек:',
+        },
+    }
+
+try:
+    MSG[lang]
+except KeyError:
+    lang = 'en'
+
+# 'О&бмен полей %s и %s' if lang == 'ru' else _('S&wap %s and %s fields')
+# 'Выполнен обмен значений между полями <b>%s</b> и <b>%s</b>.'
+#   if lang == 'ru' else '<b>%s</b> and <b>%s</b> swapped.'
+# 'Обмен полей' if lang == 'ru' else _('Swap fields')
+# 'Дублировать записи и обменять поля' if lang == 'ru'
+#   else _('Duplicate notes and Swap fields')
+# _('Enter the name of target deck:')
+
 if __name__ == '__main__':
     print("""This is _Duplicate_notes_and_Swap_fields_of_Selected_cards.py
  add-on for the Anki program and it can't be run directly.""")
@@ -250,10 +292,8 @@ It's unable to swap fields of CLOZE note type automatically.
         note.flush()  # never forget to flush
 
         if tip:
-            tooltip((
-                'Выполнен обмен значений между полями <b>%s</b> и <b>%s</b>.'
-                if lang == 'ru'
-                else '<b>%s</b> and <b>%s</b> swapped.') %
+            tooltip(
+                MSG[lang]['fields_swapped'] %
                 (fld1st, fld2nd), period=2000)
 
 
@@ -276,9 +316,7 @@ def TryItYourself(edit):
 
 ##
 
-swap_action = QAction((
-    'О&бмен полей %s и %s' if lang == 'ru'
-    else _('S&wap %s and %s fields')) % (fld1st, fld2nd), mw)
+swap_action = QAction(MSG[lang]['swap_fields'] % (fld1st, fld2nd), mw)
 
 swap_action.setShortcut(QKeySequence(HOTKEY['swap']))
 swap_action.setIcon(QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'swap.png')))
@@ -306,8 +344,7 @@ def setup_buttons(editor):
     editor._addButton(
         'swap_fields', lambda edito=editor: TryItYourself(edito),
         HOTKEY['swap'], text='Sw',
-        tip=('Обмен полей' if lang == 'ru' else _('Swap fields')) +
-        ' (' + HOTKEY['swap'] + ')')
+        tip=MSG[lang]['swapping'] + ' (' + HOTKEY['swap'] + ')')
 
 # register callback function that gets executed
 # after setupEditorButtons has run.
@@ -329,7 +366,7 @@ def swapSelectedNotes(self):
     if not nids:
         return
     # Allow undo
-    self.mw.checkpoint('Обмен полей' if lang == 'ru' else _('Swap fields'))
+    self.mw.checkpoint(MSG[lang]['swapping'])
     self.mw.progress.start(immediate=True)
     # Not sure if beginReset is required
     self.model.beginReset()
@@ -403,8 +440,7 @@ def createDuplicate(self):
             # from user.
         deckName = ''
 
-    (deckName, retv) = getText(
-        _('Enter the name of target deck:'), default=deckName)
+    (deckName, retv) = getText(MSG[lang]['target_deck'], default=deckName)
     deckName = deckName.replace('"', '').replace("'", '')
     if not retv:
         tooltip('Canceled by user', period=1000)
@@ -477,16 +513,13 @@ def setupMenu(self):
     menu = self.form.menuEdit
     menu.addSeparator()
 
-    swp_action = QAction('Обмен полей' if lang ==
-                         'ru' else _('Swap fields'), self)
+    swp_action = QAction(MSG[lang]['swapping'], self)
     swp_action.setShortcut(QKeySequence(HOTKEY['swap']))
     self.connect(swp_action, SIGNAL('triggered()'),
                  lambda s=self: swapSelectedNotes(self))
     menu.addAction(swp_action)
 
-    dup_action = menu.addAction(
-        'Дублировать записи и обменять поля' if lang == 'ru'
-        else _('Duplicate notes and Swap fields'))
+    dup_action = menu.addAction(MSG[lang]['duplicate'])
     dup_action.setShortcut(QKeySequence(HOTKEY['dupe']))
     self.connect(dup_action, SIGNAL('triggered()'),
                  lambda s=self: createDuplicate(s))

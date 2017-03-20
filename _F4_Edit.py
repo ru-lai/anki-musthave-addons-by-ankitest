@@ -30,12 +30,43 @@ from aqt.editor import Editor  # the editor when you click 'Add' in Anki
 import anki.lang
 lang = anki.lang.getLang()
 
+MSG = {
+    'en': {
+        'later': _('later'),
+        'not now': _('not now'),
+        'Cards': _('&Cards'),
+        'View': _('&View'),
+        'Go': _('&Go'),
+        'Edit': _('&Edit...'),
+        'Edit Layout': _('Edi&t Layout...'),
+        },
+    'ru': {
+        'later': 'позже',
+        'not now': 'не сейчас',
+        'Cards': '&Карточки',
+        'View': '&Вид',
+        'Go': 'П&ереход',
+        'Edit': 'Ре&дактирование...',
+        'Edit Layout': '&Шаблоны карточек...',
+        },
+    }
+
+try:
+    MSG[lang]
+except KeyError:
+    lang = 'en'
+
+# 'Р&едактирование...' if lang == 'ru' else _('&Edit...')
+# '&Карточки...' if lang == 'ru' else _('&Cards...')
+
 # You can set up your own hotkeys here:
 HOTKEY = {      # in Reviewer
     'Edit_HTML': 'F4',         # Ctrl+Shift+X
     'Edit_Fields': 'F4',         # e
     'Edit_Cards': 'Shift+F4',
 }
+
+#
 
 if __name__ == '__main__':
     print("This is _F4_Edit add-on for the Anki program" +
@@ -77,14 +108,12 @@ def go_edit_layout():
 try:
     mw.addon_cards_menu
 except AttributeError:
-    mw.addon_cards_menu = QMenu(
-        _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
+    mw.addon_cards_menu = QMenu(MSG[lang]['Cards'], mw)
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
 F4_edit_current_action = QAction(mw)
-F4_edit_current_action.setText(
-    u'Р&едактирование...' if lang == 'ru' else _(u'&Edit...'))
+F4_edit_current_action.setText(MSG[lang]['Edit'])
 F4_edit_current_action.setIcon(
     QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_current.png')))
 F4_edit_current_action.setShortcut(QKeySequence(HOTKEY['Edit_Fields']))
@@ -92,8 +121,7 @@ F4_edit_current_action.setEnabled(False)
 mw.connect(F4_edit_current_action, SIGNAL('triggered()'), go_edit_current)
 
 F4_edit_layout_action = QAction(mw)
-F4_edit_layout_action.setText(
-    u'&Карточки...' if lang == 'ru' else _(u'&Cards...'))
+F4_edit_layout_action.setText(MSG[lang]['Edit Layout'])
 F4_edit_layout_action.setIcon(
     QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_layout.png')))
 F4_edit_layout_action.setShortcut(QKeySequence(HOTKEY['Edit_Cards']))

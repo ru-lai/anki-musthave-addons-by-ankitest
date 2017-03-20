@@ -40,6 +40,63 @@ from aqt.utils import tooltip, showText
 import anki.lang
 lang = anki.lang.getLang()
 
+MSG = {
+    'en': {
+        'later': _('later'),
+        'not now': _('not now'),
+        'Cards': _('&Cards'),
+        'View': _('&View'),
+        'Later, not now': _('&Later, not now'),
+        'no_labels': _('&Answer buttons without labels'),
+        },
+    'ru': {
+        'later': 'позже',
+        'not now': 'не сейчас',
+        'Cards': '&Карточки',
+        'View': '&Вид',
+        'Later, not now': 'Позж&е, не сейчас',
+        'no_labels': '&Кнопки оценок - без меток',
+        },
+    }
+
+try:
+    MSG[lang]
+except KeyError:
+    lang = 'en'
+
+HOTKEY = {
+    'no_labels': QKeySequence('Ctrl+Alt+Shift+L'),
+    'later_not_now': 'Escape',
+    }
+
+# Anki uses a single digit to track which button has been clicked.
+NOT_NOW_BASE = 5
+
+# We will use shortcut number from the first extra button
+#  and above to track the extra buttons.
+INTERCEPT_EASE_BASE = 6
+
+extra_buttons = [  # should start from 6 anyway
+    {'Description': '5-7d', 'Label': '!!!',
+        'ShortCut': '6', 'ReschedMin': 5, 'ReschedMax': 7},
+    {'Description': '8-15d', 'Label': 'Veni',
+        'ShortCut': '7', 'ReschedMin': 8, 'ReschedMax': 15},
+    {'Description': '3-4w', 'Label': 'Vidi',
+        'ShortCut': '8', 'ReschedMin': 15, 'ReschedMax': 30},
+    {'Description': '2-3mo', 'Label': 'Vici',
+        'ShortCut': '9', 'ReschedMin': 31, 'ReschedMax': 90},
+]
+
+# Must be four or less
+assert len(extra_buttons) <= 4
+
+SWAP_TAG = False
+# SWAP_TAG = datetime.datetime.now().strftime(
+#    'rescheduled::re-%Y-%m-%d::re-card')
+# SWAP_TAG = datetime.datetime.now().strftime('re-%y-%m-%d-c')
+
+USE_INTERVALS_AS_LABELS = False  # True #
+
 """
 Adds extra buttons to the Reviewer window for new cards
 https://ankiweb.net/shared/info/468253198
@@ -100,40 +157,6 @@ ReschedMin ... same as the lower number
 ReschedMax ... same as the higher number
     in the Browser's "Edit/Rescedule" command
 """
-
-HOTKEY = {
-    'no_labels': QKeySequence('Ctrl+Alt+Shift+L'),
-    'later_not_now': 'Escape',
-    }
-
-# Anki uses a single digit to track which button has been clicked.
-NOT_NOW_BASE = 5
-
-# We will use shortcut number from the first extra button
-#  and above to track the extra buttons.
-INTERCEPT_EASE_BASE = 6
-
-extra_buttons = [  # should start from 6 anyway
-    {'Description': '5-7d', 'Label': '!!!',
-        'ShortCut': '6', 'ReschedMin': 5, 'ReschedMax': 7},
-    {'Description': '8-15d', 'Label': 'Veni',
-        'ShortCut': '7', 'ReschedMin': 8, 'ReschedMax': 15},
-    {'Description': '3-4w', 'Label': 'Vidi',
-        'ShortCut': '8', 'ReschedMin': 15, 'ReschedMax': 30},
-    {'Description': '2-3mo', 'Label': 'Vici',
-        'ShortCut': '9', 'ReschedMin': 31, 'ReschedMax': 90},
-]
-
-# Must be four or less
-assert len(extra_buttons) <= 4
-
-SWAP_TAG = False
-# SWAP_TAG = datetime.datetime.now().strftime(
-#    'rescheduled::re-%Y-%m-%d::re-card')
-# SWAP_TAG = datetime.datetime.now().strftime('re-%y-%m-%d-c')
-
-USE_INTERVALS_AS_LABELS = False  # True #
-##
 
 old_addons = (
     'Answer_Key_Remap.py',
@@ -242,15 +265,14 @@ body { overflow: hidden; }
 <td align=center><span class=nobold>&nbsp;</span><br><button
  title="Short key: %s" onclick="py.link('ease%d');">\
 %s</button></td><td>&nbsp;</td>''' % (
-            'Escape', NOT_NOW_BASE, 'позже' if lang == 'ru' else _('later'))
+            'Escape', NOT_NOW_BASE, MSG[lang]['later'])
     else:
         buf += '''
 <td align=center><span class=nobold>%s</span><br><button
 title="Short key: %s" onclick="py.link('ease%d');">\
 %s</button></td><td>&nbsp;</td>''' % (
-            'позже' if lang == 'ru' else _('later'),
-            'Escape', NOT_NOW_BASE, 'не сейчас' if lang == 'ru'
-            else _('not now'))
+            MSG[lang]['later'],
+            'Escape', NOT_NOW_BASE, MSG[lang]['not now'])
 
     for ease, label in self._answerButtonList():
         buf += but(ease, label)
@@ -375,9 +397,9 @@ def myShowAnswerButton(self, _old):
 <td align=center class=stat2><span class=stattxt>%s</span><br>
 <button title="Short key: %s" onclick="py.link('ease%d');">\
 %s</button></td><td>&nbsp;</td>''' % (
-        'позже' if lang == 'ru' else _('later'),
+        MSG[lang]['later'],
         'Escape', NOT_NOW_BASE,
-        'не сейчас' if lang == 'ru' else _('not now'))
+        MSG[lang]['not now'])
 
     middle = '''<table cellpadding=0><tbody>
 <tr>%s<td class=stat2 align=center>
@@ -401,13 +423,11 @@ if old_addons2delete == '':
     try:
         mw.addon_view_menu
     except AttributeError:
-        mw.addon_view_menu = QMenu(
-            _('&Вид') if lang == 'ru' else _('&View'), mw)
+        mw.addon_view_menu = QMenu(MSG[lang]['View'], mw)
         mw.form.menubar.insertMenu(
             mw.form.menuTools.menuAction(), mw.addon_view_menu)
 
-    more_action = QAction('&Кнопки оценок - без меток' if lang ==
-                          'ru' else _('&Answer buttons without labels'), mw)
+    more_action = QAction(MSG[lang]['no_labels'], mw)
     more_action.setShortcut(HOTKEY['no_labels'])
     more_action.setCheckable(True)
     more_action.setChecked(USE_INTERVALS_AS_LABELS)
@@ -427,14 +447,12 @@ if old_addons2delete == '':
     try:
         mw.addon_cards_menu
     except AttributeError:
-        mw.addon_cards_menu = QMenu(
-            _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
+        mw.addon_cards_menu = QMenu(MSG[lang]['Cards'], mw)
         mw.form.menubar.insertMenu(
             mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
     escape_action = QAction(mw)
-    escape_action.setText(u'Позж&е, не сейчас' if lang ==
-                          'ru' else _(u'&Later, not now'))
+    escape_action.setText(MSG[lang]['Later, not now'])
     escape_action.setShortcut(HOTKEY['later_not_now'])
     escape_action.setEnabled(False)
     mw.connect(escape_action, SIGNAL('triggered()'), onEscape)

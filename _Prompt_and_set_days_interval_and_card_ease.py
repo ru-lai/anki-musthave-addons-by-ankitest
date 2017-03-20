@@ -24,8 +24,46 @@ from anki.hooks import addHook, wrap, runHook
 from aqt import mw, browser
 from aqt.utils import tooltip, getText, showInfo
 
+# Get language class
 import anki.lang
 lang = anki.lang.getLang()
+
+MSG = {
+    'en': {
+        'later': _('later'),
+        'Cards': _('&Cards'),
+        'View': _('&View'),
+        'till next': _('Number of days until next review'),
+        'current': _('current interval'),
+        'card ease': _('Card ease'),
+        'days interval': _('&Prompt and Set ... days interval'),
+        },
+    'ru': {
+        'later': 'позже',
+        'Cards': '&Карточки',
+        'View': '&Вид',
+        'till next': 'Дней до следующего просмотра карточки',
+        'current': 'текущий интервал',
+        'card ease': 'Лёгкость карточки',
+        'days interval': '&Через ... дней',
+        },
+    }
+
+try:
+    MSG[lang]
+except KeyError:
+    lang = 'en'
+
+# ('Дней до следующего просмотра карточки ' +
+# '(текущий интервал + 1 = %s ):' if lang == 'ru' else
+# 'Number of days until next review ' +
+# '(current interval + 1 = %s ):') % (days), default=days)
+
+# 'Лёгкость карточки <b>%s</b>%%<br><br>'
+# if lang == 'ru' else 'Card ease'
+
+# '&Через ... дней' if lang == 'ru' else _(
+# '&Prompt and Set ... days interval')
 
 HOTKEY = {      # in mw Main Window (Reviewer)
     'prompt_popup': 'Alt+Shift+Space',
@@ -128,10 +166,9 @@ def promptNewInterval(cids):
     except AttributeError:
         days = u'1'
     dayString = getText(
-        ('Дней до следующего просмотра карточки ' +
-         '(текущий интервал + 1 = %s ):' if lang == 'ru' else
-         'Number of days until next review ' +
-         '(current interval + 1 = %s ):') % (days), default=days)
+        (MSG[lang]['till next'] +
+         ' (' + MSG[lang]['current'] + ' + 1 = %s ):') % (days),
+        default=days)
 
     stringY = False
     stringM = False
@@ -245,9 +282,8 @@ def promptNewInterval(cids):
             # except AttributeError:
             #     cardEase = 2500
         else:
-            infotip = ('Лёгкость карточки <b>%s</b>%%<br><br>'
-                       if lang == 'ru' else
-                       'Card ease <b>%s</b>%%<br><br>') % (cardEase)
+            infotip = (MSG[lang]['card ease'] +
+                       ' <b>%s</b>%%<br><br>') % (cardEase)
             cardEase *= 10
 
         if total:
@@ -296,11 +332,10 @@ def promptNewInterval(cids):
                     note.flush()  # never forget to flush
 
         elif cardEase is not None:
-            tooltip((
-                'Лёгкость карточки <b>%s</b>%%<br><br>'
-                if lang == 'ru' else
-                'Card ease <b>%s</b>%%<br><br>') %
-                int(cardEase / 10), period=2000)
+            tooltip((MSG[lang]['card ease'] +
+                     ' <b>%s</b>%%<br><br>') %
+                    int(cardEase / 10),
+                    period=2000)
             _refactorCards(mw.col.sched, cids, indi=cardEase)
             # mw.reviewer.card.factor = cardEase
             # mw.reviewer.card.flush()
@@ -311,14 +346,12 @@ if True:
     try:
         mw.addon_cards_menu
     except AttributeError:
-        mw.addon_cards_menu = QMenu(
-            _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
+        mw.addon_cards_menu = QMenu(MSG[lang]['Cards'], mw)
         mw.form.menubar.insertMenu(
             mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
     set_new_int_action = QAction(mw)
-    set_new_int_action.setText(u'&Через ... дней' if lang == 'ru' else _(
-        u'&Prompt and Set ... days interval'))
+    set_new_int_action.setText(MSG[lang]['days interval'])
     set_new_int_action.setIcon(
         QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'schedule.png')))
     set_new_int_action.setShortcut(QKeySequence(HOTKEY['prompt_popup']))

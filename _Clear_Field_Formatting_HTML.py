@@ -64,10 +64,44 @@ from aqt import mw
 import anki.lang
 lang = anki.lang.getLang()
 
-# Empty list means:
-# "Apply changes to all fields in the note"
-FIELDS_ONLY = []  # [_('Front'), 'Front']  #
-FIELDS_ACCEPTED = False
+MSG = {
+    'en': {
+        'later': _('later'),
+        'not now': _('not now'),
+        'Cards': _('&Cards'),
+        'View': _('&View'),
+        'Go': _('&Go'),
+        'leave_blank':
+            'Comma delimited list of fields\n' +
+            '(leave blank to process all fields)',
+        'Notes': _(u'&Notes'),
+        },
+    'ru': {
+        'later': 'позже',
+        'not now': 'не сейчас',
+        'Cards': '&Карточки',
+        'View': '&Вид',
+        'Go': 'П&ереход',
+        'leave_blank':
+            'Список очищаемых полей через запятую\n' +
+            '(для обработки всех полей — оставьте пустым)',
+        'Notes': '&Записи',
+        },
+    }
+
+try:
+    MSG[lang]
+except KeyError:
+    lang = 'en'
+
+"""
+# 'Список очищаемых полей через запятую\n' +
+            '(для обработки всех полей — оставьте пустым)'
+            if lang == 'ru' else
+            'Comma delimited list of fields\n' +
+            '(leave blank to process all fields)'
+_(u'&Записи') if lang == 'ru' else _(u'&Notes')
+"""
 
 HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
     'clear':    'Ctrl+F12',
@@ -76,7 +110,10 @@ HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
     'retags':   'Ctrl+Alt+Shift+F12',
 }
 
-##
+# Empty list means:
+# "Apply changes to all fields in the note"
+FIELDS_ONLY = []  # [_('Front'), 'Front']  #
+FIELDS_ACCEPTED = False
 
 if __name__ == '__main__':
     print("""This is _Clear_Fields_Formatting_HTML.py add-on \
@@ -89,8 +126,6 @@ else:
 if sys.version[0] == '2':  # Python 3 is utf8 only already.
     if hasattr(sys, 'setdefaultencoding'):
         sys.setdefaultencoding('utf8')
-
-##
 
 
 def stripFormatting(txt, removeTags, newlineTags, replaceTags):
@@ -149,13 +184,8 @@ def clearFormatting(self, nids=None, dids=None, note=None, chk=True,
             nids.extend(self.mw.col.findNotes(query))
 
     if nids and not delAllTags and not FIELDS_ACCEPTED:
-        demand = getText(
-            'Список очищаемых полей через запятую\n' +
-            '(для обработки всех полей — оставьте пустым)'
-            if lang == 'ru' else
-            'Comma delimited list of fields\n' +
-            '(leave blank to process all fields)',
-            default=', '.join(FIELDS_ONLY))
+        demand = getText(MSG[lang]['leave_blank'],
+                         default=', '.join(FIELDS_ONLY))
         if not demand[1]:
             tooltip('  <i>Clear Field Formatting HTML</i>   cancelled by user',
                     period=2500)
@@ -320,8 +350,7 @@ def setupMenu(self):
     try:
         self.form.addon_notes_menu
     except AttributeError:
-        self.form.addon_notes_menu = QMenu(
-            _(u'&Записи') if lang == 'ru' else _(u'&Notes'), mw)
+        self.form.addon_notes_menu = QMenu(MSG[lang]['Notes'], mw)
         self.form.menubar.insertMenu(
             self.form.menu_Help.menuAction(), self.form.addon_notes_menu)
 
@@ -479,8 +508,7 @@ mw.connect(dd, SIGNAL('triggered()'), lambda e=mw:
 try:
     mw.addon_notes_menu
 except AttributeError:
-    mw.addon_notes_menu = QMenu(
-        _(u'&Записи') if lang == 'ru' else _(u'&Notes'), mw)
+    mw.addon_notes_menu = QMenu(MSG[lang]['Notes'], mw)
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_notes_menu)
 

@@ -39,19 +39,40 @@ from anki.utils import isWin, isMac
 import anki.lang
 lang = anki.lang.getLang()
 
-if __name__ == '__main__':
-    print 'This is _Edit_Audio_Images add-on for the Anki program'
-    print " and it can't be run directly."
-    print('Please download Anki 2.0 from http://ankisrs.net/')
-    sys.exit()
-else:
-    pass
+MSG = {
+    'en': {
+        'later': _('later'),
+        'not now': _('not now'),
+        'Cards': _('&Cards'),
+        'View': _('&View'),
+        'Go': _('&Go'),
+        'Edit Audio Images': _('&Edit Audio Images from fields'),
+        'Edit Images': _('Edit &Images from fields'),
+        'Edit Audio': _('Edit &Audio from fields'),
+        },
+    'ru': {
+        'later': 'позже',
+        'not now': 'не сейчас',
+        'Cards': '&Карточки',
+        'View': '&Вид',
+        'Go': 'П&ереход',
+        'Edit Audio Images': '&Правка Аудио и Картинок из полей',
+        'Edit Images': 'Правка &Картинок из полей',
+        'Edit Audio': 'Правка &Аудио из полей',
+        },
+    }
 
-if sys.version[0] == '2':  # Python 3 is utf8 only already.
-    if hasattr(sys, 'setdefaultencoding'):
-        sys.setdefaultencoding('utf8')
+try:
+    MSG[lang]
+except KeyError:
+    lang = 'en'
 
-##
+# '&Правка Аудио и Картинок из полей' if lang == 'ru' else
+#   _('&Edit Audio Images from fields')
+# 'Правка &Картинок из полей' if lang == 'ru' else
+#   _('Edit &Images from fields')
+# 'Правка &Аудио из полей' if lang == 'ru' else
+#   _('Edit &Audio from fields')
 
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
     'edit':  'F10',
@@ -73,6 +94,22 @@ macOS_SND = "open -a " + "\'Audacity\'"
 
 # macOS_SND = ("open -a " + "/Applications/Adobe\ Audition\ CC\ " +
 #             "2017/Adobe\ Audition\ CC\ 2017.app")
+
+##########################
+#
+if __name__ == '__main__':
+    print 'This is _Edit_Audio_Images add-on for the Anki program'
+    print " and it can't be run directly."
+    print('Please download Anki 2.0 from http://ankisrs.net/')
+    sys.exit()
+else:
+    pass
+
+if sys.version[0] == '2':  # Python 3 is utf8 only already.
+    if hasattr(sys, 'setdefaultencoding'):
+        sys.setdefaultencoding('utf8')
+
+##
 
 
 def JustDoItBy(note, curFld, audioPic):
@@ -176,28 +213,19 @@ def TryItByYourself(edit):
 
 ##
 
-edit_action = QAction((
-    '&Правка Аудио и Картинок из полей'
-    if lang == 'ru' else
-    _('&Edit Audio Images from fields')), mw)
+edit_action = QAction(MSG[lang]['Edit Audio Images'], mw)
 edit_action.setShortcut(QKeySequence(HOTKEY['edit']))
 edit_action.setEnabled(False)
 mw.connect(edit_action, SIGNAL('triggered()'), JustDoItByYourself)
 
 
-images_action = QAction((
-    'Правка &Картинок из полей'
-    if lang == 'ru' else
-    _('Edit &Images from fields')), mw)
+images_action = QAction(MSG[lang]['Edit Images'], mw)
 images_action.setShortcut(QKeySequence(HOTKEY['image']))
 images_action.setEnabled(False)
 mw.connect(images_action, SIGNAL('triggered()'), JustDoItByPictures)
 
 
-sounds_action = QAction((
-    'Правка &Аудио из полей'
-    if lang == 'ru' else
-    _('Edit &Audio from fields')), mw)
+sounds_action = QAction(MSG[lang]['Edit Audio'], mw)
 sounds_action.setShortcut(QKeySequence(HOTKEY['audio']))
 sounds_action.setEnabled(False)
 mw.connect(sounds_action, SIGNAL('triggered()'), JustDoItBySounds)

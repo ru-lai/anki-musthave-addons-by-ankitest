@@ -26,8 +26,34 @@ from PyQt4.QtCore import *
 from aqt import mw
 from aqt.utils import showText
 
+# Get language class
 import anki.lang
 lang = anki.lang.getLang()
+
+MSG = {
+    'en': {
+        'later': _('later'),
+        'not now': _('not now'),
+        'Cards': _('&Cards'),
+        'no_jQuery': _('View Source code &Body'),
+        'view_source': _('&View Source code'),
+        },
+    'ru': {
+        'later': 'позже',
+        'not now': 'не сейчас',
+        'Cards': '&Карточки',
+        'no_jQuery': 'Показать Ис&ходник HTML Body',
+        'view_source': 'Показать И&сходник HTML',
+        },
+    }
+
+try:
+    MSG[lang]
+except KeyError:
+    lang = 'en'
+
+# 'Показать Ис&ходник HTML Body' if lang == 'ru' else 'View Source code &Body'
+# 'Показать И&сходник HTML' if lang == 'ru' else '&View Source code'
 
 HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
     'HTML_source': 'Ctrl+F3',
@@ -37,8 +63,7 @@ HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
 try:
     mw.addon_cards_menu
 except AttributeError:
-    mw.addon_cards_menu = QMenu(
-        _(u'&Карточки') if lang == 'ru' else _(u'&Cards'), mw)
+    mw.addon_cards_menu = QMenu(MSG[lang]['Cards'], mw)
     mw.form.menubar.insertMenu(
         mw.form.menuTools.menuAction(), mw.addon_cards_menu)
 
@@ -76,21 +101,17 @@ def _getSourceBody():
     """)) + '\n</html>\n'
     showText(html)
 
-get_HTML_Source_action = QAction(mw)
-get_HTML_Source_action.setText(
-    'Показать И&сходник HTML' if lang == 'ru'
-    else '&View Source code')
-get_HTML_Source_action.setShortcut(
-    QKeySequence(HOTKEY['HTML_source']))
-mw.connect(get_HTML_Source_action, SIGNAL('triggered()'), _getSourceHTML)
-
 get_Body_Source_action = QAction(mw)
-get_Body_Source_action.setText(
-    'Показать Ис&ходник HTML Body' if lang == 'ru'
-    else 'View Source code &Body')
+get_Body_Source_action.setText(MSG[lang]['no_jQuery'])
 get_Body_Source_action.setShortcut(
     QKeySequence(HOTKEY['Body_source']))
 mw.connect(get_Body_Source_action, SIGNAL('triggered()'), _getSourceBody)
+
+get_HTML_Source_action = QAction(mw)
+get_HTML_Source_action.setText(MSG[lang]['view_source'])
+get_HTML_Source_action.setShortcut(
+    QKeySequence(HOTKEY['HTML_source']))
+mw.connect(get_HTML_Source_action, SIGNAL('triggered()'), _getSourceHTML)
 
 if hasattr(mw, 'addon_cards_menu'):
     mw.addon_cards_menu.addSeparator()

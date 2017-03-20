@@ -43,7 +43,19 @@ from PyQt4.QtCore import *
 import anki.lang
 lang = anki.lang.getLang()
 
-##
+MSG = {
+    'en': {
+        'View': _('&View'),
+        },
+    'ru': {
+        'View': '&Вид',
+        },
+    }
+
+try:
+    MSG[lang]
+except KeyError:
+    lang = 'en'
 
 HOTKEY = {
     'timebox': "Ctrl+Shift+T"
@@ -128,8 +140,7 @@ if True:
     try:
         mw.addon_view_menu
     except AttributeError:
-        mw.addon_view_menu = QMenu(
-            _(u"&Вид") if lang == 'ru' else "&" + _(u"View"), mw)
+        mw.addon_view_menu = QMenu(MSG[lang]['View'], mw)
         mw.form.menubar.insertMenu(
             mw.form.menuTools.menuAction(), mw.addon_view_menu)
 
