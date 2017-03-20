@@ -12,11 +12,8 @@ All these add-ons also shared on AnkiWeb.net:
 Info | Code
 ------------- | -------------:
 [' Addons Install Tooltip](https://ankiweb.net/shared/info/1738282325) | 1738282325 
-[' Again Hard](https://ankiweb.net/shared/info/1996229983) | 1996229983 
-[' Again Hard Good Easy wide big buttons](https://ankiweb.net/shared/info/1508882486) | 1508882486 
 [' Alternative hotkeys to cloze selected text in Add or Editor window](https://ankiweb.net/shared/info/2074653746) | 2074653746 
 [' Clear Field Formatting HTML](https://ankiweb.net/shared/info/1114708966) | 1114708966
-[' Collapse Them All](https://ankiweb.net/shared/info/1846969611) | 1846969611 
 [' Day learning cards always before new](https://ankiweb.net/shared/info/1331545236) | 1331545236 
 [' Decks Total Average](https://ankiweb.net/shared/info/1196949488) | 1196949488 
 [' Duplicate notes and Swap fields](https://ankiweb.net/shared/info/1040866511) | 1040866511 
@@ -26,7 +23,6 @@ Info | Code
 [' F4 Edit](https://ankiweb.net/shared/info/2085904433) | 2085904433 
 [' Flip-flop](https://ankiweb.net/shared/info/519426347) | 519426347 
 [' Insensitive case type field](https://ankiweb.net/shared/info/1616934891) | 1616934891 
-[' Later not now button](https://ankiweb.net/shared/info/777151722) | 777151722 
 [' More Answer Buttons for ALL Cards](https://ankiweb.net/shared/info/755044381) | 755044381 
 [' More Decks Stats](https://ankiweb.net/shared/info/1841403427) | 1841403427 
 [' Prompt and set days interval and card ease](https://ankiweb.net/shared/info/2031109761) | 2031109761 
