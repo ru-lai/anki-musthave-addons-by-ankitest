@@ -181,7 +181,7 @@ if old_addons2delete != '':
         showText(
             'В каталоге\n\n ' + mw.pm.addonFolder() +
             '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
-            ' ~ More Answer Buttons for ALL Cards  \n' +
+            ' More Answer Buttons for ALL Cards  \n' +
             'и поэтому будут конфликтовать с ним.\n\n' +
             old_addons2delete +
             '\nУдалите эти дополнения и перезапустите Anki.')

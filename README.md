@@ -20,7 +20,6 @@ Info | Code
 [' Edit Audio Images](https://ankiweb.net/shared/info/1075177705) | 1075177705 
 [' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441 
 [' Empty Cards Check Media Database Hotkeys](https://ankiweb.net/shared/info/445912450) | 445912450 
-[' F4 Edit](https://ankiweb.net/shared/info/2085904433) | 2085904433 
 [' Flip-flop](https://ankiweb.net/shared/info/519426347) | 519426347 
 [' Insensitive case type field](https://ankiweb.net/shared/info/1616934891) | 1616934891 
 [' More Answer Buttons for ALL Cards](https://ankiweb.net/shared/info/755044381) | 755044381 

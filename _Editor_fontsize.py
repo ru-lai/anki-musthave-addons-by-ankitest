@@ -207,6 +207,38 @@ aqt.editor.Editor.fonts = anki.hooks.wrap(
 
 ##
 
+old_addons = (
+    '_Collapse_Them_All.py',
+    '_F4_Edit.py',
+)
+
+old_addons2delete = ''
+for old_addon in old_addons:
+    if len(old_addon) > 0:
+        old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+        if os.path.exists(old_filename):
+            old_addons2delete += old_addon[:-3] + ' \n'
+
+if old_addons2delete != '':
+    if lang == 'ru':
+        aqt.utils.showText(
+            'В каталоге\n\n ' + mw.pm.addonFolder() +
+            '\n\nнайдены дополнения, которые уже включены в дополнение\n' +
+            ' Editor fontsize  \n' +
+            'и поэтому будут конфликтовать с ним.\n\n' +
+            old_addons2delete +
+            '\nУдалите эти дополнения и перезапустите Anki.')
+    else:
+        aqt.utils.showText(
+            '<big>There are some add-ons in the folder <br>\n<br>\n' +
+            ' &nbsp; ' + mw.pm.addonFolder() +
+            '<pre>' + old_addons2delete + '</pre>' +
+            'They are already part of<br>\n' +
+            ' <b> &nbsp; Editor fontsize</b>' +
+            ' addon.<br>\n' +
+            'Please, delete them and restart Anki.</big>', type="html")
+##
+
 
 def particularFont(fontKey, bold=False, italic=False, underline=False):
     font = PyQt4.QtGui.QFont()
