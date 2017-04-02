@@ -24,7 +24,6 @@ Info | Code
 [' More Answer Buttons for ALL Cards](https://ankiweb.net/shared/info/755044381) | 755044381 
 [' More Decks Stats](https://ankiweb.net/shared/info/1841403427) | 1841403427 
 [' Prompt and set days interval and card ease](https://ankiweb.net/shared/info/2031109761) | 2031109761 
-[' rated:30:1](https://ankiweb.net/shared/info/1992953867) | 1992953867 
 [' Timebox tooltip](https://ankiweb.net/shared/info/2014169675) | 2014169675 
 [' View HTML source with JavaScript and CSS styles](https://ankiweb.net/shared/info/1128123950) | 1128123950 
 [' Young Mature Card Fields](https://ankiweb.net/shared/info/1751807495) | 1751807495 
