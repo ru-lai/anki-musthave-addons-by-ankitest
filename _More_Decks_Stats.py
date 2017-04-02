@@ -54,6 +54,7 @@ PARM = {
 
 _Buried = _('Suspended+Buried').split('+')
 _Buried = _Buried[1] if len(_Buried) == 2 else _('Buried')
+_Buried = _Bureid.capitalize()
 
 _Suspended = _('<small>Sus-<br>pen-<br>ded&nbsp;</small>') \
     if lang == 'en' else _('Suspended')
