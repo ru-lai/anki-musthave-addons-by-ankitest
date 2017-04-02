@@ -43,6 +43,17 @@ HOTKEY = {
     'Install': QKeySequence('Ctrl+Shift+Insert'),
     }
 
+# Here are hotkeys for https://github.com/dae/anki/blob/master/designer/main.ui
+
+aqt.mw.form.actionFullDatabaseCheck.setShortcut(
+    QKeySequence('Ctrl+Delete'))  # Check Database...
+
+aqt.mw.form.actionCheckMediaDatabase.setShortcut(
+    QKeySequence('Alt+Shift+Delete'))  # Check Media...
+
+aqt.mw.form.actionEmptyCards.setShortcut(
+    QKeySequence('Ctrl+Shift+Delete'))  # Empty Cards...
+
 
 # anki-master\aqt\addons.py
 #  Monkey Patching
