@@ -25,7 +25,6 @@ Info | Code
 [' Prompt and set days interval and card ease](https://ankiweb.net/shared/info/2031109761) | 2031109761 
 [' Timebox tooltip](https://ankiweb.net/shared/info/2014169675) | 2014169675 
 [' View HTML source with JavaScript and CSS styles](https://ankiweb.net/shared/info/1128123950) | 1128123950 
-[' Young Mature Card Fields](https://ankiweb.net/shared/info/1751807495) | 1751807495 
 [' Zooming](https://ankiweb.net/shared/info/1071179937) | 1071179937 
 
 There is no difference between GitHub and AnkiWeb,  
