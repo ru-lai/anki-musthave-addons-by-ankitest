@@ -12,6 +12,11 @@
 from __future__ import division
 from __future__ import unicode_literals
 
+# Based on Decks Total https://ankiweb.net/shared/info/1421528223
+# https://github.com/b50/anki-deck-stats
+# Author of original addon: Calumks <calumks@gmail.com>
+import os
+
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
@@ -40,15 +45,15 @@ PARM = {
     'MORE_OVERVIEW_STATS': 3,
     'HIDE_BIG_NUMBER': 999,
     'HIDE_BIG_NUMBERS': False,
-    'queueLimit': 50,  # important
-    'reportLimit': 9999,  # not less than in deck options
+    'queueLimit': 50, # important
+    'reportLimit': 9999, # not less than in deck options
     '': ''
     }
 
 # --------------------------
 
 _Buried = _('Suspended+Buried').split('+')
-_Buried = _Buried[1] if len(_Buried) == 2 else 'Buried'
+_Buried = _Buried[1] if len(_Buried) == 2 else _('Buried')
 
 _Suspended = _('<small>Sus-<br>pen-<br>ded&nbsp;</small>') \
     if lang == 'en' else _('Suspended')
@@ -118,6 +123,66 @@ try:
     titles[lang]
 except KeyError:
     lang = 'en'
+
+# --------------------------
+
+if True:
+
+    # Replace _renderStats method
+    def renderStats(self, _old):
+
+        # Get due and new cards
+        new = 0
+        lrn = 0
+        due = 0
+
+        for tree in self.mw.col.sched.deckDueTree():
+            new += tree[4]
+            lrn += tree[3]
+            due += tree[2]
+        total = new + lrn + due
+
+        # Get studdied cards
+        cards, thetime = self.mw.col.db.first(
+                """select count(), sum(time)/1000 from revlog where id > ?""",
+                (self.mw.col.sched.dayCutoff - 86400) * 1000)
+
+        cards = cards or 0
+        thetime = thetime or 0
+
+        speed = cards * 60 / max(1, thetime)
+        minutes = int(total / max(1, speed))
+
+        msgp1 = anki.lang.ngettext("%d card", "%d cards", cards) % cards
+
+        buf = "<div style='display:table;padding-top:1.5em;'>" \
+            + "<div style='display:table-cell;'> " \
+            + _old(self) + "<hr>" \
+            + _("New Cards") \
+            + ": &nbsp; <font color=#00a> %(d)s</font>" % dict(d=new) \
+            + " &nbsp; " + _("Learn") \
+            + ": &nbsp; <font color=#a00>%(c)s</font>" % dict(c=lrn) \
+            + " &nbsp; <span style='white-space:nowrap;'>" + _("To Review") \
+            + ": &nbsp; <font color=#0a0>%(c)s</font>" % dict(c=due) \
+            + "</span>" \
+            + " &nbsp; <br><span style='white-space:nowrap;'>" + _("Due") \
+            + ": &nbsp; <b style=color:#aaa>%(c)s</b> " % dict(c=(lrn+due)) \
+            + "</span> " \
+            + " &nbsp; <span style='white-space:nowrap;'>" + _("Total") \
+            + ": &nbsp; <b style=color:#888>%(c)s</b>" % dict(c=(total)) \
+            + "</span></div>" \
+            + "<div style='display:table-cell;vertical-align:middle;" \
+            + "padding-left:2em;'>" \
+            + "<span style='white-space:nowrap;'>" + _("Average") \
+            + ":<br> " + _("%.01f cards/minute") % (speed) + "</span><br><br>" \
+            + _("More") + "&nbsp;" + ngettext(
+                 "%s minute.", "%s minutes.", minutes) % (minutes) \
+            + "</div></div>"
+
+        return buf
+
+    aqt.deckbrowser.DeckBrowser._renderStats = anki.hooks.wrap(
+        aqt.deckbrowser.DeckBrowser._renderStats, renderStats, 'around')
 
 # --------------------------
 
@@ -410,16 +475,15 @@ def deck_browser_render_deck_tree(self, nodes, depth=0):
 <th class=count style='width:4em;'>%s</th>\
 <th class=count style='width:4em;'>%s</th>\
 <th class=count style='color:gray;width:4em;'>&nbsp;+&nbsp;%s</th>\
-<th class=count style='color:gray;width:4em;padding-right:1em;'\
+<th class=count style='color:gray;width:4em;padding-right:1em;'
 >&nbsp;=&nbsp;%s</th>\
-\n""" % (
-                anki.lang.getLang(), _("Total"),
-                nonzeroColour(aqt.mw.col.cardCount(), "default", False),
-                nonzeroColour(new + lrn + due, "gray", False),
-                nonzeroColour(new, "#33f", False),
-                nonzeroColour(lrn, "#c33", False),
-                nonzeroColour(due, "#090", False),
-                nonzeroColour(lrn + due, "#999", False))
+\n""" % (anki.lang.getLang(), _("Total"),
+            nonzeroColour(aqt.mw.col.cardCount(), "default", False),
+            nonzeroColour(new + lrn + due, "gray", False),
+            nonzeroColour(new, "#33f", False),
+            nonzeroColour(lrn, "#c33", False),
+            nonzeroColour(due, "#090", False),
+            nonzeroColour(lrn + due, "#999", False))
 
         # options
         if not PARM['GEAR_AT_END_OF_LINE'] and \
@@ -597,10 +661,9 @@ def initDeckBro():
 
 initDeckBro()
 
-
 def maInit(self, col):
     self.queueLimit = PARM['queueLimit']
-    self.reportLimit = PARM['reportLimit']  # not 1000!!!
+    self.reportLimit = PARM['reportLimit'] # not 1000!!!
 
 # aqt.mw.col.sched.reportLimit = 5555 # not ready yet
 

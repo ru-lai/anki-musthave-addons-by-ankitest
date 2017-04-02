@@ -15,7 +15,6 @@ Info | Code
 [' Alternative hotkeys to cloze selected text in Add or Editor window](https://ankiweb.net/shared/info/2074653746) | 2074653746 
 [' Clear Field Formatting HTML](https://ankiweb.net/shared/info/1114708966) | 1114708966
 [' Day learning cards always before new](https://ankiweb.net/shared/info/1331545236) | 1331545236 
-[' Decks Total Average](https://ankiweb.net/shared/info/1196949488) | 1196949488 
 [' Duplicate notes and Swap fields](https://ankiweb.net/shared/info/1040866511) | 1040866511 
 [' Edit Audio Images](https://ankiweb.net/shared/info/1075177705) | 1075177705 
 [' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441 
