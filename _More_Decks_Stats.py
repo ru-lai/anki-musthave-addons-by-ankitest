@@ -126,7 +126,7 @@ try:
 except KeyError:
     lang = 'en'
 
-__addon__ = "'" + __name__.replace('_',' ')
+__addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 # --------------------------

@@ -61,7 +61,7 @@ HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
     'Body_source': 'Alt+F3',
 }
 
-__addon__ = "'" + __name__.replace('_',' ')
+__addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 try:

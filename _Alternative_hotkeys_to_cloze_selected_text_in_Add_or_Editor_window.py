@@ -38,7 +38,7 @@ HOTKEY = {
     "LaTeX$$": 'Shift+F11',  # "Ctrl+T, M"
 }
 
-__addon__ = "'" + __name__.replace('_',' ')
+__addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 

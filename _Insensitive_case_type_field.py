@@ -39,7 +39,7 @@ UPPER_CASE = False
 EXACT_COMPARING = False
 # EXACT_COMPARING = True
 
-__addon__ = "'" + __name__.replace('_',' ')
+__addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 # from Ignore accents in browser search add-on

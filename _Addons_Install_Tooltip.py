@@ -7,7 +7,34 @@
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 # No support. Use it AS IS on your own risk.
 """
+ Some hotkeys:
+  Check Database...  Ctrl+Delete
+  Check Media...  Alt+Shift+Delete
+  Empty Cards...  Ctrl+Shift+Delete
+  Add-ons Browse and Install...  Ctrl+Shift+Ins
+
+ rated:90:1 will be available with this addon.
+
+ You can enter more than one addon number in install dialog
+  with spaces: 1238745 2378903 9875237
+
  You can add some {{info:...}} stencil in your templates.
+
+ This is a simple monkey patch add-on that inserts day learning cards
+ (learning cards with intervals that crossed the day turnover)
+ always before new cards without depending due reviews.
+
+ By default Anki do so:
+  learning; new if before; due; day learning; new if after
+ With this add-on card will be displayed in the following order:
+  learning; (day learning; new) if before; due; (day learning; new) if after
+
+ Normally these cards go after due, but I want them to go before new.
+
+ If Tools -> Preferences... -> Basic -> Show new cards before reviews
+    learning; day learning; new; due
+ If Tools -> Preferences... -> Basic -> Show new cards after reviews
+    learning; due; day learning; new
 """
 from __future__ import unicode_literals
 from __future__ import division
@@ -16,6 +43,7 @@ import anki
 import aqt
 
 import aqt.customstudy
+import anki.sched  # why?
 
 from anki.consts import *
 from aqt.qt import *
@@ -55,7 +83,7 @@ HOTKEY = {
     'Install': QKeySequence('Ctrl+Shift+Insert'),
     }
 
-__addon__ = "'" + __name__.replace('_',' ')
+__addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 install_tooltip = True  # False  #
@@ -404,3 +432,56 @@ def previewCards(self, note, type=0):
     return cards
 
 _Collection.previewCards = previewCards
+
+
+def _getCardReordered(self):
+    """
+    'Return the next due card id, or None.'
+
+ inspired by Anki user rjgoif
+ https://ankiweb.net/shared/info/1810271825
+ put ALL due "learning" cards first ×
+ ####################################################################
+ That is a simple add-on that inserts the daily-learning cards, i.e.
+ cards in the learning queue with intervals that crossed the day turnover,
+ before starting other reviews (new cards, review cards). \
+ Normally these cards go last, but I want them to go first.
+ ####################################################################
+    """
+
+    # learning card due?
+    c = self._getLrnCard()
+    if c:
+        return c
+
+    # new first, or time for one?
+    if self._timeForNewCard():
+
+        # day learning card due?
+        c = self._getLrnDayCard()
+        if c:
+            return c
+
+        c = self._getNewCard()
+        if c:
+            return c
+
+    # card due for review?
+    c = self._getRevCard()
+    if c:
+        return c
+
+    # day learning card due?
+    c = self._getLrnDayCard()
+    if c:
+        return c
+
+    # new cards left?
+    c = self._getNewCard()
+    if c:
+        return c
+
+    # collapse or finish
+    return self._getLrnCard(collapse=True)
+
+anki.sched.Scheduler._getCard = _getCardReordered

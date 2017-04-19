@@ -92,7 +92,7 @@ except:
 ZERO_KEY_TO_SHOW_ANSWER = True
 # ZERO_KEY_TO_SHOW_ANSWER = False
 
-__addon__ = "'" + __name__.replace('_',' ')
+__addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 if __name__ == '__main__':

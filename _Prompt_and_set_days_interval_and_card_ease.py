@@ -70,7 +70,7 @@ HOTKEY = {      # in mw Main Window (Reviewer)
     'prompt_popup': 'Alt+Shift+Space',
 }
 
-__addon__ = "'" + __name__.replace('_',' ')
+__addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 if __name__ == '__main__':

@@ -159,7 +159,7 @@ ReschedMax ... same as the higher number
     in the Browser's "Edit/Rescedule" command
 """
 
-__addon__ = "'" + __name__.replace('_',' ')
+__addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 old_addons = (

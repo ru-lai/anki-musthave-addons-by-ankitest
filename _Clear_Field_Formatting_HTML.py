@@ -116,7 +116,7 @@ HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
 FIELDS_ONLY = []  # [_('Front'), 'Front']  #
 FIELDS_ACCEPTED = False
 
-__addon__ = "'" + __name__.replace('_',' ')
+__addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 if __name__ == '__main__':
