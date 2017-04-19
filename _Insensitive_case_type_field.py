@@ -2,23 +2,24 @@
 # • Insensitive case type field
 # https://ankiweb.net/shared/info/1616934891
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# How to make Anki insensitive case when using {{type:field}}
-#
-# monkey patch
-# Upper case, lower case and {{type:}}
-#
-# You can use it together with
-# Multiple type fields on card
-# https://ankiweb.net/shared/info/689574440
-#
-# Inspired by
-# Select Buttons Automatically If Correct Answer, Wrong Answer or Nothing
-# https://ankiweb.net/shared/info/2074758752
-#
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 # No support. Use it AS IS on your own risk.
+"""
+ How to make Anki insensitive case when using {{type:field}}
+
+ monkey patch
+ Upper case, lower case and {{type:}}
+
+ You can use it together with
+ Multiple type fields on card
+ https://ankiweb.net/shared/info/689574440
+
+ Inspired by
+ Select Buttons Automatically If Correct Answer, Wrong Answer or Nothing
+ https://ankiweb.net/shared/info/2074758752
+"""
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -37,6 +38,9 @@ UPPER_CASE = False
 
 EXACT_COMPARING = False
 # EXACT_COMPARING = True
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
 
 # from Ignore accents in browser search add-on
 # https://ankiweb.net/shared/info/1924690148

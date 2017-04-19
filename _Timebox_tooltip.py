@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*-
-# ' Timebox tooltip
+# -*- mode: Python ; coding: utf-8 -*-
+# • Timebox tooltip
 # https://ankiweb.net/shared/info/2014169675
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# It puts the stats when you finish a timebox in a tooltip message
-#  that goes away after a few seconds.
-#
 # No support. Use it AS IS on your own risk.
+"""
+ It puts the stats when you finish a timebox in a tooltip message
+  that goes away after a few seconds.
+"""
 from __future__ import division
 
 from anki.hooks import wrap
@@ -60,6 +61,9 @@ except KeyError:
 HOTKEY = {
     'timebox': "Ctrl+Shift+T"
     }
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
 
 
 def renderOstrich(self):

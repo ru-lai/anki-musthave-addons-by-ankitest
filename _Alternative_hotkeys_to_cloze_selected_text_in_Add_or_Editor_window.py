@@ -1,20 +1,21 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ~ Alternative hotkeys to cloze selected text in Add or Editor window
+# • Alternative hotkeys to cloze selected text in Add or Editor window
 # https://ankiweb.net/shared/info/
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# Ctrl+Space which cloze selected text with maximum+1 number
-# and Ctrl+Alt+Space which cloze selected text with maximum number.
-#
-# New keys are synonyms for old keys Ctrl+Shift+C
-# and Ctrl+Alt+Shift+C respectively.
-#
-# You can invent your own keys combinations, specify them
-# at the beginning of the source code and restart Anki.
-#
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 # No support. Use it AS IS on your own risk.
+"""
+ Ctrl+Space which cloze selected text with maximum+1 number
+ and Ctrl+Alt+Space which cloze selected text with maximum number.
+
+ New keys are synonyms for old keys Ctrl+Shift+C
+ and Ctrl+Alt+Shift+C respectively.
+
+ You can invent your own keys combinations, specify them
+ at the beginning of the source code and restart Anki.
+"""
 
 from aqt.utils import tooltip, showInfo
 from anki.hooks import wrap
@@ -36,6 +37,9 @@ HOTKEY = {
     "LaTeX$": 'F11',       # "Ctrl+T, E"
     "LaTeX$$": 'Shift+F11',  # "Ctrl+T, M"
 }
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
 
 
 def onAltCloze(self, delta):

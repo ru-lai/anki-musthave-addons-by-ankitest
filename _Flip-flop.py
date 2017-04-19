@@ -1,14 +1,15 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ' Flip-flop
+# • Flip-flop
 # https://ankiweb.net/shared/info/519426347
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# -- Flip-flop card (Show FrontSide/BackSide
-#    by F7/F8 or Ctrl+PgUp/Control+PageDown or ^9/^3 or Insert/0)
-#
 # No support. Use it AS IS on your own risk.
+"""
+ -- Flip-flop card (Show FrontSide/BackSide
+    by F7/F8 or Ctrl+PgUp/Control+PageDown or ^9/^3 or Insert/0)
+"""
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -77,18 +78,6 @@ HOTKEY = {
     'goto_A': 'F8',
 }
 
-if __name__ == '__main__':
-    print("This is the _Flip-flop add-on for the Anki program" +
-          " and it can't be run directly.")
-    print('Please download Anki 2.0 from http://ankisrs.net/')
-    sys.exit()
-else:
-    pass
-
-if sys.version[0] == '2':  # Python 3 is utf8 only already.
-    if hasattr(sys, 'setdefaultencoding'):
-        sys.setdefaultencoding('utf8')
-
 FLIP_FLOP = True
 # FLIP_FLOP = False
 
@@ -102,6 +91,23 @@ except:
 
 ZERO_KEY_TO_SHOW_ANSWER = True
 # ZERO_KEY_TO_SHOW_ANSWER = False
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
+
+if __name__ == '__main__':
+    print("This is the _Flip-flop add-on for the Anki program" +
+          " and it can't be run directly.")
+    print('Please download Anki 2.0 from http://ankisrs.net/')
+    sys.exit()
+else:
+    pass
+
+if sys.version[0] == '2':  # Python 3 is utf8 only already.
+    if hasattr(sys, 'setdefaultencoding'):
+        sys.setdefaultencoding('utf8')
+
+##
 
 
 def go_question():

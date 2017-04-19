@@ -1,12 +1,14 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ' Addons Install Tooltip
-#
-# You can add some {{info:...}} stencil in your templates.
-#
+# • Addons Install Tooltip
 # https://ankiweb.net/shared/info/1738282325
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2017 Dmitry Mikheev, http://finpapa.ucoz.ru/index.html
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 # No support. Use it AS IS on your own risk.
+"""
+ You can add some {{info:...}} stencil in your templates.
+"""
 from __future__ import unicode_literals
 from __future__ import division
 
@@ -21,22 +23,9 @@ from aqt.qt import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-install_tooltip = True  # False  #
-install_hotkeys = True  # False  #
-install_again = False  # True  #
-install_menu = True  # False  #
-
 import copy
 import time
 from anki.collection import _Collection
-
-def timefn(tm):
-    str = ''
-    if tm >= 60:
-        str = anki.utils.fmtTimeSpan((tm / 60) * 60, short=True, point=-1, unit=1)
-    if tm % 60 != 0 or not str:
-        str += anki.utils.fmtTimeSpan(tm % 60, point=2 if not str else -1, short=True)
-    return str
 
 # Get language class
 # Выбранный пользователем язык программной оболочки
@@ -66,7 +55,27 @@ HOTKEY = {
     'Install': QKeySequence('Ctrl+Shift+Insert'),
     }
 
-# Here are hotkeys for https://github.com/dae/anki/blob/master/designer/main.ui
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
+
+install_tooltip = True  # False  #
+install_hotkeys = True  # False  #
+install_again = False  # True  #
+install_menu = True  # False  #
+
+
+def timefn(tm):
+    str = ''
+    if tm >= 60:
+        str = anki.utils.fmtTimeSpan(
+            (tm / 60) * 60, short=True, point=-1, unit=1)
+    if tm % 60 != 0 or not str:
+        str += anki.utils.fmtTimeSpan(
+            tm % 60, point=2 if not str else -1, short=True)
+    return str
+
+# Here are hotkeys for
+#  https://github.com/dae/anki/blob/master/designer/main.ui
 
 aqt.mw.form.actionFullDatabaseCheck.setShortcut(
     QKeySequence('Ctrl+Delete'))  # Check Database...

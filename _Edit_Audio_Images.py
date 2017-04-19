@@ -1,25 +1,26 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ' Edit Audio Images
+# • Edit Audio Images
 # https://ankiweb.net/shared/info/1040866511
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# In card reviewer F10 opens all images and sounds in external editors.
-# Ctrl+F10 only pictures
-# Shift+F10 only audios
-#
-# In Add/Edit window F10 opens sounds and images only from current field.
-#
-# You can uncomment lines # Windows_IMG or # Windows_SND
-# to setup you own Windows command line
-# to start external program with images/audio
-#
-# Runs on Windows and macOS.
-#
-# For Mac's start commands search: isMac
-#
 # No support. Use it AS IS on your own risk.
+"""
+ In card reviewer F10 opens all images and sounds in external editors.
+ Ctrl+F10 only pictures
+ Shift+F10 only audios
+
+ In Add/Edit window F10 opens sounds and images only from current field.
+
+ You can uncomment lines # Windows_IMG or # Windows_SND
+ to setup you own Windows command line
+ to start external program with images/audio
+
+ Runs on Windows and macOS.
+
+ For Mac's start commands search: isMac
+"""
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -97,6 +98,9 @@ macOS_SND = "open -a " + "\'Audacity\'"
 
 ##########################
 #
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
+
 if __name__ == '__main__':
     print 'This is _Edit_Audio_Images add-on for the Anki program'
     print " and it can't be run directly."

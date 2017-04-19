@@ -1,23 +1,24 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ' Duplicate notes and Swap fields
+# • Duplicate notes and Swap fields
 # https://ankiweb.net/shared/info/1040866511
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# To modify a single card so the front and back are inverted
-#  use F12 in Card Reviewer.
-#
-# You can easily add your own field name pairs in existing list.
-#  Pairs higher in the list take precedence over lower
-#   if some of them exist in the same note simultaneously.
-#
-# Inspired by Duplicate Selected Notes
-#  https://ankiweb.net/shared/info/2126361512
-# and Create Copy of Selected Cards
-#  https://ankiweb.net/shared/info/787914845
-#
 # No support. Use it AS IS on your own risk.
+"""
+ To modify a single card so the front and back are inverted
+  use F12 in Card Reviewer.
+
+ You can easily add your own field name pairs in existing list.
+  Pairs higher in the list take precedence over lower
+   if some of them exist in the same note simultaneously.
+
+ Inspired by Duplicate Selected Notes
+  https://ankiweb.net/shared/info/2126361512
+ and Create Copy of Selected Cards
+  https://ankiweb.net/shared/info/787914845
+"""
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -82,18 +83,6 @@ except KeyError:
 #   else _('Duplicate notes and Swap fields')
 # _('Enter the name of target deck:')
 
-if __name__ == '__main__':
-    print("""This is _Duplicate_notes_and_Swap_fields_of_Selected_cards.py
- add-on for the Anki program and it can't be run directly.""")
-    print('Please download Anki 2.0 from http://ankisrs.net/')
-    sys.exit()
-else:
-    pass
-
-if sys.version[0] == '2':  # Python 3 is utf8 only already.
-    if hasattr(sys, 'setdefaultencoding'):
-        sys.setdefaultencoding('utf8')
-
 CASE_SENSITIVE = True  # False  #
 
 SWAP_TAG = False
@@ -127,6 +116,21 @@ HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
     'swap': 'F12',
     'dupe': 'Shift+F12',
 }
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
+
+if __name__ == '__main__':
+    print("""This is _Duplicate_notes_and_Swap_fields_of_Selected_cards.py
+ add-on for the Anki program and it can't be run directly.""")
+    print('Please download Anki 2.0 from http://ankisrs.net/')
+    sys.exit()
+else:
+    pass
+
+if sys.version[0] == '2':  # Python 3 is utf8 only already.
+    if hasattr(sys, 'setdefaultencoding'):
+        sys.setdefaultencoding('utf8')
 
 ##
 

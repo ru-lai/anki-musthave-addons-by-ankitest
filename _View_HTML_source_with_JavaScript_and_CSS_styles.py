@@ -2,19 +2,20 @@
 # • View HTML source with JavaScript and CSS styles
 # https://ankiweb.net/shared/info/1128123950
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# Menu Cards - View Source code Body Alt+F3
-#  shows HTML source with JavaScript and CSS styles
-#   but without jQuery Menu Cards
-#
-# Menu Cards - View Source code Ctrl+F3
-#  shows full HTML source
-#
-# Works for decks panel, deck overview and any card.
-#
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 # No support. Use it AS IS on your own risk.
+"""
+ Menu Cards - View Source code Body Alt+F3
+  shows HTML source with JavaScript and CSS styles
+   but without jQuery Menu Cards
+
+ Menu Cards - View Source code Ctrl+F3
+  shows full HTML source
+
+ Works for decks panel, deck overview and any card.
+"""
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -59,6 +60,9 @@ HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
     'HTML_source': 'Ctrl+F3',
     'Body_source': 'Alt+F3',
 }
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
 
 try:
     mw.addon_cards_menu

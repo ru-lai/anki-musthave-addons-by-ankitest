@@ -1,49 +1,50 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ~ Clear Fields Formatting HTML
+# • Clear Fields Formatting HTML
 # https://ankiweb.net/shared/info/1114708966
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# NB! Create backup copy before bulk changes!
-#
-# This one creates a new items  Clear Field Formatting HTML ...
-# in the Notes menu of the card Browser and Reviewer.
-#
-# Using this, notes of all selected cards will be cleared of any html tags,
-# resulting in the removal of any formatting directly in the fields.
-# This does NOT change the card template (layout) itself,
-# but only the notes you selected in the card browser.
-#
-# Html tag   img   always stays inplace cause it's used to add pictures.
-# HTML tags   br div   may be not removed because they are used to line break
-# ( style= and other attributes from   DIV   would be deleted ).
-# Also you can remove only new lines
-# (it means html tags   br div   will be removed
-#   with their styles and attributes)
-# but all other markup will stay in place.
-#
-# FIELDS_ONLY list limits changes of fields to the certain scope.
-#
-# Support Remove some html tags: A B I U P S sub sup FONT.
-# Also you can remove or replace colors, getted by F7/F8.
-#
-# In Add and Edit windows (under down arrow)
-#  this one acts in current field only.
-#
-#  Made by request:
-#   Clear Field Formatting (HTML) in Bulk needs improvement
-#    https://anki.tenderapp.com/discussions/add-ons/
-#    7526-clear-field-formatting-html-in-bulk-needs-improvement
-# Based on
-# https://ankiweb.net/shared/info/728131107
-# Removes the field formatting of all selected notes.
-# Author: xelif@icqmail.com
-# Inspired by
-# https://ankiweb.net/shared/info/1290231794
-# RemoveLinebreak
-#
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
 # No support. Use it AS IS on your own risk.
+"""
+ NB! Create backup copy before bulk changes!
+
+ This one creates a new items  Clear Field Formatting HTML ...
+ in the Notes menu of the card Browser and Reviewer.
+
+ Using this, notes of all selected cards will be cleared of any html tags,
+ resulting in the removal of any formatting directly in the fields.
+ This does NOT change the card template (layout) itself,
+ but only the notes you selected in the card browser.
+
+ Html tag   img   always stays inplace cause it's used to add pictures.
+ HTML tags   br div   may be not removed because they are used to line break
+ ( style= and other attributes from   DIV   would be deleted ).
+ Also you can remove only new lines
+ (it means html tags   br div   will be removed
+   with their styles and attributes)
+ but all other markup will stay in place.
+
+ FIELDS_ONLY list limits changes of fields to the certain scope.
+
+ Support Remove some html tags: A B I U P S sub sup FONT.
+ Also you can remove or replace colors, getted by F7/F8.
+
+ In Add and Edit windows (under down arrow)
+  this one acts in current field only.
+
+  Made by request:
+   Clear Field Formatting (HTML) in Bulk needs improvement
+    https://anki.tenderapp.com/discussions/add-ons/
+    7526-clear-field-formatting-html-in-bulk-needs-improvement
+ Based on
+ https://ankiweb.net/shared/info/728131107
+ Removes the field formatting of all selected notes.
+ Author: xelif@icqmail.com
+ Inspired by
+ https://ankiweb.net/shared/info/1290231794
+ RemoveLinebreak
+"""
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -114,6 +115,9 @@ HOTKEY = {      # workds in card Browser, card Reviewer and note Editor (Add?)
 # "Apply changes to all fields in the note"
 FIELDS_ONLY = []  # [_('Front'), 'Front']  #
 FIELDS_ACCEPTED = False
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
 
 if __name__ == '__main__':
     print("""This is _Clear_Fields_Formatting_HTML.py add-on \

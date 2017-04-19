@@ -1,22 +1,23 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ' Editor fontsize
+# • Editor fontsize
 # https://ankiweb.net/shared/info/1931469441
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# Increase Text Size for Card Types Editor and so on.
-#
-# TODO: Some description should be here!!!
-#
-# HTML Editor saves width and height on exit.
-# Also do Addons Editor.
-#
-# Decks, Note Types and Tags in Browser Tree could be collapsed too.
-#
-# Expand/Collapse Whole Browser Tree
-#
 # No support. Use it AS IS on your own risk.
+"""
+ Increase Text Size for Card Types Editor and so on.
+
+ TODO: Some description should be here!!!
+
+ HTML Editor saves width and height on exit.
+ Also do Addons Editor.
+
+ Decks, Note Types and Tags in Browser Tree could be collapsed too.
+
+ Expand/Collapse Whole Browser Tree
+"""
 from __future__ import unicode_literals
 from __future__ import division
 import os
@@ -175,6 +176,9 @@ FONTS = {
 
     'Fields List':          ('Consolas', 18),
 }
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
 
 if __name__ == '__main__':
     print("This is _F4_Edit add-on for the Anki program " +

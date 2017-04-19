@@ -1,24 +1,25 @@
 ﻿# -*- mode: Python ; coding: utf-8 -*-
-# ' More Answer Buttons for ALL Cards
+# • More Answer Buttons for ALL Cards
 # https://ankiweb.net/shared/info/755044381
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# Adds 1-4 (4 by default) extra answer buttons with regular intervals.
-#  No answer on that card will be given, just setup additional interval.
-#
-# You can assign you own intervals, labels.
-#  Hotkeys are 6, 7, 8, 9.
-# You can use intervals as button labels
-#  View - Answer buttons without labels or Ctrl+Alt+Shift+L
-#
-# On Cards - Later, Not Now menu click (Escape hotkey):
-# No answer will be given, next card will be shown.
-# Card stays on its place in queue,
-# you'll see it next time you study the deck.
-#
 # No support. Use it AS IS on your own risk.
+"""
+ Adds 1-4 (4 by default) extra answer buttons with regular intervals.
+  No answer on that card will be given, just setup additional interval.
+
+ You can assign you own intervals, labels.
+  Hotkeys are 6, 7, 8, 9.
+ You can use intervals as button labels
+  View - Answer buttons without labels or Ctrl+Alt+Shift+L
+
+ On Cards - Later, Not Now menu click (Escape hotkey):
+ No answer will be given, next card will be shown.
+ Card stays on its place in queue,
+ you'll see it next time you study the deck.
+"""
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -157,6 +158,9 @@ ReschedMin ... same as the lower number
 ReschedMax ... same as the higher number
     in the Browser's "Edit/Rescedule" command
 """
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
 
 old_addons = (
     'Answer_Key_Remap.py',

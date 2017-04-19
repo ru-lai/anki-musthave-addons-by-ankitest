@@ -1,14 +1,15 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ' Promt and set days interval
+# • Promt and set days interval
 # https://ankiweb.net/shared/info/2031109761
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# new interval equals current interval
-#  plus + Number of days until next review (because no answer will be given).
-#
 # No support. Use it AS IS on your own risk.
+"""
+ new interval equals current interval
+  plus + Number of days until next review (because no answer will be given).
+"""
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -68,6 +69,9 @@ except KeyError:
 HOTKEY = {      # in mw Main Window (Reviewer)
     'prompt_popup': 'Alt+Shift+Space',
 }
+
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
 
 if __name__ == '__main__':
     print("This is _Swap add-on for the Anki program " +

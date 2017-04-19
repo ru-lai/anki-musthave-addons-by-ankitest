@@ -1,22 +1,23 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ' Zooming
+# • Zooming
 # https://ankiweb.net/shared/info/1071179937
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
-#
-# Zooms, unzooms, lets you set a 1:1 (100%)
-#  or initial (user defined) zoom level. It's pretty cool.
-# Work with images as well as text.
-#
-# The image is enlarged up to a maximum of 95% of the height or width
-#  of the card's window.
-#
-# Zoom in or out with Ctrl++/Ctrl+-
-# or with Ctrl+mouse wheel
-# or with the View/Zoom submenu.
-#
 # No support. Use it AS IS on your own risk.
+"""
+ Zooms, unzooms, lets you set a 1:1 (100%)
+  or initial (user defined) zoom level. It's pretty cool.
+ Work with images as well as with texts.
+
+ The image is enlarged up to a maximum of 95% of the height or width
+  of the card's window.
+
+ Zoom in or out with Ctrl++/Ctrl+-
+ or with Ctrl+mouse wheel
+ or with the View/Zoom submenu.
+"""
 from __future__ import division
 from __future__ import unicode_literals
 import os
@@ -25,14 +26,14 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from aqt import mw
+import anki
+import aqt
+
 from aqt.qt import *
-from aqt.utils import showText, showWarning, showCritical
-from anki.hooks import addHook, wrap, runHook
-import aqt.browser
+# import aqt.browser
 
 # Get language class
-import anki.lang
+# import anki.lang
 lang = anki.lang.getLang()
 
 MSG = {
@@ -47,6 +48,7 @@ MSG = {
         'zoom_out': _('Zoom &Out'),
         'zoom_reset': _('&Reset Initial'),
         'zoom_init': _('Reset'),
+        'aa': _('About addon  '),
         },
     'ru': {
         'later': 'позже',
@@ -61,6 +63,7 @@ MSG = {
         'zoom_out': 'Масштаб у&меньшить',
         'zoom_reset': 'Масштаб на&чальный',
         'zoom_init': 'Масштаб',
+        'aa': 'О дополнении  ',
         },
     }
 
@@ -80,25 +83,13 @@ except KeyError:
 # 'Масштаб у&меньшить' if lang == 'ru' else _('Zoom &Out')
 # 'Масштаб на&чальный ( =' if lang == 'ru' else _('&Reset Initial ')
 
-HOTKEY = {      # in mw Main Window (deckBrowser, Overview, Reviewer)
+HOTKEY = {  # in aqt.mw Main Window (deckBrowser, Overview, Reviewer)
     'zoom_info':    'Alt+0',
     'zoom_in':      'Ctrl++',
     'zoom_out':     'Ctrl+-',
     'zoom_reset':   'Ctrl+0',
     'zoom_init':    'Ctrl+Alt+0',
 }
-
-if __name__ == '__main__':
-    print("This is _Zooming add-on for the Anki program" +
-          " and it can't be run directly.")
-    print('Please download Anki 2.0 from http://ankisrs.net/')
-    sys.exit()
-else:
-    pass
-
-if sys.version[0] == '2':  # Python 3 is utf8 only already.
-    if hasattr(sys, 'setdefaultencoding'):
-        sys.setdefaultencoding('utf8')
 
 ZOOM_IMAGES = True  # False #
 
@@ -120,24 +111,39 @@ FONTSIZE = 0  # Use default font size
 FONT = 'Calibri'  # Use custom typeface
 FONTSIZE = 16  # 12 #18 #20 #24
 
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
+
+if __name__ == '__main__':
+    print("This is _Zooming add-on for the Anki program" +
+          " and it can't be run directly.")
+    print('Please download Anki 2.0 from http://ankisrs.net/')
+    sys.exit()
+else:
+    pass
+
+if sys.version[0] == '2':  # Python 3 is utf8 only already.
+    if hasattr(sys, 'setdefaultencoding'):
+        sys.setdefaultencoding('utf8')
+
+try:
+    MUSTHAVE_COLOR_ICONS = os.path.join(aqt.mw.pm.addonFolder(), 'handbook')
+except:
+    MUSTHAVE_COLOR_ICONS = ''
+
 
 def changeFont():
     f = QFontInfo(QFont(FONT))
     ws = QWebSettings.globalSettings()
-    mw.fontHeight = FONTSIZE if FONTSIZE else f.pixelSize()
-    mw.fontFamily = f.family()
-    mw.fontHeightDelta = max(0, mw.fontHeight - 13)
-    ws.setFontFamily(QWebSettings.StandardFont, mw.fontFamily)
-    ws.setFontSize(QWebSettings.DefaultFontSize, mw.fontHeight)
-    mw.reset()
+    aqt.mw.fontHeight = FONTSIZE if FONTSIZE else f.pixelSize()
+    aqt.mw.fontFamily = f.family()
+    aqt.mw.fontHeightDelta = max(0, aqt.mw.fontHeight - 13)
+    ws.setFontFamily(QWebSettings.StandardFont, aqt.mw.fontFamily)
+    ws.setFontSize(QWebSettings.DefaultFontSize, aqt.mw.fontHeight)
+    aqt.mw.reset()
 
 if FONT or FONTSIZE:
     changeFont()
-
-try:
-    MUSTHAVE_COLOR_ICONS = os.path.join(mw.pm.addonFolder(), 'handbook')
-except:
-    MUSTHAVE_COLOR_ICONS = ''
 
 ##################################################################
 # inspired by ZOOM
@@ -177,61 +183,61 @@ zoom_step = .1  # 1.1
 
 
 def zoom_in(step=None):
-    # Increase the text size.
+    """Increase the text size."""
     global deck_browser_current_zoom, overview_current_zoom,\
         reviewer_current_zoom
     if not step:
         step = zoom_step
 
-    if 'deckBrowser' == mw.state:
+    if 'deckBrowser' == aqt.mw.state:
         # deck_browser_current_zoom = \
         #    round(deck_browser_current_zoom * zoom_step, 1)
         deck_browser_current_zoom = round(
             deck_browser_current_zoom + zoom_step, 1)
         current_zoom = deck_browser_current_zoom
-    if 'overview' == mw.state or 'requestRequired' == mw.state:
+    if 'overview' == aqt.mw.state or 'requestRequired' == aqt.mw.state:
         overview_current_zoom = round(overview_current_zoom + zoom_step, 1)
         current_zoom = overview_current_zoom
-    if 'review' == mw.state:
+    if 'review' == aqt.mw.state:
         reviewer_current_zoom = round(reviewer_current_zoom + zoom_step, 1)
         current_zoom = reviewer_current_zoom
 
     if ZOOM_IMAGES:
-        mw.web.setZoomFactor(current_zoom)
+        aqt.mw.web.setZoomFactor(current_zoom)
     else:
-        mw.web.setTextSizeMultiplier(current_zoom)
+        aqt.mw.web.setTextSizeMultiplier(current_zoom)
 
 
 def zoom_out(step=None):
-    # Decrease the text size.
+    '''Decrease the text size.'''
     global deck_browser_current_zoom, overview_current_zoom,\
         reviewer_current_zoom
     if not step:
         step = zoom_step
 
-    if 'deckBrowser' == mw.state:
+    if 'deckBrowser' == aqt.mw.state:
         # deck_browser_current_zoom = \
         #    round(deck_browser_current_zoom / zoom_step, 1)
         deck_browser_current_zoom = max(.1, round(
             deck_browser_current_zoom - zoom_step, 1))
         current_zoom = deck_browser_current_zoom
-    if 'overview' == mw.state or 'requestRequired' == mw.state:
+    if 'overview' == aqt.mw.state or 'requestRequired' == aqt.mw.state:
         overview_current_zoom = max(.1, round(
             overview_current_zoom - zoom_step, 1))
         current_zoom = overview_current_zoom
-    if 'review' == mw.state:
+    if 'review' == aqt.mw.state:
         reviewer_current_zoom = max(.1, round(
             reviewer_current_zoom - zoom_step, 1))
         current_zoom = reviewer_current_zoom
 
     if ZOOM_IMAGES:
-        mw.web.setZoomFactor(current_zoom)
+        aqt.mw.web.setZoomFactor(current_zoom)
     else:
-        mw.web.setTextSizeMultiplier(current_zoom)
+        aqt.mw.web.setTextSizeMultiplier(current_zoom)
 
 
 def zoom_init(state=None, *args):
-    # Reset the text size.
+    """Init the text size."""
     global deck_browser_current_zoom, overview_current_zoom,\
         reviewer_current_zoom
     current_zoom = 1.0
@@ -241,52 +247,51 @@ def zoom_init(state=None, *args):
     reviewer_current_zoom = 1.0
 
     if ZOOM_IMAGES:
-        mw.web.setZoomFactor(current_zoom)
+        aqt.mw.web.setZoomFactor(current_zoom)
     else:
-        mw.web.setTextSizeMultiplier(current_zoom)
+        aqt.mw.web.setTextSizeMultiplier(current_zoom)
 
 
 def zoom_reset(state=None, *args):
-    # Reset the text size.
+    '''Reset the text size.'''
     global deck_browser_current_zoom, overview_current_zoom,\
         reviewer_current_zoom
     current_zoom = 1.0
 
-    if 'deckBrowser' == mw.state:
+    if 'deckBrowser' == aqt.mw.state:
         current_zoom = deck_browser_standard_zoom
-    if 'overview' == mw.state or 'requestRequired' == mw.state:
+    if 'overview' == aqt.mw.state or 'requestRequired' == aqt.mw.state:
         current_zoom = overview_standard_zoom
-    if 'review' == mw.state:
+    if 'review' == aqt.mw.state:
         current_zoom = reviewer_standard_zoom
     reset_current_zoom()
 
     if ZOOM_IMAGES:
-        mw.web.setZoomFactor(current_zoom)
+        aqt.mw.web.setZoomFactor(current_zoom)
     else:
-        mw.web.setTextSizeMultiplier(current_zoom)
+        aqt.mw.web.setTextSizeMultiplier(current_zoom)
 
 
 def current_reset_zoom(state=None, *args):
-    # Reset the text size.
     global deck_browser_current_zoom, overview_current_zoom,\
         reviewer_current_zoom
     current_zoom = 1
 
-    if 'deckBrowser' == mw.state:
+    if 'deckBrowser' == aqt.mw.state:
         current_zoom = deck_browser_current_zoom
-    if 'overview' == mw.state or 'requestRequired' == mw.state:
+    if 'overview' == aqt.mw.state or 'requestRequired' == aqt.mw.state:
         current_zoom = overview_current_zoom
-    if 'review' == mw.state:
+    if 'review' == aqt.mw.state:
         current_zoom = reviewer_current_zoom
 
     if ZOOM_IMAGES:
-        mw.web.setZoomFactor(current_zoom)
+        aqt.mw.web.setZoomFactor(current_zoom)
     else:
-        mw.web.setTextSizeMultiplier(current_zoom)
+        aqt.mw.web.setTextSizeMultiplier(current_zoom)
 
 
 def zoom_info():
-    showText(
+    aqt.utils.showText(
         '<table><tbody>\n' +
         '<tr><td align=right><big>deck_browser_standard_zoom = </big>' +
         '</td><td><big><b>' + str(deck_browser_current_zoom) +
@@ -300,9 +305,9 @@ def zoom_info():
         '<tr><td align=right><br>ZOOM_IMAGES = </td><td><br><b>' +
         unicode(ZOOM_IMAGES) + '</b></td></tr>\n' +
         '<tr><td align=right>textSizeMultiplier = </td><td><b>' +
-        str(mw.web.textSizeMultiplier()) + '</b></td></tr>' +
+        str(aqt.mw.web.textSizeMultiplier()) + '</b></td></tr>' +
         '<tr><td align=right>zoomFactor = </td><td><b>' +
-        str(mw.web.zoomFactor()) + '</b></td></tr>' +
+        str(aqt.mw.web.zoomFactor()) + '</b></td></tr>' +
         '</tbody></table>', type='HTML')
 
 
@@ -310,15 +315,15 @@ def zoom_images(act):
     global ZOOM_IMAGES
     ZOOM_IMAGES = act.isChecked()
     if ZOOM_IMAGES:
-        showWarning(MSG[lang]['restartAnki'])
+        aqt.utils.showWarning(MSG[lang]['restartAnki'])
     current_reset_zoom()
 
 try:
-    mw.addon_view_menu
+    aqt.mw.addon_view_menu
 except AttributeError:
-    mw.addon_view_menu = QMenu(MSG[lang]['View'], mw.menuBar())
-    mw.form.menubar.insertMenu(
-        mw.form.menuTools.menuAction(), mw.addon_view_menu)
+    aqt.mw.addon_view_menu = QMenu(MSG[lang]['View'], aqt.mw.menuBar())
+    aqt.mw.form.menubar.insertMenu(
+        aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_view_menu)
 
 zoom_images_action = None  # global
 
@@ -326,65 +331,84 @@ zoom_images_action = None  # global
 def zoom_setup_menu():
     global zoom_images_action
 
-    mw.zoom_submenu = QMenu(MSG[lang]['Zoom'], mw.menuBar())
-    mw.zoom_submenu.setIcon(
+    aqt.mw.zoom_submenu = QMenu(MSG[lang]['Zoom'], aqt.mw.menuBar())
+    aqt.mw.zoom_submenu.setIcon(
         QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'zoom.png')))
 
-    zoom_info_action = QAction(MSG[lang]['zoom_info'], mw)
+    zoom_info_action = QAction(MSG[lang]['zoom_info'], aqt.mw)
     # Ctrl+Shift+0 doesn't work on NumPad
     zoom_info_action.setShortcut(QKeySequence(HOTKEY['zoom_info']))
-    mw.connect(zoom_info_action, SIGNAL('triggered()'), zoom_info)
+    aqt.mw.connect(zoom_info_action, SIGNAL('triggered()'), zoom_info)
 
-    zoom_images_action = QAction(MSG[lang]['zoom_images'], mw)
+    zoom_images_action = QAction(MSG[lang]['zoom_images'], aqt.mw)
     # zoom_images_action.setShortcut(QKeySequence(HOTKEY['zoom_images']))
     zoom_images_action.setCheckable(True)
     zoom_images_action.setChecked(ZOOM_IMAGES)
-    mw.connect(zoom_images_action, SIGNAL('triggered()'),
+    aqt.mw.connect(zoom_images_action, SIGNAL('triggered()'),
                lambda AKT=zoom_images_action: zoom_images(AKT))
 
-    zoom_in_action = QAction(MSG[lang]['zoom_in'], mw)
+    zoom_in_action = QAction(MSG[lang]['zoom_in'], aqt.mw)
     zoom_in_action.setShortcut(QKeySequence(HOTKEY['zoom_in']))
     zoom_in_action.setIcon(
         QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'zoom_in.png')))
-    mw.connect(zoom_in_action, SIGNAL('triggered()'), zoom_in)
+    aqt.mw.connect(zoom_in_action, SIGNAL('triggered()'), zoom_in)
 
-    zoom_out_action = QAction(MSG[lang]['zoom_out'], mw)
+    zoom_out_action = QAction(MSG[lang]['zoom_out'], aqt.mw)
     zoom_out_action.setShortcut(QKeySequence(HOTKEY['zoom_out']))
     zoom_out_action.setIcon(
         QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'zoom_out.png')))
-    mw.connect(zoom_out_action, SIGNAL('triggered()'), zoom_out)
+    aqt.mw.connect(zoom_out_action, SIGNAL('triggered()'), zoom_out)
 
     reset_zoom_action = QAction(
         MSG[lang]['zoom_reset'] +
         ' ( =' + str(deck_browser_standard_zoom) + ' =' +
         str(overview_standard_zoom) + ' =' +
-        str(reviewer_standard_zoom) + ' )', mw)
+        str(reviewer_standard_zoom) + ' )', aqt.mw)
     # Shift+0 does not work on NumPad
     reset_zoom_action.setShortcut(QKeySequence(HOTKEY['zoom_reset']))
-    mw.connect(reset_zoom_action, SIGNAL('triggered()'), zoom_reset)
+    aqt.mw.connect(reset_zoom_action, SIGNAL('triggered()'), zoom_reset)
 
     reset_zoom_init_action = QAction(
         MSG[lang]['zoom_init'] +
-        ' &1:1 100% ( =1.0 =1.0 =1.0 )', mw)
+        ' &1:1 100% ( =1.0 =1.0 =1.0 )', aqt.mw)
     reset_zoom_init_action.setShortcut(QKeySequence(HOTKEY['zoom_init']))
-    mw.connect(reset_zoom_init_action, SIGNAL('triggered()'), zoom_init)
+    aqt.mw.connect(reset_zoom_init_action, SIGNAL('triggered()'), zoom_init)
 
-    if hasattr(mw, 'addon_view_menu'):
-        mw.addon_view_menu.addMenu(mw.zoom_submenu)
-        mw.zoom_submenu.addAction(zoom_info_action)
-        mw.zoom_submenu.addAction(zoom_images_action)
-        mw.zoom_submenu.addSeparator()
-        mw.zoom_submenu.addAction(zoom_in_action)
-        mw.zoom_submenu.addAction(zoom_out_action)
-        mw.zoom_submenu.addSeparator()
+    if hasattr(aqt.mw, 'addon_view_menu'):
+        aqt.mw.addon_view_menu.addMenu(aqt.mw.zoom_submenu)
+        aqt.mw.zoom_submenu.addAction(zoom_info_action)
+        aqt.mw.zoom_submenu.addAction(zoom_images_action)
+        aqt.mw.zoom_submenu.addSeparator()
+        aqt.mw.zoom_submenu.addAction(zoom_in_action)
+        aqt.mw.zoom_submenu.addAction(zoom_out_action)
+        aqt.mw.zoom_submenu.addSeparator()
         if deck_browser_standard_zoom != 1.0 or \
            overview_standard_zoom != 1.0 or \
            reviewer_standard_zoom != 1.0:
-            mw.zoom_submenu.addAction(reset_zoom_action)
-        mw.zoom_submenu.addAction(reset_zoom_init_action)
+            aqt.mw.zoom_submenu.addAction(reset_zoom_action)
+        aqt.mw.zoom_submenu.addAction(reset_zoom_init_action)
 
-################################
-#
+    def about_addon():
+        """
+        Show "About addon" message popup window.
+        """
+        aa_about_box = QMessageBox()
+        aa_about_box.setText(
+            __addon__ + "   " + __version__ + "\n" + __doc__)
+        aa_width, aa_height = (1024, 768)
+        # aa_width, aa_height = (1920, 1080)
+        aa_left = (aa_width-480)/2
+        aa_right = (aa_height-640)/2
+        aa_about_box.setGeometry(aa_left, aa_right, 480, 640)
+        aa_about_box.setWindowTitle(MSG[lang]['aa'] + __addon__)
+        aa_about_box.exec_()
+
+    about_addon_action = QAction(MSG[lang]['aa'] + __addon__, aqt.mw)
+    aqt.mw.connect(about_addon_action, SIGNAL('triggered()'), about_addon)
+    aqt.mw.zoom_submenu.addSeparator()
+    aqt.mw.zoom_submenu.addAction(about_addon_action)
+
+##
 
 
 def handle_wheel_event(event):
@@ -407,12 +431,12 @@ def handle_wheel_event(event):
 
 def run_move_to_state_hook(state, *args):
     '''Run a hook whenever we have changed the state.'''
-    runHook('movedToState', state)
+    anki.hooks.runHook('movedToState', state)
 
-mw.moveToState = wrap(mw.moveToState, run_move_to_state_hook)
-addHook('movedToState', current_reset_zoom)
-original_mw_web_wheelEvent = mw.web.wheelEvent
-mw.web.wheelEvent = handle_wheel_event
+aqt.mw.moveToState = anki.hooks.wrap(aqt.mw.moveToState, run_move_to_state_hook)
+anki.hooks.addHook('movedToState', current_reset_zoom)
+original_mw_web_wheelEvent = aqt.mw.web.wheelEvent
+aqt.mw.web.wheelEvent = handle_wheel_event
 
 zoom_setup_menu()
 
@@ -420,10 +444,10 @@ zoom_setup_menu()
 
 
 def save_toolbarz_visible():
-    mw.pm.profile['ctb_deck_browser_zoom'] = deck_browser_current_zoom
-    mw.pm.profile['ctb_overview_zoom'] = overview_current_zoom
-    mw.pm.profile['ctb_reviewer_zoom'] = reviewer_current_zoom
-    mw.pm.profile['ctb_images_zoom'] = ZOOM_IMAGES
+    aqt.mw.pm.profile['ctb_deck_browser_zoom'] = deck_browser_current_zoom
+    aqt.mw.pm.profile['ctb_overview_zoom'] = overview_current_zoom
+    aqt.mw.pm.profile['ctb_reviewer_zoom'] = reviewer_current_zoom
+    aqt.mw.pm.profile['ctb_images_zoom'] = ZOOM_IMAGES
 
 
 def load_toolbarz_visible():
@@ -431,28 +455,28 @@ def load_toolbarz_visible():
         reviewer_current_zoom, zoom_images_action, ZOOM_IMAGES
 
     try:
-        key_value = mw.pm.profile['ctb_deck_browser_zoom']
+        key_value = aqt.mw.pm.profile['ctb_deck_browser_zoom']
         deck_browser_current_zoom = key_value
     except KeyError:
         pass
     #    deck_browser_current_zoom = deck_browser_standard_zoom
 
     try:
-        key_value = mw.pm.profile['ctb_overview_zoom']
+        key_value = aqt.mw.pm.profile['ctb_overview_zoom']
         overview_current_zoom = key_value
     except KeyError:
         pass
     #   overview_current_zoom = overview_standard_zoom
 
     try:
-        key_value = mw.pm.profile['ctb_reviewer_zoom']
+        key_value = aqt.mw.pm.profile['ctb_reviewer_zoom']
         reviewer_current_zoom = key_value
     except KeyError:
         pass
     #   reviewer_current_zoom = reviewer_standard_zoom
 
     try:
-        key_value = mw.pm.profile['ctb_images_zoom']
+        key_value = aqt.mw.pm.profile['ctb_images_zoom']
         ZOOM_IMAGES = key_value
     except KeyError:
         pass
@@ -460,8 +484,8 @@ def load_toolbarz_visible():
     zoom_images_action.setChecked(ZOOM_IMAGES)
     current_reset_zoom()
 
-addHook('unloadProfile', save_toolbarz_visible)
-addHook('profileLoaded', load_toolbarz_visible)
+anki.hooks.addHook('unloadProfile', save_toolbarz_visible)
+anki.hooks.addHook('profileLoaded', load_toolbarz_visible)
 
 ##
 
@@ -476,21 +500,9 @@ def openPreview(self):
     else:
         self._previewWeb.setTextSizeMultiplier(current_zoom)
 
-aqt.browser.Browser._openPreview = wrap(
+aqt.browser.Browser._openPreview = anki.hooks.wrap(
     aqt.browser.Browser._openPreview, openPreview)
 
-
-def browserInit(self, mw):
-    # self.form.setupUi
-    current_zoom = deck_browser_current_zoom
-
-    if ZOOM_IMAGES:
-        self.form.tree.setZoomFactor(current_zoom)
-    else:
-        self.form.tree.setTextSizeMultiplier(current_zoom)
-
-# aqt.browser.Browser.__init__ = wrap(
-#   aqt.browser.Browser.__init__, browserInit )
 
 ##
 
@@ -501,14 +513,14 @@ old_addons = (
 old_addons2delete = ''
 for old_addon in old_addons:
     if len(old_addon) > 0:
-        old_filename = os.path.join(mw.pm.addonFolder(), old_addon)
+        old_filename = os.path.join(aqt.mw.pm.addonFolder(), old_addon)
         if os.path.exists(old_filename):
             old_addons2delete += old_addon[:-3] + ' \n'
 
 if old_addons2delete != '':
     if lang == 'ru':
-        showText(
-            'В каталоге\n\n ' + mw.pm.addonFolder() +
+        aqt.utils.showText(
+            'В каталоге\n\n ' + aqt.mw.pm.addonFolder() +
             '\n\nнайдены дополнения, которые уже включены в дополнение\n ' +
             os.path.basename(__file__) + '\n' +
             'и поэтому будут конфликтовать с ним.\n\n' +
@@ -517,9 +529,9 @@ if old_addons2delete != '':
             '\n или удалите эти дополнения ' +
             '\n   и перезапустите Anki.')
     else:
-        showText(
+        aqt.utils.showText(
             'There are some add-ons in the folder \n\n ' +
-            mw.pm.addonFolder() + '\n\n' +
+            aqt.mw.pm.addonFolder() + '\n\n' +
             old_addons2delete +
             '\n\nThey are already part of this addon,\n ' +
             os.path.basename(__file__) +

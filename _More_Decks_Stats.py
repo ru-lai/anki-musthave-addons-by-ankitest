@@ -1,14 +1,15 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# ' More decks overview stats
-#
+# • More decks overview stats
 # -- tested with Anki 2.0.44 under Windows 7 SP1
 # https://ankiweb.net/shared/info/1841403427
+# https://github.com/ankitest/anki-musthave-addons-by-ankitest
+# -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
 # Copyright (c) 2017 Dmitry Mikheev, http://finpapa.ucoz.ru/index.html
-#
-# Do not forget about _('To Review')
-#
 # No support. Use it AS IS on your own risk.
+"""
+ Do not forget about _('To Review')
+"""
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -45,8 +46,8 @@ PARM = {
     'MORE_OVERVIEW_STATS': 3,
     'HIDE_BIG_NUMBER': 999,
     'HIDE_BIG_NUMBERS': False,
-    'queueLimit': 50, # important
-    'reportLimit': 9999, # not less than in deck options
+    'queueLimit': 50,  # important
+    'reportLimit': 9999,  # not less than in deck options
     '': ''
     }
 
@@ -54,7 +55,7 @@ PARM = {
 
 _Buried = _('Suspended+Buried').split('+')
 _Buried = _Buried[1] if len(_Buried) == 2 else _('Buried')
-_Buried = _Bureid.capitalize()
+_Buried = _Buried.capitalize()
 
 _Suspended = _('<small>Sus-<br>pen-<br>ded&nbsp;</small>') \
     if lang == 'en' else _('Suspended')
@@ -125,6 +126,9 @@ try:
 except KeyError:
     lang = 'en'
 
+__addon__ = "'" + __name__.replace('_',' ')
+__version__ = "2.0.44a"
+
 # --------------------------
 
 if True:
@@ -175,7 +179,8 @@ if True:
             + "<div style='display:table-cell;vertical-align:middle;" \
             + "padding-left:2em;'>" \
             + "<span style='white-space:nowrap;'>" + _("Average") \
-            + ":<br> " + _("%.01f cards/minute") % (speed) + "</span><br><br>" \
+            + ":<br> " + _("%.01f cards/minute") % (speed) \
+            + "</span><br><br>" \
             + _("More") + "&nbsp;" + ngettext(
                  "%s minute.", "%s minutes.", minutes) % (minutes) \
             + "</div></div>"
@@ -184,10 +189,6 @@ if True:
 
     aqt.deckbrowser.DeckBrowser._renderStats = anki.hooks.wrap(
         aqt.deckbrowser.DeckBrowser._renderStats, renderStats, 'around')
-
-# --------------------------
-
-if True:
 
     ##
 
@@ -467,7 +468,6 @@ def deck_browser_render_deck_tree(self, nodes, depth=0):
             new += tree[4]
 
         if PARM['MORE_OVERVIEW_STATS'] > 1:
-
             buf += """\n
 <tr style="vertical-align:top;">\
 <th style="color:gray;text-align:left;">%s</th>\
@@ -477,14 +477,14 @@ def deck_browser_render_deck_tree(self, nodes, depth=0):
 <th class=count style='width:4em;'>%s</th>\
 <th class=count style='color:gray;width:4em;'>&nbsp;+&nbsp;%s</th>\
 <th class=count style='color:gray;width:4em;padding-right:1em;'
->&nbsp;=&nbsp;%s</th>\
-\n""" % (anki.lang.getLang(), _("Total"),
-            nonzeroColour(aqt.mw.col.cardCount(), "default", False),
-            nonzeroColour(new + lrn + due, "gray", False),
-            nonzeroColour(new, "#33f", False),
-            nonzeroColour(lrn, "#c33", False),
-            nonzeroColour(due, "#090", False),
-            nonzeroColour(lrn + due, "#999", False))
+>&nbsp;=&nbsp;%s</th>\n""" % (
+                anki.lang.getLang(), _("Total"),
+                nonzeroColour(aqt.mw.col.cardCount(), "default", False),
+                nonzeroColour(new + lrn + due, "gray", False),
+                nonzeroColour(new, "#33f", False),
+                nonzeroColour(lrn, "#c33", False),
+                nonzeroColour(due, "#090", False),
+                nonzeroColour(lrn + due, "#999", False))
 
         # options
         if not PARM['GEAR_AT_END_OF_LINE'] and \
@@ -662,11 +662,12 @@ def initDeckBro():
 
 initDeckBro()
 
+
 def maInit(self, col):
     self.queueLimit = PARM['queueLimit']
-    self.reportLimit = PARM['reportLimit'] # not 1000!!!
+    self.reportLimit = PARM['reportLimit']  # not 1000!!!
 
-# aqt.mw.col.sched.reportLimit = 5555 # not ready yet
+# aqt.mw.col.sched.reportLimit = 5555  # not ready yet
 
 anki.sched.Scheduler.__init__ = \
     anki.hooks.wrap(anki.sched.Scheduler.__init__, maInit)
