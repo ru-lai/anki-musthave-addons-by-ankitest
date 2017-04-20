@@ -335,11 +335,13 @@ def _renderQA(self, data, qfmt=None, afmt=None):
         """Mapping of field name -> (ord, field)."""
         d = dict((f['name'], (f['ord'], f)) for f in m['flds'])
         newFields = [
-            'info:Ord', 'info:Did', 'info:Due', 'info:Id',
-            'info:Ivl', 'info:Queue', 'info:Reviews', 'info:Lapses',
+            'info:ord', 'info:did', 'info:due',
+            'info:odid', 'info:odue', 'info:id', 'info:left',
+            'info:ivl', 'info:queue', 'info:Reviews', 'info:reps',
+            'info:lapses', 'info:flags', 'info:data',
             'info:FirstReview', 'info:LastReview', 'info:TimeAvg',
-            'info:TimeTotal', 'info:Young', 'info:Mature', 'info:CardType',
-            'info:Nid', 'info:Mod', 'info:Usn', 'info:Factor',
+            'info:TimeTotal', 'info:Young', 'info:Mature',
+            'info:type', 'info:nid', 'info:mod', 'info:usn', 'info:factor',
             'info:New', 'info:Learning', 'info:dayLearning', 'info:Review',
         ]
         for i, f in enumerate(newFields):
@@ -351,8 +353,9 @@ def _renderQA(self, data, qfmt=None, afmt=None):
     additionalFields = [str(data[4])]
     if card is not None:
         additionalFields += map(str, [
-            card.did, card.due, card.id,
-            card.ivl, card.queue, card.reps, card.lapses])
+            card.did, card.due, card.odid, card.odue, card.id, card.left,
+            card.ivl, card.queue, card.reps, card.reps, card.lapses,
+            card.flags, card.data])
         (first, last, cnt, total) = self.db.first(
             'select min(id), max(id), count(), sum(time)/1000 ' +
             'from revlog where cid = :id',
@@ -398,7 +401,7 @@ def _renderQA(self, data, qfmt=None, afmt=None):
         else:
             additionalFields += ['']
     else:
-        additionalFields += [''] * 22
+        additionalFields += [''] * 28
     data[6] += '\x1f'.join(additionalFields)
 
     result = _old_renderQA(self, data, qfmt=qfmt, afmt=afmt)
