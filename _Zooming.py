@@ -344,8 +344,9 @@ def zoom_setup_menu():
     # zoom_images_action.setShortcut(QKeySequence(HOTKEY['zoom_images']))
     zoom_images_action.setCheckable(True)
     zoom_images_action.setChecked(ZOOM_IMAGES)
-    aqt.mw.connect(zoom_images_action, SIGNAL('triggered()'),
-               lambda AKT=zoom_images_action: zoom_images(AKT))
+    aqt.mw.connect(
+        zoom_images_action, SIGNAL('triggered()'),
+        lambda AKT=zoom_images_action: zoom_images(AKT))
 
     zoom_in_action = QAction(MSG[lang]['zoom_in'], aqt.mw)
     zoom_in_action.setShortcut(QKeySequence(HOTKEY['zoom_in']))
@@ -433,7 +434,8 @@ def run_move_to_state_hook(state, *args):
     '''Run a hook whenever we have changed the state.'''
     anki.hooks.runHook('movedToState', state)
 
-aqt.mw.moveToState = anki.hooks.wrap(aqt.mw.moveToState, run_move_to_state_hook)
+aqt.mw.moveToState = anki.hooks.wrap(
+    aqt.mw.moveToState, run_move_to_state_hook)
 anki.hooks.addHook('movedToState', current_reset_zoom)
 original_mw_web_wheelEvent = aqt.mw.web.wheelEvent
 aqt.mw.web.wheelEvent = handle_wheel_event

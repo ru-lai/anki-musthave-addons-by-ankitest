@@ -18,7 +18,6 @@ Info | Code
 [' Duplicate notes and Swap fields](https://ankiweb.net/shared/info/1040866511) | 1040866511 
 [' Edit Audio Images](https://ankiweb.net/shared/info/1075177705) | 1075177705 
 [' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441 
-[' Flip-flop](https://ankiweb.net/shared/info/519426347) | 519426347 
 [' More Decks Stats](https://ankiweb.net/shared/info/1841403427) | 1841403427 
 [' Prompt and set days interval and card ease](https://ankiweb.net/shared/info/2031109761) | 2031109761 
 [' Timebox tooltip](https://ankiweb.net/shared/info/2014169675) | 2014169675 

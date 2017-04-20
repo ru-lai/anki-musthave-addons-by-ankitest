@@ -741,7 +741,8 @@ def myDefaultEase(self, _old):
                             # It happens very often
                             # after unexpected pushing Enter key.
                             self.typeCorrect[i] = JustDoIt(
-                                anki.utils.stripHTML(unicode(self.typeCorrect[i])))
+                                anki.utils.stripHTML(
+                                    unicode(self.typeCorrect[i])))
                         cor = self.typeCorrect
                         # with Multiple_type_fields_on_card.py it becomes
                         # a list of strings
