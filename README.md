@@ -13,7 +13,6 @@ Info | Code
 ------------- | -------------:
 [' Addons Install Tooltip](https://ankiweb.net/shared/info/1738282325) | 1738282325 
 [' Again Good HUGE extra buttons](https://ankiweb.net/shared/info/2074653746) | 2074653746 
-[' Alternative hotkeys to cloze selected text in Add or Editor window](https://ankiweb.net/shared/info/2074653746) | 2074653746 
 [' Clear Field Formatting HTML](https://ankiweb.net/shared/info/1114708966) | 1114708966
 [' Edit Audio Images](https://ankiweb.net/shared/info/1075177705) | 1075177705 
 [' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441 
