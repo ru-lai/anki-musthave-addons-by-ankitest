@@ -12,6 +12,7 @@ All these add-ons also shared on AnkiWeb.net:
 Info | Code
 ------------- | -------------:
 [' Addons Install Tooltip](https://ankiweb.net/shared/info/1738282325) | 1738282325 
+[' Again Good HUGE extra buttons](https://ankiweb.net/shared/info/2074653746) | 2074653746 
 [' Alternative hotkeys to cloze selected text in Add or Editor window](https://ankiweb.net/shared/info/2074653746) | 2074653746 
 [' Clear Field Formatting HTML](https://ankiweb.net/shared/info/1114708966) | 1114708966
 [' Duplicate notes and Swap fields](https://ankiweb.net/shared/info/1040866511) | 1040866511 
@@ -19,7 +20,6 @@ Info | Code
 [' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441 
 [' Flip-flop](https://ankiweb.net/shared/info/519426347) | 519426347 
 [' Insensitive case type field](https://ankiweb.net/shared/info/1616934891) | 1616934891 
-[' More Answer Buttons for ALL Cards](https://ankiweb.net/shared/info/755044381) | 755044381 
 [' More Decks Stats](https://ankiweb.net/shared/info/1841403427) | 1841403427 
 [' Prompt and set days interval and card ease](https://ankiweb.net/shared/info/2031109761) | 2031109761 
 [' Timebox tooltip](https://ankiweb.net/shared/info/2014169675) | 2014169675 
