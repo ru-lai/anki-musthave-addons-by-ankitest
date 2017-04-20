@@ -367,13 +367,6 @@ try:
 except:
     MUSTHAVE_COLOR_ICONS = ''
 
-if MUSTHAVE_COLOR_ICONS == '':
-    try:
-        MUSTHAVE_COLOR_ICONS = os.path.join(
-            aqt.mw.pm.addonFolder(), 'musthave_icons')
-    except:
-        MUSTHAVE_COLOR_ICONS = ''
-
 ZERO_KEY_TO_SHOW_ANSWER = True
 # ZERO_KEY_TO_SHOW_ANSWER = False
 
