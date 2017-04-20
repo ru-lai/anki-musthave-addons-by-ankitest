@@ -19,7 +19,6 @@ Info | Code
 [' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441 
 [' More Decks Stats](https://ankiweb.net/shared/info/1841403427) | 1841403427 
 [' Prompt and set days interval and card ease](https://ankiweb.net/shared/info/2031109761) | 2031109761 
-[' Timebox tooltip](https://ankiweb.net/shared/info/2014169675) | 2014169675 
 [' View HTML source with JavaScript and CSS styles](https://ankiweb.net/shared/info/1128123950) | 1128123950 
 [' Zooming](https://ankiweb.net/shared/info/1071179937) | 1071179937 
 

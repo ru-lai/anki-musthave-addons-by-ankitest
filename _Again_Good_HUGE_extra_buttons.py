@@ -54,12 +54,17 @@
   https://ankiweb.net/shared/info/2126361512
  and Create Copy of Selected Cards
   https://ankiweb.net/shared/info/787914845
+
+ It puts the stats when you finish a timebox in a tooltip message
+  that goes away after a few seconds.
+ Based on Decks Total https://ankiweb.net/shared/info/1421528223
 """
-from __future__ import division
 from __future__ import unicode_literals
+from __future__ import division
 import datetime
 import random
 import json
+import time
 import sys
 import os
 import re
@@ -265,6 +270,8 @@ HOTKEY = {
 
     'swap': 'F12',
     'dupe': 'Shift+F12',
+
+    'timebox': "Ctrl+Shift+T",
     }
 
 # It is a part of '• Must Have' addon's functionality:
@@ -438,7 +445,8 @@ __addon__ = "'" + __name__.replace('_', ' ')
 __version__ = "2.0.44a"
 
 if __name__ == '__main__':
-    print("This is _Again_Good_HUGE_extra_buttons add-on for the Anki program" +
+    print("This is _Again_Good_HUGE_extra_buttons" +
+          " add-on for the Anki program" +
           "and it can't be run directly.")
     print('Please download Anki 2.0 from https://apps.ankiweb.net/')
     sys.exit()
@@ -1702,7 +1710,8 @@ fld2nd = _('Back')  # Ответ
 def JustDoIt(note, ecf, tip=True):
     global fld1st, fld2nd
     """
-    if not (aqt.mw.reviewer.state == 'question' or aqt.mw.reviewer.state == 'answer'):
+    if not (aqt.mw.reviewer.state == 'question'
+        or aqt.mw.reviewer.state == 'answer'):
      showCritical('''Обмен в списке колод или в окне колоды невозможен,
       <br>только при просмотре (заучивании) карточек.''' \
         if lang=='ru' else '''Swap fields is available only for cards,<br>
@@ -2007,7 +2016,8 @@ def createDuplicate(self):
             # from user.
         deckName = ''
 
-    (deckName, retv) = aqt.utils.getText(MSG[lang]['target_deck'], default=deckName)
+    (deckName, retv) = aqt.utils.getText(
+        MSG[lang]['target_deck'], default=deckName)
     deckName = deckName.replace('"', '').replace("'", '')
     if not retv:
         tooltip('Canceled by user', period=1000)
@@ -2022,10 +2032,11 @@ def createDuplicate(self):
     deck = self.mw.col.decks.get(self.mw.col.decks.id(deckName))
 
     # <big> does not work here
-    doSwap = aqt.utils.askUser(_('<center><code>  &nbsp; After duplicating notes ' +
-                       'of selected cards &nbsp;  \n<br>  &nbsp; ' +
-                       'into <i>%s</i> &nbsp;  \n<br> <b>Swap fields</b> ' +
-                       'in duplicated notes? </code></center>') % (deckName))
+    doSwap = aqt.utils.askUser(_(
+           '<center><code>  &nbsp; After duplicating notes ' +
+           'of selected cards &nbsp;  \n<br>  &nbsp; ' +
+           'into <i>%s</i> &nbsp;  \n<br> <b>Swap fields</b> ' +
+           'in duplicated notes? </code></center>') % (deckName))
 
     # Set checkpoint
     self.mw.progress.start()
@@ -2094,5 +2105,103 @@ def setupMenu(self):
     menu.addSeparator()
 
 anki.hooks.addHook('browser.setupMenus', setupMenu)
+
+##
+
+
+def renderOstrich(self):
+
+    # Get due and new cards
+    new = 0
+    lrn = 0
+    due = 0
+
+    for tree in self.mw.col.sched.deckDueTree():
+        new += tree[4]
+        lrn += tree[3]
+        due += tree[2]
+    total = new + lrn + due
+
+    # Get studdied cards
+    cards, thetime = self.mw.col.db.first(
+            """select count(), sum(time)/1000 from revlog where id > ?""",
+            (self.mw.col.sched.dayCutoff - 86400) * 1000)
+
+    cards = cards or 0
+    thetime = thetime or 0
+
+    speed = cards * 60 / max(1, thetime)
+    minutes = int(total / max(1, speed))
+
+    msgp1 = ngettext("%d card", "%d cards", cards) % cards
+
+    buf = "" + _("Average") \
+        + ": " + _("%.01f cards/minute") % (speed) + " &nbsp; " \
+        + _("More") + "&nbsp;" + ngettext(
+             "%s minute.", "%s minutes.", minutes) % (
+                "<b>"+str(minutes)+"</b>")
+
+    return buf
+
+
+def timeboxReached(self):
+    "Return (elapsedTime, reps)"
+    if not self.conf['timeLim']:
+        # timeboxing disabled
+        return False
+    elapsed = time.time() - self._startTime
+    return (self.conf['timeLim'], self.sched.reps - self._startReps)
+
+
+def maProc(self, elapsed):
+        part1 = ngettext('%d card studied in',
+                         '%d cards studied in', elapsed[1]) % elapsed[1]
+        mins = int(round(elapsed[0] / 60))
+        part2 = ngettext('%s minute.', '%s minutes.', mins) % mins
+        aqt.utils.tooltip(
+            '<big><b style=font-size:larger;color:blue;font-weight:bold;>' +
+            '%s <span style=color:red>%s</span></b> <br><br> %s</big>' % (
+                part1, part2, renderOstrich(self)), period=8000)
+
+
+def myInfoCards(self):
+    elapsed = timeboxReached(self.mw.col)
+    if elapsed:
+        maProc(self, elapsed)
+
+
+def maNextCard(self):
+    elapsed = self.mw.col.timeboxReached()
+    if elapsed:
+        maProc(self, elapsed)
+        self.mw.col.startTimebox()
+
+aqt.reviewer.Reviewer.nextCard = anki.hooks.wrap(
+    aqt.reviewer.Reviewer.nextCard, maNextCard, 'before')
+
+if True:
+    info_action = QAction(aqt.mw)
+    info_action.setText("&" + _("Timebox time limit"))
+    info_action.setShortcut(HOTKEY['timebox'])
+    info_action.setEnabled(False)
+
+    aqt.mw.connect(
+        info_action, SIGNAL("triggered()"),
+        lambda: myInfoCards(aqt.mw.reviewer))
+
+    aqt.mw.addon_view_menu.addAction(info_action)
+
+    def info_off():
+        info_action.setEnabled(False)
+
+    def info_on():
+        info_action.setEnabled(True)
+
+    aqt.mw.deckBrowser.show = anki.hooks.wrap(
+        aqt.mw.deckBrowser.show, info_off)
+    aqt.mw.overview.show = anki.hooks.wrap(
+        aqt.mw.overview.show, info_off)
+    aqt.mw.reviewer.show = anki.hooks.wrap(
+        aqt.mw.reviewer.show, info_on)
 
 ##
