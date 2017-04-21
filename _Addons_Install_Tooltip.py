@@ -354,7 +354,7 @@ def _renderQA(self, data, qfmt=None, afmt=None):
         d = dict((f['name'], (f['ord'], f)) for f in m['flds'])
         newFields = [
             'info:ord', 'info:did', 'info:due',
-            'info:odid', 'info:odue', 'info:id', 'info:left',
+            'info:odid', 'info:odue', 'info:cid', 'info:left',
             'info:ivl', 'info:queue', 'info:Reviews', 'info:reps',
             'info:lapses', 'info:flags', 'info:data',
             'info:FirstReview', 'info:LastReview', 'info:TimeAvg',
@@ -376,8 +376,8 @@ def _renderQA(self, data, qfmt=None, afmt=None):
             card.flags, card.data])
         (first, last, cnt, total) = self.db.first(
             'select min(id), max(id), count(), sum(time)/1000 ' +
-            'from revlog where cid = :id',
-            id=card.id)
+            'from revlog where cid = :cid',
+            cid=card.id)
         if cnt:
             additionalFields.append(time.strftime(
                 '%Y-%m-%d', time.localtime(first / 1000)))
