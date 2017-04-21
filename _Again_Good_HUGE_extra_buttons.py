@@ -154,6 +154,11 @@ MSG = {
         'swapping': _('Swap fields'),
         'duplicate': _('Duplicate notes and Swap fields'),
         'target_deck': _('Enter the name of target deck:'),
+
+        'till next': _('Number of days until next review'),
+        'current': _('actual interval'),
+        'card ease': _('Card ease'),
+        'days interval': _('&Prompt and Set ... days interval'),
         },
     'ru': {
         'later': 'позже',
@@ -205,6 +210,11 @@ MSG = {
         'swapping': 'Обмен полей',
         'duplicate': 'Дублировать записи и обменять поля',
         'target_deck': 'Введите имя целевой папки для дублируемых карточек:',
+
+        'till next': 'Дней до следующего просмотра карточки',
+        'current': 'фактический интервал',
+        'card ease': 'Лёгкость карточки',
+        'days interval': '&Через ... дней',
         }
     }
 
@@ -272,6 +282,8 @@ HOTKEY = {
     'dupe': 'Shift+F12',
 
     'timebox': "Ctrl+Shift+T",
+
+    'prompt_popup': 'Alt+Shift+Space',
     }
 
 # It is a part of '• Must Have' addon's functionality:
@@ -482,6 +494,7 @@ old_addons = (
     'Create_Duplicate_Notes.py',
     'Duplicate_Selected_Notes.py',
     'anki-browser-create-duplicate.py',
+    '_Prompt_and_set_days_interval_and_card_ease.py',
 )
 
 old_addons2delete = ''
@@ -1492,21 +1505,6 @@ ReschedMax ... same as the higher number
 
 if old_addons2delete == '':
 
-    def _reschedCards(self, ids, imin, imax, indi=2500):
-        "Put cards in review queue with a new interval in days (min, max)."
-        d = []
-        t = self.today
-        mod = anki.utils.intTime()
-        for id in ids:
-            r = random.randint(imin, imax)
-            d.append(dict(id=id, due=r + t, ivl=max(1, r), mod=mod,
-                          usn=self.col.usn(), fact=indi))
-        self.remFromDyn(ids)
-        self.col.db.executemany("""
-    update cards set type=2,queue=2,ivl=:ivl,due=:due,odue=0,
-    usn=:usn,mod=:mod,factor=:fact where id=:id""", d)
-        self.col.log(ids)
-
     def keyHandler(self, evt, _old):
         key = unicode(evt.text())
         if self.state == 'answer':
@@ -2204,4 +2202,339 @@ if True:
     aqt.mw.reviewer.show = anki.hooks.wrap(
         aqt.mw.reviewer.show, info_on)
 
-##
+################################
+# • Promt and set days interval
+
+
+def _reschedCards(self, ids, imin, imax, indi=2500):
+    """Put cards in review queue with a new interval in days (min, max)."""
+    d = []
+    t = self.today
+    mod = anki.utils.intTime()
+    for id in ids:
+        r = random.randint(imin, imax)
+        d.append(dict(id=id, due=r + t, ivl=max(1, r), mod=mod,
+                      usn=self.col.usn(), fact=indi))
+    self.remFromDyn(ids)
+    self.col.db.executemany("""
+update cards set type=2,queue=2,ivl=:ivl,due=:due,odue=0,
+usn=:usn,mod=:mod,factor=:fact where id=:id""", d)
+    self.col.log(ids)
+
+
+def _nofactorCards(self, ids, imin, imax, indi=2500):
+    """Put cards in review queue with a new interval in days (min, max)."""
+    d = []
+    t = self.today
+    mod = anki.utils.intTime()
+    for id in ids:
+        r = random.randint(imin, imax)
+        d.append(dict(id=id, due=r + t, ivl=max(1, r), mod=mod,
+                      usn=self.col.usn(), fact=indi))
+    self.remFromDyn(ids)
+    self.col.db.executemany("""
+update cards set queue=2,ivl=:ivl,due=:due,odue=0,
+usn=:usn,mod=:mod where id=:id and type=2""", d)
+    self.col.db.executemany("""
+update cards set type=2,queue=2,ivl=:ivl,due=:due,odue=0,
+usn=:usn,mod=:mod,factor=:fact where id=:id and type<>2""", d)
+    self.col.log(ids)
+
+
+def _refactorCards(self, ids, indi=2500):
+    """Put cards in review queue with a new factor."""
+    d = []
+    mod = anki.utils.intTime()
+    for id in ids:
+        d.append(dict(id=id, mod=mod,
+                      usn=self.col.usn(), fact=indi))
+    self.remFromDyn(ids)
+    self.col.db.executemany("""
+update cards set queue=2,odue=0,
+usn=:usn,mod=:mod,factor=:fact where id=:id and type=2""", d)
+    self.col.log(ids)
+
+# inspired by
+# Date:     January 27, 2016
+# Author:   Benjamin Gray
+# File:     Quick_Reschedule.py
+# Purpose:  Quickly reschedule cards in anki to a user specified interval
+# using sched.reschedCards()
+
+# prompt for new interval, and set it
+
+
+def promptNewInterval(cids):
+    if cids is None:
+        cids = [aqt.mw.reviewer.card.id]
+    SWAP_TAG = False
+    cardEase = None
+    infotip = ''
+    prefix = ''
+    suffix = ''
+    total = 0
+    dayz = float(0)
+    try:
+        days = unicode(aqt.mw.reviewer.card.ivl + 1)
+    except AttributeError:
+        days = u'1'
+    dayString = aqt.utils.getText(
+        (MSG[lang]['till next'] +
+         ' (' + MSG[lang]['current'] + ' + 1 = %s ):') % (days),
+        default=days)
+
+    stringY = False
+    stringM = False
+    stringW = False
+    stringD = False
+
+    if dayString[1]:
+        daysList = dayString[0].strip().lower().split()
+        for nextWord in daysList:
+            nextDate = nextWord.strip()
+            if len(nextDate) == 0:
+                continue
+
+            dayStringY = False
+            dayStringM = False
+            dayStringW = False
+            dayStringD = False
+
+            if nextDate.endswith('y') or nextDate.endswith(u'г'):
+                nextDate = nextDate[:-1].strip()
+                dayStringY = True
+                stringY = True
+            if nextDate.endswith('m') or nextDate.endswith(u'м'):
+                nextDate = nextDate[:-1].strip()
+                dayStringM = True
+                stringM = True
+            if nextDate.endswith('w') or nextDate.endswith(u'н'):
+                nextDate = nextDate[:-1].strip()
+                dayStringW = True
+                stringW = True
+            if nextDate.endswith('d') or nextDate.endswith(u'д'):
+                nextDate = nextDate[:-1].strip()
+                dayStringD = True
+                stringD = True
+            if len(nextDate) == 0:
+                nextDate = '1'
+                dayStringD = True
+                stringD = True
+
+            if nextDate.endswith('%'):
+                nextDate = nextDate[:-1].strip()
+                if nextDate == '':
+                    nextDate = '250'
+                try:
+                    cardEase = max(130, abs(int(nextDate)))
+                except ValueError:
+                    cardEase = 130
+            else:
+                prefix += nextWord + ' '
+                try:
+                    dayz = float(0)
+                    days = int(nextDate)
+                    if dayStringM:
+                        dayz = abs(float(days))
+                        days = 0
+                    if dayStringY:
+                        dayz = abs(float(days)) * 12.0
+                        days = 0
+                        dayStringM = True
+                    if dayStringW:
+                        days = abs(days) * 7
+                except ValueError:
+                    days = 1  # aqt.mw.reviewer.card.ivl + 1
+                    try:
+                        dayz = abs(float(nextDate))
+                        if 0 < dayz and dayz < 1:
+                            days = int(dayz * 10) * 7
+                            dayz = float(0)
+                            dayStringW = True
+                            stringW = True
+                        else:
+                            days = 0
+                            dayStringM = True
+                            stringM = True
+                            if dayStringY:
+                                dayz = dayz * 12.0
+                    except ValueError:
+                        dayz = float(0)
+
+                if dayStringM:
+                    total += int(30 * abs(dayz))
+                else:
+                    total += abs(days)
+
+        aqt.mw.checkpoint(_('Reschedule card'))
+
+        days = total
+
+        if stringD or (not stringD and not stringW and not stringM):
+            if days > 9:
+                suffix = '&plusmn;1'
+                total = days + random.randrange(-1, 1 + 1, 1)
+            else:  # from 1 to 9 setup exact number of day
+                suffix = ''
+                total = days  # days = days
+        elif stringW:  # .2 is two weeks
+            suffix = '&plusmn;3'
+            total = abs(days) + random.randrange(-3, 3 + 1, 1)
+        elif stringM:  # 3.1 or 1.2 is monthes
+            suffix = '&plusmn;15'
+            total = abs(days) + random.randrange(-15, 15 + 1, 1)
+
+        if cardEase is None:
+            if not total:  # empty request line == drop cards to new queue
+                aqt.mw.col.sched.forgetCards(cids)
+                aqt.mw.reset()
+                return
+            infotip = ''
+            # try:
+            #     cardEase = aqt.mw.reviewer.card.factor  # 2500
+            # except AttributeError:
+            #     cardEase = 2500
+        else:
+            infotip = (MSG[lang]['card ease'] +
+                       ' <b>%s</b>%%<br><br>') % (cardEase)
+            cardEase *= 10
+
+        if total:
+            # aqt.mw.col.sched.reschedCards(
+            #   [aqt.mw.reviewer.card.id], total-1 if total>1 else 1, total+1 )
+            if cardEase is not None:
+                if total < 10:
+                    _reschedCards(
+                        aqt.mw.col.sched, cids, total, total, indi=cardEase)
+                else:
+                    _reschedCards(
+                        aqt.mw.col.sched, cids, total -
+                        1 if total > 1 else 1, total + 1, indi=cardEase)
+            else:
+                if total < 10:
+                    _nofactorCards(
+                        aqt.mw.col.sched, cids, total, total)
+                else:
+                    _nofactorCards(
+                        aqt.mw.col.sched, cids, total -
+                        1 if total > 1 else 1, total + 1)
+
+            days_mod = (total % 10) if ((total % 100) < 11 or (
+                total % 100) > 14) else (total % 100)
+            aqt.utils.tooltip(
+                infotip + (
+                    'Запланирован просмотр через <b>%s</b> %s ' +
+                    ('день' if days_mod == 1 else (
+                        'дня' if days_mod >= 2 and
+                        days_mod <= 4 else 'дней'))
+                    if lang == 'ru' else
+                    'Rescheduled for review in <b>%s</b> %s days') % (
+                        total, ' ( <b style="color:#666;">%s</b> %s ) ' %
+                        (prefix.strip(), suffix) if len(suffix) else ''),
+                period=2000)
+
+            # SWAP_TAG = datetime.datetime.now().strftime(
+            #   'rescheduled::re-%Y-%m-%d::re-card')
+            # SWAP_TAG = datetime.datetime.now().strftime(
+            #   're-%y-%m-%d-c')
+            if SWAP_TAG:
+                SWAP_TAG += unicode(aqt.mw.reviewer.card.ord + 1)
+                note = aqt.mw.reviewer.card.note()
+                if not note.hasTag(SWAP_TAG):
+                    note.addTag(SWAP_TAG)
+                    note.flush()  # never forget to flush
+
+        elif cardEase is not None:
+            aqt.utils.tooltip((MSG[lang]['card ease'] +
+                     ' <b>%s</b>%%<br><br>') %
+                    int(cardEase / 10),
+                    period=2000)
+            _refactorCards(aqt.mw.col.sched, cids, indi=cardEase)
+            # aqt.mw.reviewer.card.factor = cardEase
+            # aqt.mw.reviewer.card.flush()
+
+        aqt.mw.reset()
+
+if True:
+    try:
+        aqt.mw.addon_cards_menu
+    except AttributeError:
+        aqt.mw.addon_cards_menu = QMenu(MSG[lang]['Cards'], aqt.mw)
+        aqt.mw.form.menubar.insertMenu(
+            aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_cards_menu)
+
+    set_new_int_action = QAction(aqt.mw)
+    set_new_int_action.setText(MSG[lang]['days interval'])
+    set_new_int_action.setIcon(
+        QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'schedule.png')))
+    set_new_int_action.setShortcut(QKeySequence(HOTKEY['prompt_popup']))
+    set_new_int_action.setEnabled(False)
+    aqt.mw.connect(set_new_int_action, SIGNAL('triggered()'),
+               lambda: promptNewInterval(None))
+
+    if hasattr(aqt.mw, 'addon_cards_menu'):
+        aqt.mw.addon_cards_menu.addAction(set_new_int_action)
+        aqt.mw.addon_cards_menu.addSeparator()
+
+    def edit_actions_off():
+        set_new_int_action.setEnabled(False)
+
+    def edit_actions_on():
+        set_new_int_action.setEnabled(True)
+
+    aqt.mw.deckBrowser.show = anki.hooks.wrap(
+        aqt.mw.deckBrowser.show, edit_actions_off)
+    aqt.mw.overview.show = anki.hooks.wrap(
+        aqt.mw.overview.show, edit_actions_off)
+    aqt.mw.reviewer.show = anki.hooks.wrap(
+        aqt.mw.reviewer.show, edit_actions_on)
+
+# reset_card_scheduling.py
+# https://ankiweb.net/shared/info/1432861881
+# Reset card(s) scheduling information / progress
+#######################################################
+
+# Col is a collection of cards, cids are the ids of the cards to reset.
+
+
+def resetSelectedCardScheduling(self):
+    """
+    Resets statistics for selected cards,
+    and removes them from learning queues.
+    """
+    cids = self.selectedCards()
+    if not cids:
+        return
+    # Allow undo
+    self.mw.checkpoint(_('Promt and set days interval'))
+    self.mw.progress.start(immediate=True)
+    # Not sure if beginReset is required
+    self.model.beginReset()
+
+    # Resets selected cards in current collection
+    # self.col.sched.resetCards(cids)
+    # Removes card from dynamic deck?
+    # self.col.sched.remFromDyn(cids)
+    # Removes card from learning queues
+    # self.col.sched.removeLrn(cids)
+
+    promptNewInterval(cids=cids)
+
+    self.model.endReset()
+    self.mw.progress.finish()
+    # Update the main UI window to reflect changes in card status
+    self.mw.reset()
+
+
+def addMenuItem(self):
+    """ Adds hook to the Edit menu in the note browser """
+    newInt_action = QAction('Promt and set days interval', self)
+    newInt_action.setShortcut(QKeySequence(HOTKEY['prompt_popup']))
+    self.resetSelectedCardScheduling = resetSelectedCardScheduling
+    self.connect(newInt_action, SIGNAL('triggered()'),
+                 lambda s=self: resetSelectedCardScheduling(self))
+    self.form.menuEdit.addAction(newInt_action)
+
+# Add-in hook; called by the AQT Browser object when it is ready for the
+# add-on to modify the menus
+anki.hooks.addHook('browser.setupMenus', addMenuItem)
