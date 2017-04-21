@@ -2244,14 +2244,18 @@ usn=:usn,mod=:mod,factor=:fact where id=:id and type<>2""", d)
 def _refactorCards(self, ids, indi=2500):
     """Put cards in review queue with a new factor."""
     d = []
+    t = self.today
     mod = anki.utils.intTime()
     for id in ids:
-        d.append(dict(id=id, mod=mod,
+        d.append(dict(id=id, due=1 + t, mod=mod,
                       usn=self.col.usn(), fact=indi))
     self.remFromDyn(ids)
     self.col.db.executemany("""
 update cards set queue=2,odue=0,
 usn=:usn,mod=:mod,factor=:fact where id=:id and type=2""", d)
+    self.col.db.executemany("""
+update cards set type=2,queue=2,ivl=1,due=:due,odue=0,
+usn=:usn,mod=:mod,factor=:fact where id=:id and type<>2""", d)
     self.col.log(ids)
 
 # inspired by
