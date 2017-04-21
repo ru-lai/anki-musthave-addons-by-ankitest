@@ -1035,6 +1035,8 @@ if old_addons2delete == '':
         aqt.mw.huge_buttons
     except AttributeError:
         aqt.mw.huge_buttons = QMenu(MSG[lang]['HUGE_buttons'], aqt.mw)
+        aqt.mw.huge_buttons.setIcon(
+            QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'push_button.png')))
         aqt.mw.addon_view_menu.addMenu(aqt.mw.huge_buttons)
 
     aqt.mw.huge_buttons.addSeparator()
@@ -1117,11 +1119,6 @@ if old_addons2delete == '':
     more_action.setChecked(USE_INTERVALS_AS_LABELS)
     aqt.mw.connect(more_action, SIGNAL('triggered()'), more_proc)
 
-    aqt.mw.huge_buttons.addAction(styles_action)
-    aqt.mw.huge_buttons.addAction(flat_action)
-    aqt.mw.huge_buttons.addAction(more_action)
-    aqt.mw.huge_buttons.addAction(smiles_action)
-
     aqt.reviewer.Reviewer._answerButtons = anki.hooks.wrap(
         aqt.reviewer.Reviewer._answerButtons, myAnswerButtons, 'around')
 
@@ -1157,9 +1154,15 @@ if old_addons2delete == '':
 
         aqt.mw.extra_class_submenu = QMenu(
             '&'+MSG[lang]['HardGoodEasy'], aqt.mw)
+        aqt.mw.extra_class_submenu.setIcon(
+            QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'push_button.png')))
 
-        # aqt.mw.huge_buttons.addSeparator()
+        aqt.mw.huge_buttons.addAction(flat_action)
+        aqt.mw.huge_buttons.addAction(styles_action)
         aqt.mw.huge_buttons.addMenu(aqt.mw.extra_class_submenu)
+        aqt.mw.huge_buttons.addAction(more_action)
+        aqt.mw.huge_buttons.addAction(smiles_action)
+        aqt.mw.huge_buttons.addSeparator()
 
         def set_buttons(parm_btn, parm_act):
             global remap
@@ -1283,6 +1286,8 @@ if old_addons2delete == '':
         aa_about_box.exec_()
 
     about_addon_action = QAction(MSG[lang]['aa'] + __addon__, aqt.mw)
+    about_addon_action.setIcon(
+        QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'money.png')))
     aqt.mw.connect(about_addon_action, SIGNAL('triggered()'), about_addon)
     aqt.mw.huge_buttons.addSeparator()
     aqt.mw.huge_buttons.addAction(about_addon_action)
@@ -1308,6 +1313,10 @@ if old_addons2delete == '':
         aqt.editor.onFields(aqt.mw)
 
     F4_edit_current_action = QAction(aqt.mw)
+
+
+
+
     F4_edit_current_action.setText(MSG[lang]['Edit'])
     F4_edit_current_action.setIcon(
         QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_current.png')))
@@ -2180,6 +2189,8 @@ aqt.reviewer.Reviewer.nextCard = anki.hooks.wrap(
 if True:
     info_action = QAction(aqt.mw)
     info_action.setText("&" + _("Timebox time limit"))
+    info_action.setIcon(
+        QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'clock.png')))
     info_action.setShortcut(HOTKEY['timebox'])
     info_action.setEnabled(False)
 

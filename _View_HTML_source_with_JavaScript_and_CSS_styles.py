@@ -53,6 +53,12 @@ try:
 except KeyError:
     lang = 'en'
 
+try:
+    MUSTHAVE_COLOR_ICONS = os.path.join(
+        mw.pm.addonFolder(), 'handbook')
+except:
+    MUSTHAVE_COLOR_ICONS = ''
+
 # 'Показать Ис&ходник HTML Body' if lang == 'ru' else 'View Source code &Body'
 # 'Показать И&сходник HTML' if lang == 'ru' else '&View Source code'
 
@@ -109,12 +115,16 @@ get_Body_Source_action = QAction(mw)
 get_Body_Source_action.setText(MSG[lang]['no_jQuery'])
 get_Body_Source_action.setShortcut(
     QKeySequence(HOTKEY['Body_source']))
+get_Body_Source_action.setIcon(
+    QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'html.png')))
 mw.connect(get_Body_Source_action, SIGNAL('triggered()'), _getSourceBody)
 
 get_HTML_Source_action = QAction(mw)
 get_HTML_Source_action.setText(MSG[lang]['view_source'])
 get_HTML_Source_action.setShortcut(
     QKeySequence(HOTKEY['HTML_source']))
+get_HTML_Source_action.setIcon(
+    QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'html5.png')))
 mw.connect(get_HTML_Source_action, SIGNAL('triggered()'), _getSourceHTML)
 
 if hasattr(mw, 'addon_cards_menu'):
