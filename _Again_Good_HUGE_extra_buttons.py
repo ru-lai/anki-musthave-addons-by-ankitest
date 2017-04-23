@@ -72,14 +72,22 @@ import re
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-import anki
-import aqt
+import anki.hooks
+import anki.utils
+import anki.sound
+
+import aqt.main
+import aqt.utils
+import aqt.qt
+import aqt.reviewer
+import aqt.editor
+import aqt.fields
 
 from aqt.clayout import CardLayout
 from anki.consts import MODEL_STD, MODEL_CLOZE
 
 # Get language class
-# import anki.lang
+import anki.lang
 lang = anki.lang.getLang()
 
 extra_buttons = [  # should start from 6 anyway
@@ -728,6 +736,8 @@ def laterNotNow(self, showAnswer):
 
 
 def myShowAnswerButton(self, _old):
+    _old(self)
+
     if newRemaining(self):
         self.mw.moveToState('overview')
     self._bottomReady = True
@@ -899,6 +909,8 @@ def answerCard_tooltip(self, ease):
 
 
 def myAnswerButtons(self, _old):
+    _old(self)
+
     times = []
     default = self._defaultEase()
 
@@ -1434,8 +1446,7 @@ if old_addons2delete == '':
         F4_edit_fields_action.setEnabled(True)
 
     def onFields(self):
-        from aqt.fields import FieldDialog
-        FieldDialog(self, self.card.note(), parent=aqt.mw)
+        aqt.fields.FieldDialog(self, self.card.note(), parent=aqt.mw)
 
     F4_Edit_exists = os.path.exists(
         os.path.join(aqt.mw.pm.addonFolder(), '_F4_Edit.py')) or \
