@@ -40,8 +40,8 @@
   you'll see it next time you study the deck
   or immediatly after reset of cards' queue.
 
- • Flip-flop card (Show FrontSide/BackSide
-   by F7/F8 or Ctrl+PgUp/Control+PageDown or ^9/^3 or Insert/0)
+ • Flip-flop card: Show FrontSide/BackSide
+   by Ctrl+Up/Control+Down or ^8/^2 or Insert/0
 
  To modify a single card so the front and back are inverted
   use F12 in Card Reviewer.
@@ -192,16 +192,10 @@ MSG = {
 
         'aa': 'О дополнении  ',
 
-        'showFrontSide': 'Показать &Лицевую Сторону',
-        'showBackSide': 'Показать &Оборотную Сторону',
-        'viewFrontSide': '&Лицевая Сторона',
-        'viewBackSide': '&Оборотная Сторона',
-        'cardFrontSide': '&Лицевая Сторона карточки',
-        'cardBackSide': '&Оборотная Сторона карточки',
-        'gotoFrontSide': 'Перейти на &Лицевую Сторону',
-        'gotoBackSide': 'Перейти на &Оборотную Сторону',
-        'goFrontSide': 'на &Лицевую Сторону',
-        'goBackSide': 'на &Оборотную Сторону',
+        'showFrontSide': 'Перейти на &Лицевую Сторону карточки',
+        'showBackSide': 'Перейти на &Оборотную Сторону карточки',
+        'viewFrontSide': 'Показать &Лицевую Сторону карточки',
+        'viewBackSide': 'Показать &Оборотную Сторону карточки',
 
         'swap_fields': 'О&бмен полей %s и %s',
         'fields_swapped':
@@ -267,16 +261,10 @@ HOTKEY = {
     "LaTeX$": 'F11',       # "Ctrl+T, E"
     "LaTeX$$": 'Shift+F11',  # "Ctrl+T, M"
 
-    'showFrontSide': Qt.Key_F7,
-    'showBackSide': 'F8',
-    'viewFrontSide': "Ctrl+PgUp",
-    'viewBackSide': QKeySequence(Qt.CTRL + Qt.Key_PageDown),
-    'cardFrontSide': QKeySequence('Ctrl+9'),
-    'cardBackSide': Qt.CTRL + Qt.Key_3,  # 'Ctrl+3'
-    'gotoFrontSide': "Ctrl+Up",
-    'gotoBackSide': "Ctrl+Down",
-    'goFrontSide': "Ctrl+8",
-    'goBackSide': "Ctrl+2",
+    'showFrontSide': "Ctrl+Up",
+    'showBackSide': "Ctrl+Down",
+    'viewFrontSide': "Ctrl+8",
+    'viewBackSide': "Ctrl+2",
 
     'swap': 'F12',
     'dupe': 'Shift+F12',
@@ -1534,7 +1522,6 @@ def go_question():
     if aqt.mw.state == 'review':
         if (aqt.mw.reviewer.state == 'answer' or
                 aqt.mw.reviewer.state == 'question'):
-            # refresh FrontSide on PageUp
             anki.sound.stopMplayer()
             aqt.mw.reviewer._showQuestion()
 
@@ -1594,101 +1581,6 @@ if FLIP_FLOP and mw_addon_view_menu_exists:
     aqt.mw.addon_view_menu.addAction(show_question_aktion)
     aqt.mw.addon_view_menu.addAction(show_answer_aktion)
     aqt.mw.addon_view_menu.addSeparator()
-
-##
-
-mw_addon_cards_menu_exists = hasattr(aqt.mw, 'addon_cards_menu')
-
-if FLIP_FLOP and mw_addon_cards_menu_exists:
-
-    snow_question_action = QAction(aqt.mw)
-    snow_question_action.setText(MSG[lang]['cardFrontSide'])
-    snow_question_action.setShortcut(HOTKEY['cardFrontSide'])
-    if ANKI_MENU_ICONS:
-        snow_question_action.setIcon(PageUp_icon)
-    aqt.mw.connect(
-        snow_question_action, SIGNAL("triggered()"), go_question)
-
-    snow_answer_action = QAction(aqt.mw)
-    snow_answer_action.setText(MSG[lang]['cardBackSide'])
-    snow_answer_action.setShortcut(HOTKEY['cardBackSide'])
-    if ANKI_MENU_ICONS:
-        snow_answer_action.setIcon(PageDown_icon)
-    aqt.mw.connect(
-        snow_answer_action, SIGNAL("triggered()"), go_answer)
-
-    aqt.mw.addon_cards_menu.addSeparator()
-    aqt.mw.addon_cards_menu.addAction(snow_question_action)
-    aqt.mw.addon_cards_menu.addAction(snow_answer_action)
-    aqt.mw.addon_cards_menu.addSeparator()
-
-##
-
-try:
-    aqt.mw.addon_sound_menu.addSeparator()
-except AttributeError:
-    aqt.mw.addon_sound_menu = QMenu(MSG[lang]['Sound'], aqt.mw)
-    aqt.mw.form.menubar.insertMenu(
-        aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_sound_menu)
-
-mw_addon_sound_menu_exists = hasattr(aqt.mw, 'addon_sound_menu')
-
-if FLIP_FLOP and mw_addon_sound_menu_exists:
-
-    show_question_action = QAction(aqt.mw)
-    show_question_action.setText(MSG[lang]['gotoFrontSide'])
-    show_question_action.setShortcut(HOTKEY['gotoFrontSide'])
-    if ANKI_MENU_ICONS:
-        show_question_action.setIcon(PageUp_icon)
-    aqt.mw.connect(
-        show_question_action, SIGNAL('triggered()'), go_question)
-
-    show_answer_action = QAction(aqt.mw)
-    show_answer_action.setText(MSG[lang]['gotoBackSide'])
-    show_answer_action.setShortcut(HOTKEY['gotoBackSide'])
-    if ANKI_MENU_ICONS:
-        show_answer_action.setIcon(PageDown_icon)
-    aqt.mw.connect(
-        show_answer_action, SIGNAL('triggered()'), go_answer)
-
-    aqt.mw.addon_sound_menu.addSeparator()
-    aqt.mw.addon_sound_menu.addAction(show_question_action)
-    aqt.mw.addon_sound_menu.addAction(show_answer_action)
-    aqt.mw.addon_sound_menu.addSeparator()
-
-##
-
-try:
-    aqt.mw.addon_go_menu.addSeparator()
-except AttributeError:
-    aqt.mw.addon_go_menu = QMenu(MSG[lang]['Go'], aqt.mw)
-    aqt.mw.form.menubar.insertMenu(
-        aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_go_menu)
-
-mw_addon_go_menu_exists = hasattr(aqt.mw, 'addon_go_menu')
-
-if FLIP_FLOP and mw_addon_go_menu_exists:
-
-    show_question_action = QAction(aqt.mw)
-    show_question_action.setText(MSG[lang]['goFrontSide'])
-    show_question_action.setShortcut(HOTKEY['goFrontSide'])
-    if ANKI_MENU_ICONS:
-        show_question_action.setIcon(PageUp_icon)
-    aqt.mw.connect(
-        show_question_action, SIGNAL('triggered()'), go_question)
-
-    show_answer_action = QAction(aqt.mw)
-    show_answer_action.setText(MSG[lang]['goBackSide'])
-    show_answer_action.setShortcut(HOTKEY['goBackSide'])
-    if ANKI_MENU_ICONS:
-        show_answer_action.setIcon(PageDown_icon)
-    aqt.mw.connect(
-        show_answer_action, SIGNAL('triggered()'), go_answer)
-
-    aqt.mw.addon_go_menu.addSeparator()
-    aqt.mw.addon_go_menu.addAction(show_question_action)
-    aqt.mw.addon_go_menu.addAction(show_answer_action)
-    aqt.mw.addon_go_menu.addSeparator()
 
 ##
 
