@@ -159,6 +159,9 @@ MSG = {
         'current': _('actual interval'),
         'card ease': _('Card ease'),
         'days interval': _('&Prompt and Set ... days interval'),
+
+        'search in browser': 'Search Anki Browser for %s...',
+        'delete note': 'Delete note?',
         },
     'ru': {
         'later': 'позже',
@@ -209,6 +212,9 @@ MSG = {
         'current': 'фактический интервал',
         'card ease': 'Лёгкость карточки',
         'days interval': '&Через ... дней',
+
+        'search in browser': 'Поиск в Обозревателе Anki: %s...',
+        'delete note': "Удалить запись?",
         }
     }
 
@@ -531,6 +537,98 @@ SWAP_TAG = False
 USE_INTERVALS_AS_LABELS = False  # True  #
 
 FLAT_BUTTONS = True  # False  #
+
+# --------------------------
+# hotkeys does not work on context menu
+# for information purpose only (exploratory testing is anticipated)
+
+def ask_delete():
+    """Delete a note after asking the user."""
+    if aqt.mw.state != 'review':
+        return
+    if aqt.utils.askUser(MSG[lang]['delete note']):  # , defaultno=True):
+        aqt.mw.reviewer.onDelete()
+
+# -- Disable the delete key in reviews
+aqt.mw.disconnect(aqt.mw.reviewer.delShortcut, aqt.qt.SIGNAL(
+    "activated()"), aqt.mw.reviewer.onDelete)
+# дисконнект нужен обязательно, иначе продолжают работать вместе
+aqt.mw.connect(aqt.mw.reviewer.delShortcut,
+               aqt.qt.SIGNAL("activated()"), ask_delete)
+
+opts = [
+    [_("Mark Note"), "*", aqt.mw.reviewer.onMark],
+    None,
+    [_("Bury Card"), "-", aqt.mw.reviewer.onBuryCard],
+    [_("Bury Note"), "=", aqt.mw.reviewer.onBuryNote],
+    [_("Suspend Card"), "@", aqt.mw.reviewer.onSuspendCard],
+    [_("Suspend Note"), "!", aqt.mw.reviewer.onSuspend],
+    [_("Delete Note"), "Delete", ask_delete],  # aqt.mw.reviewer.onDelete],
+    None,
+    [_("Options"), "o", aqt.mw.reviewer.onOptions],
+]
+
+opts.extend([
+    None,
+    [_("Replay Audio"), "r", aqt.mw.reviewer.replayAudio],
+    None,
+])
+
+opts.append(
+    [_("Record Own Voice"), "Shift+v", aqt.mw.reviewer.onRecordVoice],
+)
+opts.append(
+    [_("Replay Own Voice"), "v", aqt.mw.reviewer.onReplayRecorded],
+)
+
+class BrowserLookup:
+
+    def get_selected(self, view):
+        """Copy selected text"""
+        return view.page().selectedText()
+
+    def lookup_action(self, view):
+        browser = aqt.dialogs.open("Browser", aqt.mw)
+        browser.form.searchEdit.lineEdit().setText(self.get_selected(view))
+        browser.onSearch()
+
+    def add_action(self, view, menu, action):
+        """Add 'lookup' action to context menu."""
+        if self.get_selected(view):
+            action = menu.addAction(action)
+            action.connect(action, SIGNAL('triggered()'),
+                           lambda view=view: self.lookup_action(view))
+
+    def context_lookup_action(self, view, menu):
+        if aqt.mw.state != 'review':
+            return
+
+        edit_current_action = menu.addAction(MSG[lang]["Edit"])
+        edit_current_action.connect(
+            edit_current_action, SIGNAL("triggered()"), go_edit_current)
+
+        more_menu = QMenu(MSG[lang]["More"], menu)
+        menu.addMenu(more_menu)
+
+        for row in opts:
+            if not row:
+                more_menu.addSeparator()
+                continue
+            label, scut, func = row
+            a = more_menu.addAction(label)
+            a.setShortcut(QKeySequence(scut))
+            a.connect(a, SIGNAL("triggered()"), func)
+
+        """Browser Lookup action"""
+        self.add_action(
+            view, menu, 
+            MSG[lang]['search in browser'] % self.get_selected(view)[:20])
+
+# Add lookup actions to context menu
+browser_lookup = BrowserLookup()
+anki.hooks.addHook(
+    "AnkiWebView.contextMenuEvent",
+    browser_lookup.context_lookup_action)
 
 """
 # Bigger Show Answer Button
