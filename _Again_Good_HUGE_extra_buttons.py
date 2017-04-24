@@ -82,6 +82,8 @@ import aqt.qt
 import aqt.reviewer
 import aqt.editor
 import aqt.fields
+import aqt.deckconf
+import aqt.forms
 
 from aqt.clayout import CardLayout
 from anki.consts import MODEL_STD, MODEL_CLOZE
@@ -117,8 +119,10 @@ MSG = {
     'en': {
         'later': _('later'),
         'not now': _('not now'),
-        'Cards': _('&Cards'),
+        'Later, not now': _('&Later, not now'),
+
         'View': _('&View'),
+        'Cards': _('&Cards'),
         'Sound': _('&Sound'),
         'Go': _('&Go'),
 
@@ -128,7 +132,7 @@ MSG = {
         'AgainHard': _('Again')+', &'+_('Hard'),
         'AgainGood': _('Again')+', &'+_('Good'),
         'AgainEasy': _('Again')+', &'+_('Easy'),
-        'Later, not now': _('&Later, not now'),
+
         'no_smiles': _('No smiles'),
         'no_styles': _('No big buttons'),
         'no_labels': _('Next Interva&L — on answer buttons'),
@@ -170,12 +174,21 @@ MSG = {
 
         'search in browser': 'Search Anki Browser for %s...',
         'delete note': 'Delete note?',
+
+        'autoshow': _("Autoshow answer/next question"),
+        'autoshow Answer': _("Automatically show answer after"),
+        'autoshow Question': _("Automatically show next question after"),
+        'AUTOSHOW_STATE is on': "<b>Auto</b> show Q-and-A is <b style=color:blue;>ON</b> now",
+        'AUTOSHOW_STATE is off': "<b>Auto</b> show QandA is <b style=color:red;>OFF</b> now",
+
         },
     'ru': {
         'later': 'позже',
         'not now': 'не сейчас',
-        'Cards': '&Карточки',
+        'Later, not now': 'Поз&же, не сейчас',
+
         'View': '&Вид',
+        'Cards': '&Карточки',
         'Sound': '&Звук',
         'Go': 'П&ереход',
 
@@ -185,7 +198,7 @@ MSG = {
         'AgainHard': _('Again')+', &'+_('Hard'),
         'AgainGood': _('Again')+', &'+_('Good'),
         'AgainEasy': _('Again')+', &'+_('Easy'),
-        'Later, not now': 'Поз&же, не сейчас',
+
         'no_smiles': '&Без смайликов',
         'no_styles': '&Обычная высота кнопок',
         'no_labels': 'На кнопках о&ценок - следующий интервал',
@@ -223,6 +236,13 @@ MSG = {
 
         'search in browser': 'Поиск в Обозревателе Anki: %s...',
         'delete note': "Удалить запись?",
+
+        'autoshow': "Автопоказ ответа/следующего вопроса",
+        'autoshow Answer': "Автоматически показывать ответ на вопрос через",
+        'autoshow Question': "Автоматически показывать следующий вопрос через",
+        'AUTOSHOW_STATE is on': "<b style=color:blue;>Включён</b> <b>автопоказ</b> вопросов и ответов",
+        'AUTOSHOW_STATE is off': "<b>Автопоказ</b> вопросов и ответов <b style=color:red;>отключён</b>",
+
         }
     }
 
@@ -286,6 +306,9 @@ HOTKEY = {
     'timebox': "Ctrl+Shift+T",
 
     'prompt_popup': 'Alt+Shift+Space',
+
+    'autoshow': 'Ctrl+Shift+F5',
+
     }
 
 # It is a part of '• Must Have' addon's functionality:
@@ -453,6 +476,27 @@ fldlst = [
     [_('Front'), _('Back')],  # Вопрос, Ответ
 ]
 
+# Anki uses a single digit to track which button has been clicked.
+NOT_NOW_BASE = 5
+
+# We will use shortcut number from the first extra button
+#  and above to track the extra buttons.
+INTERCEPT_EASE_BASE = 6
+
+# Must be four or less
+assert len(extra_buttons) <= 4
+
+SWAP_TAG = False
+# SWAP_TAG = datetime.datetime.now().strftime(
+#    'rescheduled::re-%Y-%m-%d::re-card')
+# SWAP_TAG = datetime.datetime.now().strftime('re-%y-%m-%d-c')
+
+USE_INTERVALS_AS_LABELS = False  # True  #
+
+FLAT_BUTTONS = True  # False  #
+
+AUTOSHOW_STATE = False  # True  #
+
 #
 
 __addon__ = "'" + __name__.replace('_', ' ')
@@ -526,25 +570,6 @@ if old_addons2delete != '':
             'Please, delete them and restart Anki.</big>', type="html")
 
 act = [None, None, None, None, None]
-
-# Anki uses a single digit to track which button has been clicked.
-NOT_NOW_BASE = 5
-
-# We will use shortcut number from the first extra button
-#  and above to track the extra buttons.
-INTERCEPT_EASE_BASE = 6
-
-# Must be four or less
-assert len(extra_buttons) <= 4
-
-SWAP_TAG = False
-# SWAP_TAG = datetime.datetime.now().strftime(
-#    'rescheduled::re-%Y-%m-%d::re-card')
-# SWAP_TAG = datetime.datetime.now().strftime('re-%y-%m-%d-c')
-
-USE_INTERVALS_AS_LABELS = False  # True  #
-
-FLAT_BUTTONS = True  # False  #
 
 # --------------------------
 # hotkeys does not work on context menu
@@ -737,6 +762,7 @@ def laterNotNow(self, showAnswer):
 
 def myShowAnswerButton(self, _old):
     _old(self)
+    set_timeoutA(self)
 
     if newRemaining(self):
         self.mw.moveToState('overview')
@@ -910,6 +936,7 @@ def answerCard_tooltip(self, ease):
 
 def myAnswerButtons(self, _old):
     _old(self)
+    set_timeoutQ(self)
 
     times = []
     default = self._defaultEase()
@@ -1118,16 +1145,16 @@ def load_wide_buttons():
 
 ##
 
+try:
+    aqt.mw.addon_view_menu
+except AttributeError:
+    aqt.mw.addon_view_menu = QMenu(MSG[lang]['View'], aqt.mw)
+    aqt.mw.form.menubar.insertMenu(
+        aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_view_menu)
+
 if old_addons2delete == '':
     anki.hooks.addHook("unloadProfile", save_wide_buttons)
     anki.hooks.addHook("profileLoaded", load_wide_buttons)
-
-    try:
-        aqt.mw.addon_view_menu
-    except AttributeError:
-        aqt.mw.addon_view_menu = QMenu(MSG[lang]['View'], aqt.mw)
-        aqt.mw.form.menubar.insertMenu(
-            aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_view_menu)
 
     try:
         aqt.mw.huge_buttons
@@ -2554,3 +2581,114 @@ def addMenuItem(self):
 # Add-in hook; called by the AQT Browser object when it is ready for the
 # add-on to modify the menus
 anki.hooks.addHook('browser.setupMenus', addMenuItem)
+
+##
+
+def switch_autoshow():
+    global AUTOSHOW_STATE
+    AUTOSHOW_STATE = autoshow_action.isChecked()
+    if AUTOSHOW_STATE:
+        aqt.utils.tooltip(MSG[lang]['AUTOSHOW_STATE is on'])
+        if aqt.mw.reviewer.state == 'answer':
+            set_timeoutQ(aqt.mw.reviewer)
+        elif aqt.mw.reviewer.state == 'question':
+            set_timeoutA(aqt.mw.reviewer)
+    else:
+        aqt.utils.tooltip(MSG[lang]['AUTOSHOW_STATE is off'])
+        clear_timeout()
+
+autoshow_action = QAction(MSG[lang]['autoshow'], aqt.mw)
+autoshow_action.setShortcut(QKeySequence(HOTKEY['autoshow']))
+autoshow_action.setCheckable(True)
+aqt.mw.connect(autoshow_action, SIGNAL('triggered()'), switch_autoshow)
+
+if hasattr(aqt.mw, 'addon_view_menu'):
+    aqt.mw.addon_view_menu.addAction(autoshow_action)
+
+##
+
+
+def append_html(self, _old):
+    return _old(self) + """
+        <script>
+            var autoTimeout = 0;
+            var setAuto = function(ms) {
+                clearTimeout(autoTimeout);
+                autoTimeout = setTimeout(function () { py.link('ans') }, ms);
+            }
+            var setAvto = function(ms) {
+                clearTimeout(autoTimeout);
+                autoTimeout = setTimeout(function () { py.link('ease%d') }, ms);
+            }
+        </script>
+        """ % (NOT_NOW_BASE)
+
+def clear_timeout():
+    aqt.mw.reviewer.bottom.web.eval("clearTimeout(autoTimeout);")
+
+def set_timeoutA(self):
+    if AUTOSHOW_STATE:
+        c = self.mw.col.decks.confForDid(self.card.odid or self.card.did)
+        if c.get('autoAnswer', 0) > 0:
+            self.bottom.web.eval("setAuto(%d);" % (c['autoAnswer'] * 1000))
+
+def set_timeoutQ(self):
+    if AUTOSHOW_STATE:
+        c = self.mw.col.decks.confForDid(self.card.odid or self.card.did)
+        if c.get('autoQuestion', 0) > 0:
+            self.bottom.web.eval("setAvto(%d);" % (c['autoQuestion'] * 1000))
+
+def setup_ui(self, Dialog):
+    self.maxTaken.setMinimum(3)
+    grid = QGridLayout()
+    label1 = QLabel(self.tab_5)
+    label1.setText(MSG[lang]['autoshow Answer'])
+    label2 = QLabel(self.tab_5)
+    label2.setText(_("seconds"))
+    self.autoAnswer = QSpinBox(self.tab_5)
+    self.autoAnswer.setMinimum(0)
+    self.autoAnswer.setMaximum(3600)
+    grid.addWidget(label1, 0, 0, 1, 1)
+    grid.addWidget(self.autoAnswer, 0, 1, 1, 1)
+    grid.addWidget(label2, 0, 2, 1, 1)
+    self.verticalLayout_6.insertLayout(1, grid)
+
+    self.maxTaken.setMinimum(3)
+    grid = QGridLayout()
+    label1 = QLabel(self.tab_5)
+    label1.setText(MSG[lang]['autoshow Question'])
+    label2 = QLabel(self.tab_5)
+    label2.setText(_("seconds"))
+    self.autoQuestion = QSpinBox(self.tab_5)
+    self.autoQuestion.setMinimum(0)
+    self.autoQuestion.setMaximum(3600)
+    grid.addWidget(label1, 0, 0, 1, 1)
+    grid.addWidget(self.autoQuestion, 0, 1, 1, 1)
+    grid.addWidget(label2, 0, 2, 1, 1)
+    self.verticalLayout_6.insertLayout(1, grid)
+
+def load_conf(self):
+    f = self.form
+    c = self.conf
+    f.autoAnswer.setValue(c.get('autoAnswer', 0))
+    f.autoQuestion.setValue(c.get('autoQuestion', 0))
+
+def save_conf(self):
+    f = self.form
+    c = self.conf
+    c['autoAnswer'] = f.autoAnswer.value()
+    c['autoQuestion'] = f.autoQuestion.value()
+
+aqt.reviewer.Reviewer._bottomHTML = anki.hooks.wrap(
+    aqt.reviewer.Reviewer._bottomHTML, append_html, 'around')
+
+aqt.forms.dconf.Ui_Dialog.setupUi = anki.hooks.wrap(
+    aqt.forms.dconf.Ui_Dialog.setupUi, setup_ui)
+
+aqt.deckconf.DeckConf.loadConf = anki.hooks.wrap(
+    aqt.deckconf.DeckConf.loadConf, load_conf)
+
+aqt.deckconf.DeckConf.saveConf = anki.hooks.wrap(
+    aqt.deckconf.DeckConf.saveConf, save_conf, 'before')
+
+##
