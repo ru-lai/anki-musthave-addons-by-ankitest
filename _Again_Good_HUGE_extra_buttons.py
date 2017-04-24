@@ -541,6 +541,7 @@ old_addons = (
     'Duplicate_Selected_Notes.py',
     'anki-browser-create-duplicate.py',
     '_Prompt_and_set_days_interval_and_card_ease.py',
+    'Automatically_show_answer_after_X_seconds.py',
 )
 
 old_addons2delete = ''
