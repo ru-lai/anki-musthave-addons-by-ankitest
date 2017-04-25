@@ -28,7 +28,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 # Get language class
-#import anki.lang
+# import anki.lang
 lang = anki.lang.getLang()
 
 MSG = {
@@ -122,7 +122,7 @@ get_Body_Source_action.setShortcut(
 get_Body_Source_action.setIcon(
     QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'html.png')))
 aqt.mw.connect(
-    get_Body_Source_action, SIGNAL('triggered()'), 
+    get_Body_Source_action, SIGNAL('triggered()'),
     lambda: _getSourceBody(aqt.mw.web))
 
 get_HTML_Source_action = QAction(aqt.mw)
@@ -137,13 +137,13 @@ aqt.mw.connect(
 get_Top_Source_action = QAction(aqt.mw)
 get_Top_Source_action.setText(MSG[lang]['toolbarWeb'])
 aqt.mw.connect(
-    get_Top_Source_action, SIGNAL('triggered()'), 
+    get_Top_Source_action, SIGNAL('triggered()'),
     lambda: _getSourceBody(aqt.mw.toolbar.web))
 
 get_Bottom_Source_action = QAction(aqt.mw)
 get_Bottom_Source_action.setText(MSG[lang]['bottomWeb'])
 aqt.mw.connect(
-    get_Bottom_Source_action, SIGNAL('triggered()'), 
+    get_Bottom_Source_action, SIGNAL('triggered()'),
     lambda: _getSourceBody(aqt.mw.bottomWeb))
 
 # -- these work perfectly well
