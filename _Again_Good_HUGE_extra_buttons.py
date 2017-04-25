@@ -50,6 +50,12 @@
   Pairs higher in the list take precedence over lower
    if some of them exist in the same note simultaneously.
 
+ 2B cont...
+"""
+from __future__ import unicode_literals
+from __future__ import division
+
+"""
  Inspired by Duplicate Selected Notes
   https://ankiweb.net/shared/info/2126361512
  and Create Copy of Selected Cards
@@ -99,8 +105,6 @@
  Select Buttons Automatically If Correct Answer, Wrong Answer or Nothing
  https://ankiweb.net/shared/info/2074758752
 """
-from __future__ import unicode_literals
-from __future__ import division
 import datetime
 import random
 import json
@@ -342,10 +346,6 @@ HOTKEY = {
     'Good': QKeySequence('Ctrl+Alt+Shift+3'),
     'Easy': QKeySequence('Ctrl+Alt+Shift+4'),
 
-    'Edit_HTML': 'F4',         # Ctrl+Shift+X
-    'Edit_Fields': 'F4',         # e
-    'Edit_Cards': 'Shift+F4',
-    'Edit_Fieldz': 'Ctrl+F4',    # Alt+F4 == Close Window == ^F4 on Mac
     'flat_buttons': 'Ctrl+Alt+Shift+F',
 
     "next_cloze": 'Ctrl+Space',
@@ -385,8 +385,6 @@ HOTKEY = {
 #   https://ankiweb.net/shared/info/777151722
 #  ' Again Hard Good Easy wide big buttons
 #   https://ankiweb.net/shared/info/1508882486
-#  ' F4 Edit
-#   https://ankiweb.net/shared/info/2085904433
 
 # inspired by
 #  Answer_Key_Remap.py
@@ -590,7 +588,6 @@ old_addons = (
     'Button_Colours_Good_Again.py',
     'Bigger_Show_All_Answer_Buttons.py',
     'More_Answer_Buttons_for_New_Cards.py',
-    '_F4_Edit.py',
     '_Again_Hard.py',
     # '_Editor_Fontsize.py',
     '_Again_Hard_Good_Easy_wide_big_buttons.py',
@@ -1488,97 +1485,12 @@ if old_addons2delete == '':
     aqt.mw.huge_buttons.addSeparator()
     aqt.mw.huge_buttons.addAction(about_addon_action)
 
-    # F4
-
     def go_edit_current():
         """Edit the current card when there is one."""
         try:
             aqt.mw.onEditCurrent()
         except AttributeError:
             pass
-
-    def go_edit_layout():
-        """Edit the current card's note's layout if there is one."""
-        try:
-            ccard = aqt.mw.reviewer.card
-            CardLayout(aqt.mw, ccard.note(), ord=ccard.ord)
-        except AttributeError:
-            return
-
-    def go_edit_fields():
-        aqt.editor.onFields(aqt.mw)
-
-    F4_edit_current_action = QAction(aqt.mw)
-
-    F4_edit_current_action.setText(MSG[lang]['Edit'])
-    F4_edit_current_action.setIcon(
-        QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_current.png')))
-    F4_edit_current_action.setShortcut(HOTKEY['Edit_Fields'])
-    F4_edit_current_action.setEnabled(False)
-
-    F4_edit_layout_action = QAction(aqt.mw)
-    F4_edit_layout_action.setText(MSG[lang]['Edit Layout'])
-    F4_edit_layout_action.setIcon(
-        QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_layout.png')))
-    F4_edit_layout_action.setShortcut(HOTKEY['Edit_Cards'])
-    F4_edit_layout_action.setEnabled(False)
-
-    F4_edit_fields_action = QAction(aqt.mw)
-    F4_edit_fields_action.setText(MSG[lang]['Edit Fields'])
-    F4_edit_fields_action.setIcon(
-        QIcon(os.path.join(MUSTHAVE_COLOR_ICONS, 'edit_fields.png')))
-    F4_edit_fields_action.setShortcut(HOTKEY['Edit_Fieldz'])
-    F4_edit_fields_action.setEnabled(False)
-
-    def swap_off():
-        F4_edit_current_action.setEnabled(False)
-        F4_edit_layout_action.setEnabled(False)
-        F4_edit_fields_action.setEnabled(False)
-
-    def swap_on():
-        F4_edit_current_action.setEnabled(True)
-        F4_edit_layout_action.setEnabled(True)
-        F4_edit_fields_action.setEnabled(True)
-
-    def onFields(self):
-        aqt.fields.FieldDialog(self, self.card.note(), parent=aqt.mw)
-
-    F4_Edit_exists = os.path.exists(
-        os.path.join(aqt.mw.pm.addonFolder(), '_F4_Edit.py')) or \
-        os.path.exists(
-            os.path.join(aqt.mw.pm.addonFolder(), '_Editor_Fontsize.py'))
-
-    if not F4_Edit_exists:
-        aqt.mw.connect(
-            F4_edit_current_action, SIGNAL('triggered()'), go_edit_current)
-        aqt.mw.connect(
-            F4_edit_layout_action, SIGNAL('triggered()'), go_edit_layout)
-        aqt.mw.connect(
-            F4_edit_fields_action, SIGNAL('triggered()'),
-            lambda: onFields(aqt.mw.reviewer))
-
-        aqt.mw.addon_cards_menu.addSeparator()
-        aqt.mw.addon_cards_menu.addAction(F4_edit_current_action)
-        aqt.mw.addon_cards_menu.addAction(F4_edit_layout_action)
-        aqt.mw.addon_cards_menu.addAction(F4_edit_fields_action)
-        aqt.mw.addon_cards_menu.addSeparator()
-
-        aqt.mw.deckBrowser.show = anki.hooks.wrap(
-            aqt.mw.deckBrowser.show, swap_off)
-        aqt.mw.overview.show = anki.hooks.wrap(
-            aqt.mw.overview.show, swap_off)
-        aqt.mw.reviewer.show = anki.hooks.wrap(
-            aqt.mw.reviewer.show, swap_on)
-
-    # F4 as well as Ctrl+Shift+X in Fields Editor
-    #   (Add Card, Edit Card, Browse)
-    def myHTMLeditF4(self):
-        f4 = QShortcut(
-            QKeySequence(HOTKEY['Edit_HTML']), self.parentWindow)
-        f4.connect(f4, SIGNAL('activated()'), self.onHtmlEdit)
-
-    aqt.editor.Editor.setupButtons = anki.hooks.wrap(
-        aqt.editor.Editor.setupButtons, myHTMLeditF4)
 
 ##
 
