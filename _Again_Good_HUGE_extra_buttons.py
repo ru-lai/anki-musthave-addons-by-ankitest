@@ -55,6 +55,46 @@
 from __future__ import unicode_literals
 from __future__ import division
 
+import datetime
+import random
+import json
+import time
+import sys
+import os
+import re
+import copy
+import unicodedata
+import HTMLParser
+
+import anki  # ' Addons Install Tooltip
+import aqt
+
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
+
+import anki.hooks
+import anki.utils
+import anki.sound
+
+import aqt.main
+import aqt.utils
+import aqt.qt
+import aqt.reviewer
+import aqt.editor
+import aqt.fields
+import aqt.deckconf
+import aqt.forms
+
+import aqt.customstudy
+import anki.sched  # why?
+
+from anki.collection import _Collection
+
+from aqt.qt import *
+from aqt.clayout import CardLayout
+from anki.consts import MODEL_STD, MODEL_CLOZE
+from anki.consts import *
+
 """
  Inspired by Duplicate Selected Notes
   https://ankiweb.net/shared/info/2126361512
@@ -105,45 +145,6 @@ from __future__ import division
  Select Buttons Automatically If Correct Answer, Wrong Answer or Nothing
  https://ankiweb.net/shared/info/2074758752
 """
-import datetime
-import random
-import json
-import time
-import sys
-import os
-import re
-import copy
-import unicodedata
-import HTMLParser
-
-import anki  # ' Addons Install Tooltip
-import aqt
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-
-import anki.hooks
-import anki.utils
-import anki.sound
-
-import aqt.main
-import aqt.utils
-import aqt.qt
-import aqt.reviewer
-import aqt.editor
-import aqt.fields
-import aqt.deckconf
-import aqt.forms
-
-import aqt.customstudy
-import anki.sched  # why?
-
-from anki.collection import _Collection
-
-from aqt.qt import *
-from aqt.clayout import CardLayout
-from anki.consts import MODEL_STD, MODEL_CLOZE
-from anki.consts import *
 
 # Get language class
 # import anki.lang
