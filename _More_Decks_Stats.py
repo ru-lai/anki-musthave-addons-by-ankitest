@@ -222,7 +222,7 @@ if True:
         else:
             PARM['MORE_OVERVIEW_STATS'] = 3
 
-        musthave_setup_menu(3)
+        musthave_setup_menu()
         initDeckBro()
 
         if aqt.mw.state == "deckBrowser":
@@ -237,7 +237,7 @@ if True:
         else:
             PARM['MORE_OVERVIEW_STATS'] = 0
 
-        musthave_setup_menu(4)
+        musthave_setup_menu()
         initDeckBro()
 
         if aqt.mw.state == "deckBrowser":
@@ -255,7 +255,7 @@ if True:
         else:
             PARM['MORE_OVERVIEW_STATS'] = 3
 
-        musthave_setup_menu(5)
+        musthave_setup_menu()
         initDeckBro()
 
         if aqt.mw.state == "deckBrowser":
@@ -314,10 +314,11 @@ if True:
         aqt.mw.musthave_submenu.addAction(unseen_and_suspended_action)
         aqt.mw.musthave_submenu.addAction(gear_at_end_of_line_action)
         aqt.mw.musthave_submenu.addAction(hide_big_numbers_action)
+        aqt.mw.musthave_submenu.addSeparator()
         aqt.mw.musthave_submenu.addAction(musthave_study_action)
         aqt.mw.musthave_submenu.addSeparator()
 
-    def musthave_setup_menu(num):
+    def musthave_setup_menu():
 
         checkers_action.setChecked(PARM['MORE_OVERVIEW_STATS'] > 0)
 
@@ -339,7 +340,7 @@ if True:
         gear_at_end_of_line_action.setEnabled(
             PARM['MORE_OVERVIEW_STATS'] > 2)
 
-    musthave_setup_menu(1)
+    musthave_setup_menu()
 
 # _____ ------ ========== *********** ========== -------- ______
 
@@ -671,3 +672,74 @@ def maInit(self, col):
 
 anki.sched.Scheduler.__init__ = \
     anki.hooks.wrap(anki.sched.Scheduler.__init__, maInit)
+
+#
+
+
+def save_more_decks_stats():
+    aqt.mw.pm.profile['ctb_more_overview_stats'] = (
+        PARM['MORE_OVERVIEW_STATS'])
+    aqt.mw.pm.profile['ctb_hide_big_number'] = (
+        PARM['HIDE_BIG_NUMBER'])
+    aqt.mw.pm.profile['ctb_hide_big_numbers'] = (
+        PARM['HIDE_BIG_NUMBERS'])
+    aqt.mw.pm.profile['ctb_gear_at_end_of_line'] = (
+        PARM['GEAR_AT_END_OF_LINE'])
+    aqt.mw.pm.profile['ctb_musthave_study'] = (
+        PARM['STUDY_BUTTON'])
+    aqt.mw.pm.profile['ctb_button_titles'] = (
+        PARM['BUTTON_TITLES'])
+
+
+def load_more_decks_stats():
+    global PARM
+
+    try:
+        tmp = aqt.mw.pm.profile['ctb_more_overview_stats']
+        PARM['MORE_OVERVIEW_STATS'] = tmp
+    except KeyError:
+        pass
+
+    try:
+        tmp = aqt.mw.pm.profile['ctb_hide_big_number']
+        PARM['HIDE_BIG_NUMBER'] = tmp
+    except KeyError:
+        pass
+
+    try:
+        tmp = aqt.mw.pm.profile['ctb_hide_big_numbers']
+        PARM['HIDE_BIG_NUMBERS'] = tmp
+    except KeyError:
+        pass
+
+    try:
+        tmp = aqt.mw.pm.profile['ctb_gear_at_end_of_line']
+        PARM['GEAR_AT_END_OF_LINE'] = tmp
+    except KeyError:
+        pass
+
+    try:
+        tmp = aqt.mw.pm.profile['ctb_musthave_study']
+        PARM['STUDY_BUTTON'] = tmp
+    except KeyError:
+        pass
+
+    try:
+        tmp = aqt.mw.pm.profile['ctb_button_titles']
+        PARM['BUTTON_TITLES'] = tmp
+    except KeyError:
+        pass
+
+    musthave_setup_menu()
+    initDeckBro()
+
+    if aqt.mw.state == "deckBrowser":
+        aqt.mw.moveToState("deckBrowser")
+    if aqt.mw.state == "overview":
+        aqt.mw.moveToState("overview")
+
+
+anki.hooks.addHook("unloadProfile", save_more_decks_stats)
+anki.hooks.addHook("profileLoaded", load_more_decks_stats)
+
+#
