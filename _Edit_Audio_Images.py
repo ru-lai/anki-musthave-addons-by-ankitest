@@ -208,7 +208,7 @@ def JustDoItBySounds():
 def TryItByYourself(edit):
     ecf = edit.currentField
     JustDoItBy(edit.note, ecf, 0)
-    aqt.mw.reset()  # refresh gui
+    # aqt.mw.reset()  # refresh gui
     # focus field so it's saved
     edit.web.setFocus()
     edit.web.eval('focusField(%d);' % ecf)
@@ -309,7 +309,7 @@ def refresh_media():
 # Set up menus and hooks
 refresh_media_action = QAction("Refresh &Media", aqt.mw)
 refresh_media_action.setShortcut(QKeySequence("Ctrl+Alt+M"))
-refresh_media_action.triggered.connect(refresh_media)
+refresh_media_action.triggered.connect(aqt.mw.reset)
 aqt.mw.form.menuTools.addAction(refresh_media_action)
 
 anki.hooks.addHook("reset", refresh_media)
