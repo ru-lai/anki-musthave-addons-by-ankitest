@@ -313,3 +313,19 @@ refresh_media_action.triggered.connect(aqt.mw.reset)
 aqt.mw.form.menuTools.addAction(refresh_media_action)
 
 anki.hooks.addHook("reset", refresh_media)
+
+
+def setupMenu(self):
+    """
+    Add the items to the browser menu Edit
+    """
+    try:
+        self.form.addon_notes_menu
+    except AttributeError:
+        self.form.addon_notes_menu = QMenu(MSG[lang]['Notes'], mw)
+        self.form.menubar.insertMenu(
+            self.form.menu_Help.menuAction(), self.form.addon_notes_menu)
+
+    self.form.addon_notes_menu.addAction(refresh_media_action)
+
+anki.hooks.addHook('browser.setupMenus', setupMenu)
