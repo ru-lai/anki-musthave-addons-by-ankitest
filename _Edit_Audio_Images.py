@@ -270,7 +270,7 @@ def edit_ai_buttons(editor):
 # See Editor.setupEditorButtons for details
 anki.hooks.addHook('setupEditorButtons', edit_ai_buttons)
 
-## https://ankiweb.net/shared/info/162278717
+# https://ankiweb.net/shared/info/162278717
 
 """
 Anki Add-on: Refresh Media References
