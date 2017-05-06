@@ -43,6 +43,7 @@ MSG = {
         'later': _('later'),
         'not now': _('not now'),
         'Cards': _('&Cards'),
+        'Tools': _('&Tools'),
         'View': _('&View'),
         'Go': _('&Go'),
         'Edit Audio Images': _('&Edit Audio Images from fields'),
@@ -53,6 +54,7 @@ MSG = {
         'later': 'позже',
         'not now': 'не сейчас',
         'Cards': '&Карточки',
+        'Tools': '&Инструменты',
         'View': '&Вид',
         'Go': 'П&ереход',
         'Edit Audio Images': '&Правка Аудио и Картинок из полей',
@@ -320,12 +322,12 @@ def setupMenu(self):
     Add the items to the browser menu Edit
     """
     try:
-        self.form.addon_notes_menu
+        self.form.addon_tools_menu
     except AttributeError:
-        self.form.addon_notes_menu = QMenu(MSG[lang]['Notes'], mw)
+        self.form.addon_tools_menu = QMenu(MSG[lang]['Tools'], self.mw)
         self.form.menubar.insertMenu(
-            self.form.menu_Help.menuAction(), self.form.addon_notes_menu)
+            self.form.menu_Help.menuAction(), self.form.addon_tools_menu)
 
-    self.form.addon_notes_menu.addAction(refresh_media_action)
+    self.form.addon_tools_menu.addAction(refresh_media_action)
 
 anki.hooks.addHook('browser.setupMenus', setupMenu)
