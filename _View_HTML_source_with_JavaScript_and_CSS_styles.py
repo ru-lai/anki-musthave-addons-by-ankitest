@@ -28,7 +28,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 FONTS = {
-    'showText':         ('Calibri', 18),
+    'showText':         ('Calibri', 16),
 }
 
 HOTKEY = {      # in aqt.mw Main Window (deckBrowser, Overview, Reviewer)
