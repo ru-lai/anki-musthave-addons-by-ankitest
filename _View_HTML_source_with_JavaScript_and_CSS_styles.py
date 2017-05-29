@@ -27,6 +27,15 @@ import aqt
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+FONTS = {
+    'showText':         ('Calibri', 18),
+}
+
+HOTKEY = {      # in aqt.mw Main Window (deckBrowser, Overview, Reviewer)
+    'HTML_source': 'Ctrl+F3',
+    'Body_source': 'Alt+F3',
+}
+
 # Get language class
 # import anki.lang
 lang = anki.lang.getLang()
@@ -66,13 +75,8 @@ except:
 # 'Показать Ис&ходник HTML Body' if lang == 'ru' else 'View Source code &Body'
 # 'Показать И&сходник HTML' if lang == 'ru' else '&View Source code'
 
-HOTKEY = {      # in aqt.mw Main Window (deckBrowser, Overview, Reviewer)
-    'HTML_source': 'Ctrl+F3',
-    'Body_source': 'Alt+F3',
-}
-
 __addon__ = "'" + __name__.replace('_', ' ')
-__version__ = "2.0.44a"
+__version__ = "2.0.44b"
 
 try:
     aqt.mw.addon_cards_menu
@@ -82,6 +86,67 @@ except AttributeError:
         aqt.mw.form.menuTools.menuAction(), aqt.mw.addon_cards_menu)
 
 
+def particularFont(fontKey, bold=False, italic=False, underline=False):
+    font = QFont()
+    if fontKey in FONTS:
+        if FONTS[fontKey][0] is not None:
+            font.setFamily(FONTS[fontKey][0])
+        fontsize = int(FONTS[fontKey][1])
+        if fontsize > 0:
+            font.setPixelSize(fontsize)
+            # font.setPointSize(fontsize)
+        font.setBold(bold)
+        font.setItalic(italic)
+        font.setUnderline(underline)
+    return font
+
+
+def showTextik(txt, parent=None, type="text", run=True, geomKey=None, \
+        minWidth=500, minHeight=400, title="Anki"):
+    if not parent:
+        parent = aqt.mw.app.activeWindow() or aqt.mw
+    diag = QDialog(parent)
+    diag.setWindowTitle(title)
+    layout = QVBoxLayout(diag)
+    diag.setLayout(layout)
+    text = QTextEdit()
+    text.setReadOnly(True)
+
+    text.setFont(particularFont('showText'))
+    if type == "text":
+        text.setPlainText(txt)
+    else:
+        text.setHtml(txt)
+    layout.addWidget(text)
+    box = QDialogButtonBox(QDialogButtonBox.Close)
+    layout.addWidget(box)
+
+    def onReject():
+        if geomKey:
+            aqt.utils.saveGeom(diag, geomKey)
+        QDialog.reject(diag)
+    diag.connect(box, SIGNAL("rejected()"), onReject)
+    # box.rejected.connect(onReject)
+    # Python 3
+    def onFinish():
+        if geomKey:
+            aqt.utils.saveGeom(diag, geomKey)
+    diag.connect(box, SIGNAL("rejected()"), onReject)
+    # box.accepted.connect(onFinish)
+    # Python 3
+
+    diag.setMinimumHeight(minHeight)
+    diag.setMinimumWidth(minWidth)
+    if geomKey:
+        aqt.utils.restoreGeom(diag, geomKey)
+    if run:
+        diag.exec_()
+    else:
+        return diag, box
+
+aqt.utils.showText = showTextik
+
+
 def _getSourceHTML():
     """To look at sourcne HTML+CSS code."""
     html = aqt.mw.web.page().mainFrame().evaluateJavaScript("""
@@ -89,7 +154,7 @@ def _getSourceHTML():
              return document.documentElement.outerHTML
          }())
     """)
-    aqt.utils.showText(html)
+    aqt.utils.showText(html, geomKey="ViewHTML")
 
 
 def _getSourceBody(mWeb):
@@ -113,7 +178,7 @@ def _getSourceBody(mWeb):
              return document.body.outerHTML
          }())
     """)) + '\n</html>\n'
-    aqt.utils.showText(html)
+    aqt.utils.showText(html, geomKey="ViewHTML")
 
 get_Body_Source_action = QAction(aqt.mw)
 get_Body_Source_action.setText(MSG[lang]['no_jQuery'])
