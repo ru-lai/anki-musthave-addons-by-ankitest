@@ -132,7 +132,7 @@ def JustDoItBy(note, curFld, audioPic):
             for next_picture in next_pictures:
                 if next_picture and anki.utils.isWin:
                     found = os.path.join(aqt.mw.col.media.dir(),
-                                         next_picture)  # .group(1))
+                                         next_picture)
                     if os.path.exists(found):
                         if Windows_IMG:
                             os.system(Windows_IMG % (found))
@@ -145,7 +145,8 @@ def JustDoItBy(note, curFld, audioPic):
                                 except:
                                     pass
                 if next_picture and anki.utils.isMac:
-                    fullPath = os.path.join(pathToCollection, found)
+                    fullPath = os.path.join(aqt.mw.col.media.dir(),
+                                            next_picture)
                     # need to escape spaces
                     fullPath = re.sub(" ", "\ ", fullPath)
                     os.system(macOS_IMG + " " + fullPath)
