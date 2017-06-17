@@ -1,12 +1,14 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • Editor fontsize
+# _Editor_fontsize.py
 # https://ankiweb.net/shared/info/1931469441
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.ru/
 # No support. Use it AS IS on your own risk.
 """
+' Editor fontsize
+
  Increase Text Size for Card Types Editor and so on.
 
  TODO: Some description should be here!!!

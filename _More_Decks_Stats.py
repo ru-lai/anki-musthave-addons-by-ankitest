@@ -1,13 +1,16 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • More decks overview stats
-# -- tested with Anki 2.0.44 under Windows 7 SP1
+# _More_Decks_Stats.py
 # https://ankiweb.net/shared/info/1841403427
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2017 Dmitry Mikheev, http://finpapa.ucoz.ru/index.html
+# Copyright (c) 2017 Dmitry Mikheev, http://finpapa.ucoz.ru/
 # No support. Use it AS IS on your own risk.
 """
+' More Decks Stats
+
+ ? More decks overview stats
+
  Do not forget about _('To Review')
 """
 from __future__ import division

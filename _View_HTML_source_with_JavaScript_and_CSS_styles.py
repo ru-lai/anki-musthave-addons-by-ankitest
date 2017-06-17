@@ -1,12 +1,14 @@
 # -*- mode: Python ; coding: utf-8 -*-
-# • View HTML source with JavaScript and CSS styles
+# _View_HTML_source_with_JavaScript_and_CSS_styles.py
 # https://ankiweb.net/shared/info/1128123950
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
 # -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.net/
+# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.ru/
 # No support. Use it AS IS on your own risk.
 """
+' View HTML source with JavaScript and CSS styles
+
  Menu Cards - View Source code Body Alt+F3
   shows HTML source with JavaScript and CSS styles
    but without jQuery Menu Cards
