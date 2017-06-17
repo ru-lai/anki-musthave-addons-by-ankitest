@@ -11,13 +11,14 @@ All these add-ons also shared on AnkiWeb.net:
 
 Info | Code
 ------------- | -------------:
-[' Again Good HUGE extra buttons](https://ankiweb.net/shared/info/2074653746) | 2074653746 
-[' Clear Field Formatting HTML](https://ankiweb.net/shared/info/1114708966) | 1114708966
-[' Edit Audio Images](https://ankiweb.net/shared/info/1075177705) | 1075177705 
-[' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441 
-[' More Decks Stats](https://ankiweb.net/shared/info/1841403427) | 1841403427 
-[' View HTML source with JavaScript and CSS styles](https://ankiweb.net/shared/info/1128123950) | 1128123950 
-[' Zooming](https://ankiweb.net/shared/info/1071179937) | 1071179937 
+[' Again Good HUGE extra buttons](https://ankiweb.net/shared/info/2074653746) | 2074653746  
+[' Clear Field Formatting HTML](https://ankiweb.net/shared/info/1114708966) | 1114708966  
+[' Edit Audio Images](https://ankiweb.net/shared/info/1075177705) | 1075177705  
+[' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441  
+[' More Decks Stats](https://ankiweb.net/shared/info/1841403427) | 1841403427  
+[' REPL print Debug Console](https://ankiweb.net/shared/info/???) | ???  
+[' View HTML source with JavaScript and CSS styles](https://ankiweb.net/shared/info/1128123950) | 1128123950  
+[' Zooming](https://ankiweb.net/shared/info/1071179937) | 1071179937  
 
 There is no difference between GitHub and AnkiWeb,  
 both are updated at the same time.  

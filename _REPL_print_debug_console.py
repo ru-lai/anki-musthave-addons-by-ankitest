@@ -1,6 +1,6 @@
 # -*- mode: Python ; coding: utf-8 -*-
 # _REPL_print_Debug_Console.py
-# https://ankiweb.net/shared/info/???
+# https://ankiweb.net/shared/info/887733884
 # https://github.com/ankitest/anki-musthave-addonz-by-ankitest
 # -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
