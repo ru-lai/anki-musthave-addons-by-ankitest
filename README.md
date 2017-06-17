@@ -16,7 +16,6 @@ Info | Code
 [' Edit Audio Images](https://ankiweb.net/shared/info/1075177705) | 1075177705 
 [' Editor fontsize](https://ankiweb.net/shared/info/1931469441) | 1931469441 
 [' More Decks Stats](https://ankiweb.net/shared/info/1841403427) | 1841403427 
-[' Search an asterisk in Browse](https://ankiweb.net/shared/info/1233315867) | 1233315867 
 [' View HTML source with JavaScript and CSS styles](https://ankiweb.net/shared/info/1128123950) | 1128123950 
 [' Zooming](https://ankiweb.net/shared/info/1071179937) | 1071179937 
 
