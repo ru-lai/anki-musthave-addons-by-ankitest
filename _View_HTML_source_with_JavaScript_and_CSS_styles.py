@@ -1,4 +1,4 @@
-# -*- mode: Python ; coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # _View_HTML_source_with_JavaScript_and_CSS_styles.py
 # https://ankiweb.net/shared/info/1128123950
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest

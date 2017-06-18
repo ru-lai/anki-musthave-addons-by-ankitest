@@ -1,4 +1,4 @@
-# -*- mode: Python ; coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # _Again_Good_HUGE_extra_buttons.py
 # https://ankiweb.net/shared/info/2074653746
 # https://github.com/ankitest/anki-musthave-addonz-by-ankitest

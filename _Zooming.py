@@ -1,4 +1,4 @@
-# -*- mode: Python ; coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # _Zooming.py
 # https://ankiweb.net/shared/info/1071179937
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest

@@ -1,4 +1,4 @@
-# -*- mode: Python ; coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # _Clear_Fields_Formatting_HTML.py
 # https://ankiweb.net/shared/info/1114708966
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest

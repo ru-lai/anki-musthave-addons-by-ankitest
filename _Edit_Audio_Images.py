@@ -1,4 +1,4 @@
-# -*- mode: Python ; coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # _Edit_Audio_Images.py
 # https://ankiweb.net/shared/info/1040866511
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest

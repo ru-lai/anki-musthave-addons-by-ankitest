@@ -1,10 +1,10 @@
-# -*- mode: Python ; coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # _REPL_print_Debug_Console.py
 # https://ankiweb.net/shared/info/887733884
 # https://github.com/ankitest/anki-musthave-addonz-by-ankitest
 # -- tested with Anki 2.0.44 under Windows 7 SP1
 # License: GNU GPL, version 3 or later; http://www.gnu.org/copyleft/gpl.html
-# Copyright (c) 2016-2017 Dmitry Mikheev, http://finpapa.ucoz.ru/
+# Copyright (c) 2017 Dmitry Mikheev, http://finpapa.ucoz.ru/
 # No support. Use it AS IS on your own risk.
 """
 ' REPL print Debug Console

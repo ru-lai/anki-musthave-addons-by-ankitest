@@ -1,4 +1,4 @@
-# -*- mode: Python ; coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # _Editor_fontsize.py
 # https://ankiweb.net/shared/info/1931469441
 # https://github.com/ankitest/anki-musthave-addons-by-ankitest
