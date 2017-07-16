@@ -103,7 +103,8 @@ def particularFont(fontKey, bold=False, italic=False, underline=False):
     return font
 
 
-def showTextik(txt, parent=None, type="text", run=True, geomKey=None, \
+def showTextik(
+        txt, parent=None, type="text", run=True, geomKey=None,
         minWidth=500, minHeight=400, title="Anki"):
     if not parent:
         parent = aqt.mw.app.activeWindow() or aqt.mw
@@ -130,6 +131,7 @@ def showTextik(txt, parent=None, type="text", run=True, geomKey=None, \
     diag.connect(box, SIGNAL("rejected()"), onReject)
     # box.rejected.connect(onReject)
     # Python 3
+
     def onFinish():
         if geomKey:
             aqt.utils.saveGeom(diag, geomKey)
