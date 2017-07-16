@@ -119,7 +119,7 @@ FIELDS_ONLY = []  # [_('Front'), 'Front']  #
 FIELDS_ACCEPTED = False
 
 __addon__ = "'" + __name__.replace('_', ' ')
-__version__ = "2.0.44a"
+__version__ = "2.0.44b"
 
 if __name__ == '__main__':
     print("""This is _Clear_Fields_Formatting_HTML.py add-on \
@@ -292,12 +292,14 @@ def onClearFormattag(self, nids=None, dids=None, note=None):
     requests = demand[0].strip().lower().split()
     for req in requests:
         if req in valid:
-            if req in ('sound'):
+            if req in ('sound',):  # == 'sound':
                 stencil.extend(['\[sound\:.*?\]'])
-            elif req in ('img'):
+                # in ('img'):  # it is parsed character by character
+            elif req in ('img',):  # == 'img':
                 stencil.extend(['<%s.*?>' % (req)])
             else:
-                stencil.extend(['<%s.*?>|</%s>' % (req, req)])
+                stencil.extend(['<%s>|<%s .*?>|</%s>' % (req, req, req)])
+                # <%s.*?> is wrong because of <i <img and <s <sub <sup
         elif req == 'tags':
             removeAllTags = True
         else:
@@ -314,7 +316,7 @@ def onClearFormattag(self, nids=None, dids=None, note=None):
                            '<del.*?>|</del>|<ins.*?>|</ins>'])
 
     join_stencil = '|'.join(stencil)
-    if stencil and askUser('Delete %s?' % (join_stencil)):
+    if stencil and askUser('Delete %s?' % (join_stencil.replace('<', '&lt;'))):
         clearFormatting(
             self, nids=nids, dids=dids, note=note, chk=False,
             removeTags=join_stencil)
@@ -342,7 +344,7 @@ def onClearFormattag(self, nids=None, dids=None, note=None):
                     self, nids=nids, dids=dids, note=note, chk=False,
                     removeTags=oldTag)
 
-    if removeAllTags and askUser('Delete all Tags?'):
+    if removeAllTags and askUser('Delete <b>all</b> Tags?'):
         clearFormatting(
             self, nids=nids, dids=dids, note=note, chk=False)
 
