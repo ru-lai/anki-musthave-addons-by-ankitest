@@ -22,6 +22,7 @@ _lang = anki.lang.getLang()
 
 HOTKEY = "Ctrl+Shift+D"
 
+
 def _REPL():
     action = QAction(
         "&Отладка REPL print Debug Console" if _lang == "ru" else
